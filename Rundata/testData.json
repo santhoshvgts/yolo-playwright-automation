@@ -25,11 +25,11 @@
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
-    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "vulgivagus",
-    "productDescription": "Consequatur sint vociferor stultus blandior caritas sponte patior aspicio.",
-    "salePricePerPcs": "220",
-    "updatedAt": "2026-09-21T07:37:32.723Z"
+    "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "voluptatum",
+    "productDescription": "Traho speciosus voluptates dolorem.",
+    "salePricePerPcs": "605",
+    "updatedAt": "2026-09-21T13:28:55.573Z"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -42,9 +42,45 @@
     "updatedAt": "2026-09-21T07:25:17.197Z"
   },
   "productItemCreateData": {
-    "productName": "vulgivagus",
-    "productDescription": "Consequatur sint vociferor stultus blandior caritas sponte patior aspicio.",
-    "salePricePerPcs": "220",
-    "updatedAt": "2026-09-21T07:37:48.995Z"
+    "productName": "infit",
+    "productDescription": "Cunabula adfectus attollo speculum deleo temeritas.",
+    "salePricePerPcs": "313",
+    "updatedAt": "2026-09-21T09:37:27.737Z"
+  },
+  "GeneralOverallMarkupPricing": {
+    "priceListName": "Price List Awesome Gold Hat",
+    "customRate": "42",
+    "updatedAt": "2026-09-21T13:15:42.364Z"
+  },
+  "GeneralItemSpecificPricing": {
+    "priceListName": "Price List Electronic Steel Cheese",
+    "customRate": "42",
+    "itemName": "infit",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-21T13:16:11.735Z"
+  },
+  "CategoryWiseOverallMarkupPricing": {
+    "priceListName": "Price List Awesome Rubber Hat",
+    "customRate": "3",
+    "updatedAt": "2026-09-21T13:29:22.803Z"
+  },
+  "CategoryWiseItemSpecificPricing": {
+    "priceListName": "Price List Handcrafted Rubber Shirt",
+    "customRate": "59",
+    "itemName": "infit",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-21T13:17:02.852Z"
+  },
+  "ProfileWiseOverallMarkupPricing": {
+    "priceListName": "Price List Refined Ceramic Towels",
+    "customRate": "59",
+    "updatedAt": "2026-09-21T13:17:24.052Z"
+  },
+  "ProfileWiseItemSpecificPricing": {
+    "priceListName": "Price List Oriental Steel Chips",
+    "customRate": "59",
+    "itemName": "infit",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-21T13:18:00.128Z"
   }
 }
