@@ -1,0 +1,41 @@
+{
+  "spec": "tests/Product_item_Create.spec.js",
+  "status": "failed",
+  "exitCode": 1,
+  "summary": "──────────────────────────────────────────────────────────────────────────────────────────────── | Error Context: test-results\\artifacts\\Product_item_Create-Produc-b67d2-new-product-item-and-verify-chromium-retry3\\error-context.md | 1 failed | [chromium] › tests\\Product_item_Create.spec.js:10:3 › Product_item_Create › Create a new product item and verify",
+  "finishedAt": "2026-09-21T07:25:17.195Z",
+  "data": {
+    "recorded:Product_item_Create": {
+      "emailId": "santhosh@yoloworks.com",
+      "password": "***REDACTED***",
+      "searchByNameOrGST": "auto",
+      "fieldFile": "MZO9pvcB03.png",
+      "productName": "Sonyu",
+      "productDescription": "hi",
+      "salePricePerPcs": "100",
+      "recordedUrl": "https://invoice.test.vgts.xyz/",
+      "source": "codegen-recording",
+      "updatedAt": "2026-09-21T07:23:30.176Z"
+    },
+    "recorded:Product_item_Create:strategy": {
+      "emailId": "faker.internet.email()",
+      "password": "ENV: credential — process.env.PASSWORD, never faker, never a committed literal",
+      "searchByNameOrGST": "LITERAL: searches for an existing record — keep literal, a random term matches nothing",
+      "fieldFile": "LITERAL: uploaded file path — keep literal (or point at a fixture in the repo)",
+      "productName": "faker.lorem.words(1)",
+      "productDescription": "faker.lorem.sentence()",
+      "salePricePerPcs": "faker.string.numeric(3)",
+      "updatedAt": "2026-09-21T07:23:30.182Z"
+    },
+    "Product_item_Create:generateProduct_item_CreateData": {
+      "emailId": "Gussie59@gmail.com",
+      "password": "***REDACTED***",
+      "searchByNameOrGST": "auto",
+      "fieldFile": "MZO9pvcB03.png",
+      "productName": "vapulus",
+      "productDescription": "Cicuta cubo tenetur vilicus utrum sto.",
+      "salePricePerPcs": "398",
+      "updatedAt": "2026-09-21T07:25:09.457Z"
+    }
+  }
+}
