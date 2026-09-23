@@ -308,4 +308,152 @@ test.describe(moduleName, () => {
 
   });
 
+  test('Edit a pricing list - General - overallmarkdown', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Login
+    await page.goto('https://invoice.test.vgts.xyz/');
+    await pom.loginButton.click();
+    await pom.emailField.fill(data.emailId);
+    await pom.passwordField.fill(data.password);
+    await pom.showPasswordCheckbox.check();
+    await pom.loginButtonFinal.click();
+
+    await pom.page.waitForTimeout(5000); // Wait for the page to load
+    // Verify org selection screen appears (precondition check)
+    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
+
+    // Select org
+    await pom.orgSearchField.fill(data.searchByNameOrGST);
+    await pom.orgResult.click();
+    await pom.switchButton.click();
+
+    // Navigate to product creation
+    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await pom.editGeneralOverallMarkdownPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+
+  });
+
+    test('Edit a pricing list - General - item specific', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Login
+    await page.goto('https://invoice.test.vgts.xyz/');
+    await pom.loginButton.click();
+    await pom.emailField.fill(data.emailId);
+    await pom.passwordField.fill(data.password);
+    await pom.showPasswordCheckbox.check();
+    await pom.loginButtonFinal.click();
+
+    await pom.page.waitForTimeout(5000); // Wait for the page to load
+    // Verify org selection screen appears (precondition check)
+    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
+
+    // Select org
+    await pom.orgSearchField.fill(data.searchByNameOrGST);
+    await pom.orgResult.click();
+    await pom.switchButton.click();
+
+    // Navigate to product creation
+    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await pom.editGeneralItemSpecificPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
+   test('Edit a pricing list - CategoryWise - Overall Markup', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Login
+    await page.goto('https://invoice.test.vgts.xyz/');
+    await pom.loginButton.click();
+    await pom.emailField.fill(data.emailId);
+    await pom.passwordField.fill(data.password);
+    await pom.showPasswordCheckbox.check();
+    await pom.loginButtonFinal.click();
+
+    await pom.page.waitForTimeout(5000); // Wait for the page to load
+    // Verify org selection screen appears (precondition check)
+    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
+
+    // Select org
+    await pom.orgSearchField.fill(data.searchByNameOrGST);
+    await pom.orgResult.click();
+    await pom.switchButton.click();
+
+    // Navigate to product creation
+    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await pom.editCategoryWiseOverallMarkupPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
+
+    test('Edit a pricing list - CategoryWise - Overall Markdown', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Login
+    await page.goto('https://invoice.test.vgts.xyz/');
+    await pom.loginButton.click();
+    await pom.emailField.fill(data.emailId);
+    await pom.passwordField.fill(data.password);
+    await pom.showPasswordCheckbox.check();
+    await pom.loginButtonFinal.click();
+
+    await pom.page.waitForTimeout(5000); // Wait for the page to load
+    // Verify org selection screen appears (precondition check)
+    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
+
+    // Select org
+    await pom.orgSearchField.fill(data.searchByNameOrGST);
+    await pom.orgResult.click();
+    await pom.switchButton.click();
+
+    // Navigate to product creation
+    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await pom.editCategoryWiseOverallMarkdownPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
+  test('Edit a pricing list - CategoryWise - Item Specific', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Login
+    await page.goto('https://invoice.test.vgts.xyz/');
+    await pom.loginButton.click();
+    await pom.emailField.fill(data.emailId);
+    await pom.passwordField.fill(data.password);
+    await pom.showPasswordCheckbox.check();
+    await pom.loginButtonFinal.click();
+
+    await pom.page.waitForTimeout(5000); // Wait for the page to load
+
+    // Verify org selection screen appears (precondition check)
+    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
+
+    // Select org
+    await pom.orgSearchField.fill(data.searchByNameOrGST);
+    await pom.orgResult.click();
+    await pom.switchButton.click();
+
+    // Navigate to product creation
+    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await pom.editCategoryWiseItemSpecificPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
 });

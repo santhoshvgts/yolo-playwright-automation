@@ -26,10 +26,10 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "capitulus",
-    "productDescription": "Convoco corrupti commodi amplexus crapula ater cohaero amplexus.",
-    "salePricePerPcs": "544",
-    "updatedAt": "2026-09-23T10:35:40.369Z"
+    "productName": "terror",
+    "productDescription": "Accendo sum suscipit ab.",
+    "salePricePerPcs": "476",
+    "updatedAt": "2026-09-23T13:28:19.750Z"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -62,54 +62,70 @@
     "itemAmount": "100"
   },
   "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Practical Wooden Table",
+    "priceListName": "Price List Handmade Wooden Fish",
     "customRate": "42",
-    "updatedAt": "2026-09-23T10:36:01.186Z"
+    "updatedAt": "2026-09-23T13:32:15.434Z",
+    "editedPriceListName": "Price List Sleek Metal Computer",
+    "editedCustomRate": "50"
   },
   "GeneralOverallMarkdownPricing": {
-    "priceListName": "Price List Ergonomic Steel Gloves",
+    "priceListName": "Price List Tasty Steel Gloves",
     "customRate": "42",
-    "updatedAt": "2026-09-23T10:36:30.680Z"
+    "updatedAt": "2026-09-23T13:32:39.958Z",
+    "editedPriceListName": "Price List Tasty Cotton Tuna",
+    "editedCustomRate": "50"
   },
   "GeneralItemSpecificPricing": {
-    "priceListName": "Price List Gorgeous Ceramic Hat",
+    "priceListName": "Price List Awesome Granite Bike",
     "customRate": "42",
     "itemName": "infit",
     "itemAmount": "100",
-    "updatedAt": "2026-09-23T10:36:55.943Z"
+    "updatedAt": "2026-09-23T13:33:16.364Z",
+    "editedPriceListName": "Price List Recycled Rubber Chair",
+    "editedCustomRate": "50",
+    "editedProductName": "Sonyu",
+    "editedPrimaryUOM": "150"
   },
   "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Fresh Aluminum Ball",
+    "priceListName": "Price List Licensed Silk Hat",
     "customRate": "42",
-    "updatedAt": "2026-09-23T10:37:19.932Z"
+    "updatedAt": "2026-09-23T13:33:39.654Z",
+    "editedPriceListName": "Price List Elegant Silk Ball",
+    "editedCustomRate": "50"
   },
   "CategoryWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Awesome Gold Pants",
+    "priceListName": "Price List Frozen Wooden Ball",
     "customRate": "42",
-    "updatedAt": "2026-09-23T10:37:47.008Z"
+    "updatedAt": "2026-09-23T13:33:59.619Z",
+    "editedPriceListName": "Price List Ergonomic Plastic Table",
+    "editedCustomRate": "50"
   },
   "CategoryWiseItemSpecificPricing": {
-    "priceListName": "Price List Frozen Gold Chips",
+    "priceListName": "Price List Soft Gold Shoes",
     "customRate": "42",
     "itemName": "infit",
     "itemAmount": "100",
-    "updatedAt": "2026-09-23T10:38:19.711Z"
+    "updatedAt": "2026-09-23T13:34:28.575Z",
+    "editedPriceListName": "Price List Modern Concrete Mouse",
+    "editedCustomRate": "50",
+    "editedProductName": "Sonyu",
+    "editedPrimaryUOM": "150"
   },
   "ProfileWiseOverallMarkupPricing": {
-    "priceListName": "Price List Recycled Silk Towels",
+    "priceListName": "Price List Rustic Steel Chicken",
     "customRate": "42",
-    "updatedAt": "2026-09-23T10:38:40.356Z"
+    "updatedAt": "2026-09-23T13:31:03.226Z"
   },
   "ProfileWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Oriental Steel Tuna",
+    "priceListName": "Price List Bespoke Plastic Towels",
     "customRate": "42",
-    "updatedAt": "2026-09-23T10:39:05.882Z"
+    "updatedAt": "2026-09-23T13:31:27.210Z"
   },
   "ProfileWiseItemSpecificPricing": {
-    "priceListName": "Price List Luxurious Plastic Computer",
+    "priceListName": "Price List Unbranded Aluminum Bike",
     "customRate": "42",
     "itemName": "infit",
     "itemAmount": "100",
-    "updatedAt": "2026-09-23T10:39:34.628Z"
+    "updatedAt": "2026-09-23T13:31:53.906Z"
   }
 }
