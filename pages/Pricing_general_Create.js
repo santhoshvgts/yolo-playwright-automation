@@ -46,11 +46,13 @@ class Pricing_general_Create extends SelfHealingBasePage {
     this.searchField = this.page.getByRole('textbox', { name: 'Search' });
     this.searchedField = this.page.locator('(//div[@class="Product_Name_Class"])[1]');
     this.editPricingButton = this.page.getByRole('button', { name: 'Edit' });
+    this.markupDropdown = this.page.getByText('Markup', { exact: true });
+    this.markdownDropdown = this.page.getByTitle('Markdown');
     
   }
 
 
-    async fillAndSubmitGeneralOverallMarkupPricing(data) { 
+    async fillAndSubmitGeneralOverallMarkupPricing(data) {   // fillAndSubmitGeneralOverallMarkdownPricing
     // Navigate to pricing creation
     await this.inventoryLink.click();
     await this.page.waitForTimeout(2000);
@@ -76,6 +78,39 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
   }
 
+
+    async fillAndSubmitGeneralOverallMarkdownPricing(data) {   
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+    await this.addPricingButton.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.priceListNameField.fill(data.markdownPriceListName1);
+    await this.addDescriptionButton.click();
+    await this.removeDescriptionButton.click(); // Remove description if it exists
+    await this.addDescriptionButton.click();
+    await this.descriptionInput.fill(data.description);
+    await this.assignPriceListToDropdown.click();
+    await this.assignPriceListOption.click();
+    
+    await this.markupDropdown.click();
+    await this.page.waitForTimeout(2000);
+    await this.markdownDropdown.click();
+    await this.page.waitForTimeout(2000);
+    await this.customRateField.fill(data.customRate);
+
+    await this.savePriceListButton.click();  
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+
+    saveSection('GeneralOverallMarkdownPricing', {
+      priceListName: data.markdownPriceListName1,
+      customRate: data.customRate
+    });
+
+  }
+
   // async editGeneralOverallMarkupPricing(data) { 
   //   // Navigate to pricing creation
   //   await this.inventoryLink.click();
@@ -93,7 +128,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
   //   await this.page.waitForTimeout(2000); // Wait for modal to appear
 
 
-  //   await this.priceListNameField.fill(data.priceListName1);
+  //   await this.priceListNameField.fill(data.editedPriceListName1);
   //   await this.addDescriptionButton.click();
   //   await this.removeDescriptionButton.click(); // Remove description if it exists
   //   await this.addDescriptionButton.click();
@@ -150,7 +185,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
   }
 
 
-  async fillAndSubmitCategoryWiseOverallMarkupPricing(data) {     
+  async fillAndSubmitCategoryWiseOverallMarkupPricing(data) {      // fillAndSubmitCategoryWiseOverallMarkdownPricing
     // Navigate to pricing creation
     await this.inventoryLink.click();
     await this.page.waitForTimeout(2000);
@@ -179,6 +214,45 @@ class Pricing_general_Create extends SelfHealingBasePage {
           priceListName: data.priceListName3,
           customRate: data.customRate
         });
+
+  }
+
+    async fillAndSubmitCategoryWiseOverallMarkdownPricing(data) {      
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+    await this.addPricingButton.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.priceListNameField.fill(data.markdownPriceListName2);
+    await this.addDescriptionButton.click();
+    await this.removeDescriptionButton.click(); // Remove description if it exists
+    await this.addDescriptionButton.click();
+    await this.descriptionInput.fill(data.description);
+    await this.priceListTypeDropdown.click();
+    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+    await this.priceListTypeOption1.click();
+    await this.assignPriceListToDropdown.click();
+    await this.assignPriceListOption.click();
+    await this.businessCategoryDropdown.click();
+    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+    await this.businessCategoryOption.click();
+
+    await this.markupDropdown.click();
+    await this.page.waitForTimeout(2000);
+    await this.markdownDropdown.click();
+    await this.page.waitForTimeout(2000);
+
+    await this.customRateField.fill(data.customRate);
+    await this.savePriceListButton.click();  
+
+    saveSection('CategoryWiseOverallMarkdownPricing', {
+          priceListName: data.markdownPriceListName2,
+          customRate: data.customRate
+        });
+
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
 
   }
 
@@ -254,6 +328,45 @@ class Pricing_general_Create extends SelfHealingBasePage {
       priceListName: data.priceListName5,
       customRate: data.customRate
     });
+
+  }
+
+    async fillAndSubmitProfileWiseOverallMarkdownPricing(data) {     
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+    await this.addPricingButton.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.priceListNameField.fill(data.markdownPriceListName3);
+    await this.addDescriptionButton.click();
+    await this.removeDescriptionButton.click(); // Remove description if it exists
+    await this.addDescriptionButton.click();
+    await this.descriptionInput.fill(data.description);
+    await this.priceListTypeDropdown.click();
+    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+    await this.priceListTypeOption2.click();
+    await this.assignPriceListToDropdown.click();
+    await this.assignPriceListOption.click();
+
+    await this.itemSelectionField.fill(data.profileName);
+
+    await this.markupDropdown.click();
+    await this.page.waitForTimeout(2000);
+    await this.markdownDropdown.click();
+    await this.page.waitForTimeout(2000);
+
+    await this.customRateField.fill(data.customRate);
+    await this.savePriceListButton.click();  
+
+    saveSection('ProfileWiseOverallMarkdownPricing', {
+      priceListName: data.markdownPriceListName3,
+      customRate: data.customRate
+    });
+
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+
 
   }
 

@@ -26,10 +26,10 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "voluptatum",
-    "productDescription": "Traho speciosus voluptates dolorem.",
-    "salePricePerPcs": "605",
-    "updatedAt": "2026-09-21T13:28:55.573Z"
+    "productName": "capitulus",
+    "productDescription": "Convoco corrupti commodi amplexus crapula ater cohaero amplexus.",
+    "salePricePerPcs": "544",
+    "updatedAt": "2026-09-23T10:35:40.369Z"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -47,40 +47,69 @@
     "salePricePerPcs": "313",
     "updatedAt": "2026-09-21T09:37:27.737Z"
   },
-  "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Awesome Gold Hat",
+  "MasterData_Pricing": {
+    "GeneralOverallMarkuppriceListName": "Price List Practical Wooden Table",
+    "GeneralOverallMarkdownpriceListName": "Price List Ergonomic Steel Gloves",
+    "GeneralItemSpecificpriceListName": "Price List Gorgeous Ceramic Hat",
+    "CategoryWiseOverallMarkuppriceListName": "Price List Fresh Aluminum Ball",
+    "CategoryWiseOverallMarkdownpriceListName": "Price List Awesome Gold Pants",
+    "CategoryWiseItemSpecificpriceListName": "Price List Frozen Gold Chips",
+    "ProfileWiseOverallMarkuppriceListName": "Price List Recycled Silk Towels",
+    "ProfileWiseOverallMarkdownpriceListName": "Price List Oriental Steel Tuna",
+    "ProfileWiseItemSpecificpriceListName": "Price List Luxurious Plastic Computer",
     "customRate": "42",
-    "updatedAt": "2026-09-21T13:15:42.364Z"
+    "itemName": "infit",
+    "itemAmount": "100"
+  },
+  "GeneralOverallMarkupPricing": {
+    "priceListName": "Price List Practical Wooden Table",
+    "customRate": "42",
+    "updatedAt": "2026-09-23T10:36:01.186Z"
+  },
+  "GeneralOverallMarkdownPricing": {
+    "priceListName": "Price List Ergonomic Steel Gloves",
+    "customRate": "42",
+    "updatedAt": "2026-09-23T10:36:30.680Z"
   },
   "GeneralItemSpecificPricing": {
-    "priceListName": "Price List Electronic Steel Cheese",
+    "priceListName": "Price List Gorgeous Ceramic Hat",
     "customRate": "42",
     "itemName": "infit",
     "itemAmount": "100",
-    "updatedAt": "2026-09-21T13:16:11.735Z"
+    "updatedAt": "2026-09-23T10:36:55.943Z"
   },
   "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Awesome Rubber Hat",
-    "customRate": "3",
-    "updatedAt": "2026-09-21T13:29:22.803Z"
+    "priceListName": "Price List Fresh Aluminum Ball",
+    "customRate": "42",
+    "updatedAt": "2026-09-23T10:37:19.932Z"
+  },
+  "CategoryWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Awesome Gold Pants",
+    "customRate": "42",
+    "updatedAt": "2026-09-23T10:37:47.008Z"
   },
   "CategoryWiseItemSpecificPricing": {
-    "priceListName": "Price List Handcrafted Rubber Shirt",
-    "customRate": "59",
+    "priceListName": "Price List Frozen Gold Chips",
+    "customRate": "42",
     "itemName": "infit",
     "itemAmount": "100",
-    "updatedAt": "2026-09-21T13:17:02.852Z"
+    "updatedAt": "2026-09-23T10:38:19.711Z"
   },
   "ProfileWiseOverallMarkupPricing": {
-    "priceListName": "Price List Refined Ceramic Towels",
-    "customRate": "59",
-    "updatedAt": "2026-09-21T13:17:24.052Z"
+    "priceListName": "Price List Recycled Silk Towels",
+    "customRate": "42",
+    "updatedAt": "2026-09-23T10:38:40.356Z"
+  },
+  "ProfileWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Oriental Steel Tuna",
+    "customRate": "42",
+    "updatedAt": "2026-09-23T10:39:05.882Z"
   },
   "ProfileWiseItemSpecificPricing": {
-    "priceListName": "Price List Oriental Steel Chips",
-    "customRate": "59",
+    "priceListName": "Price List Luxurious Plastic Computer",
+    "customRate": "42",
     "itemName": "infit",
     "itemAmount": "100",
-    "updatedAt": "2026-09-21T13:18:00.128Z"
+    "updatedAt": "2026-09-23T10:39:34.628Z"
   }
 }
