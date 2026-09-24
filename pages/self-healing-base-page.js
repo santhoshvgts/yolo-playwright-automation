@@ -20,6 +20,7 @@
 
 const { BasePage }            = require('./base-page');
 const { SelfHealingLocator }  = require('../utils/selfHealingLocator');
+const { TIMEOUTS }            = require('../config/timeouts');
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -74,7 +75,7 @@ class SelfHealingBasePage extends BasePage {
    */
   async healingClick(locator, fallbacks = []) {
     try {
-      await locator.waitFor({ state: 'visible', timeout: 10000 });
+      await locator.waitFor({ state: 'visible', timeout: TIMEOUTS.healProbe });
       await locator.click();
     } catch (err) {
       console.warn(`[SelfHeal] Primary locator click failed: ${err.message}`);
@@ -99,7 +100,7 @@ class SelfHealingBasePage extends BasePage {
    */
   async healingFill(locator, value, fallbacks = []) {
     try {
-      await locator.waitFor({ state: 'visible', timeout: 5000 });
+      await locator.waitFor({ state: 'visible', timeout: TIMEOUTS.healProbe });
       await locator.fill(value);
       // Blur after fill so the Android soft keyboard fully closes before the
       // next interaction (dropdown click etc.). Harmless on desktop.
@@ -135,7 +136,7 @@ class SelfHealingBasePage extends BasePage {
   async safeClick(selector, retries = 3) {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
-        await this.page.locator(selector).click({ timeout: 5000 });
+        await this.page.locator(selector).click({ timeout: TIMEOUTS.healProbe });
         return;
       } catch (err) {
         if (attempt === retries) throw err;
@@ -154,8 +155,8 @@ class SelfHealingBasePage extends BasePage {
    */
   async waitForStableDOM() {
     try {
-      await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 });
-      await this.page.waitForLoadState('networkidle',      { timeout: 30000 });
+      await this.page.waitForLoadState('domcontentloaded', { timeout: TIMEOUTS.loadState });
+      await this.page.waitForLoadState('networkidle',      { timeout: TIMEOUTS.loadState });
     } catch {
       // networkidle can timeout on pages with long-polling — continue anyway
       console.warn('[SelfHeal] waitForStableDOM: networkidle timed out, continuing');

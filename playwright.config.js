@@ -1,6 +1,9 @@
 // @ts-check
 import dotenv from 'dotenv';
 import { defineConfig } from '@playwright/test';
+import { TIMEOUTS } from './config/timeouts.js';
+import { STORAGE_STATE } from './config/auth.js';
+import { URLS } from './config/urls.js';
 
 // Resolves relative to CWD — always run `npx playwright test` from the project root.
 dotenv.config({ quiet: true });
@@ -12,6 +15,13 @@ const isUI = process.env.PLAYWRIGHT_UI_MODE === 'true'
           || process.argv.includes('--ui-host');
 
 export default defineConfig({
+  // ── One-Time Login ──────────────────────────────────
+  // Logs in once before the whole run and writes STORAGE_STATE. Unlike a setup
+  // project this still runs when you filter to one spec file or one project.
+  // Re-runs inside SESSION_MAX_AGE_MS reuse the saved session; FORCE_LOGIN=true
+  // forces a fresh login.
+  globalSetup: './config/global-setup.js',
+
   // ── Test Discovery ──────────────────────────────────────────────
   testDir: './tests',
   testMatch: '**/*.spec.{js,ts}',
@@ -25,9 +35,11 @@ export default defineConfig({
   retries: process.env.CI ? 5 : 3,
 
   // ── Timeouts ─────────────────────────────────────────────────────
-  timeout: 120_0000,
+  // All values live in config/timeouts.js — tune them there, or per run via
+  // TEST_TIMEOUT / EXPECT_TIMEOUT / ACTION_TIMEOUT / NAVIGATION_TIMEOUT.
+  timeout: TIMEOUTS.test,
   expect: {
-    timeout: 15_0000,
+    timeout: TIMEOUTS.expect,
   },
 
   // ── Reporters ────────────────────────────────────────────────────
@@ -46,12 +58,13 @@ export default defineConfig({
 
   // ── Shared Browser Settings ──────────────────────────────────────
   use: {
-    baseURL: process.env.BASE_URL,
+    // From config/urls.js — lets specs call page.goto('/some/path').
+    baseURL: URLS.base,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    navigationTimeout: 60_000,
-    actionTimeout: 15_000,
+    navigationTimeout: TIMEOUTS.navigation,
+    actionTimeout: TIMEOUTS.action,
     ignoreHTTPSErrors: true,
   },
 
@@ -65,6 +78,8 @@ export default defineConfig({
       testIgnore: ['**/Mobile/**'],
       use: {
         browserName: 'chromium',
+        // Every test starts already logged in and inside the org.
+        storageState: STORAGE_STATE,
         viewport: null,
         launchOptions: {
           slowMo: process.env.SLOWMO ? 500 : 0,

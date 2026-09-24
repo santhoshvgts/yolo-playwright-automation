@@ -9,7 +9,10 @@ function generateProduct_item_CreateData() {
     fieldFile: path.join(__dirname, 'Upload_files', 'MZO9pvcB03.png'), // KEEP literal — uploaded file path
     productName: faker.lorem.words(1),
     productDescription: faker.lorem.sentence(),
-    salePricePerPcs: faker.string.numeric(3)
+    salePricePerPcs: faker.string.numeric(3),
+    productName2: faker.lorem.words(1),
+    productDescription2: faker.lorem.sentence(),
+    salePricePerUnit: faker.string.numeric(3)
   };
 }
 

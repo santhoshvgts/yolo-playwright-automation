@@ -1,10 +1,11 @@
+const { TIMEOUTS } = require('../config/timeouts');
 
 class BasePage {
   constructor(page) {
     this.page = page;
   }
 
-  async navigate(url, options = { waitUntil: 'networkidle', timeout: 100000000 }) {
+  async navigate(url, options = { waitUntil: 'networkidle', timeout: TIMEOUTS.navigation }) {
     if (!url) {
       throw new Error('URL is undefined. Check BASE_URL in .env file');
     }
