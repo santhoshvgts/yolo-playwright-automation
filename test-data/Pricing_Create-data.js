@@ -37,6 +37,7 @@ function generatePricing_general_CreateData() {
     primaryUOM: '100',
     profileName: `Profile ${faker.commerce.productName()}`,
     profileName1: `Profile ${faker.commerce.productName()}`,
+    
   };
 }
 

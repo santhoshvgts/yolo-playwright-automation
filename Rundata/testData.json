@@ -27,14 +27,14 @@
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
-    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "deduco",
-    "productDescription": "Tepesco absconditus conservo.",
-    "salePricePerPcs": "396",
-    "updatedAt": "2026-09-24T06:51:54.109Z",
-    "productName2": "patrocinor",
-    "productDescription2": "Succurro theca abutor bardus.",
-    "salePricePerUnit": "205"
+    "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "admoveo",
+    "productDescription": "Volaticus vitae aliqua calco argumentum clarus virtus clam vehemens patrocinor.",
+    "salePricePerPcs": "937",
+    "updatedAt": "2026-09-24T07:07:05.499Z",
+    "productName2": "derideo",
+    "productDescription2": "Surgo teneo arceo carbo autus alii reprehenderit uberrime acceptus.",
+    "salePricePerUnit": "185"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
