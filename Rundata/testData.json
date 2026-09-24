@@ -28,10 +28,13 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "vulgivagus",
-    "productDescription": "Consequatur sint vociferor stultus blandior caritas sponte patior aspicio.",
-    "salePricePerPcs": "220",
-    "updatedAt": "2026-09-21T07:37:32.723Z"
+    "productName": "deduco",
+    "productDescription": "Tepesco absconditus conservo.",
+    "salePricePerPcs": "396",
+    "updatedAt": "2026-09-24T06:51:54.109Z",
+    "productName2": "patrocinor",
+    "productDescription2": "Succurro theca abutor bardus.",
+    "salePricePerUnit": "205"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -44,9 +47,9 @@
     "updatedAt": "2026-09-21T07:25:17.197Z"
   },
   "productItemCreateData": {
-    "productName": "vulgivagus",
-    "productDescription": "Consequatur sint vociferor stultus blandior caritas sponte patior aspicio.",
-    "salePricePerPcs": "220",
-    "updatedAt": "2026-09-21T07:37:48.995Z"
+    "productName": "aspernatur",
+    "productDescription": "Labore totus truculenter.",
+    "salePricePerPcs": "240",
+    "updatedAt": "2026-09-24T06:49:26.091Z"
   }
 }

@@ -1,34 +1,28 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../fixtures/base-test');
 const { Pricing_general_Create } = require('../pages/Pricing_general_Create');
 const { generatePricing_general_CreateData } = require('../test-data/Pricing_Create-data');
+const { LoginFlow } = require('../pages/LoginFlow');
+const { URLS } = require('../config/urls');
 
 const moduleName = 'Pricing_general_Create';
+
+// URLs live in config/urls.js — override the host with BASE_URL, the org with ORG_ID.
+//
+// Every test logs in for itself: no session is cached or shared between tests,
+// so each one starts from a clean browser context at the login screen.
 
 const data = generatePricing_general_CreateData();
 
 test.describe(moduleName, () => {
+  test.beforeEach(async ({ page }) => {
+    await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
+  });
+
   test('Create a new pricing list - General - overallmarkup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitGeneralOverallMarkupPricing(data);
 
     // Logout
@@ -39,25 +33,8 @@ test.describe(moduleName, () => {
   test('Create a new pricing list - General - overallmarkdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitGeneralOverallMarkdownPricing(data);
 
     // Logout
@@ -72,25 +49,8 @@ test.describe(moduleName, () => {
   test('Create a new pricing list - General - item specific', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitGeneralItemSpecificPricing(data);
 
     // Logout
@@ -101,25 +61,8 @@ test.describe(moduleName, () => {
   test('Create a new pricing list - CategoryWise - Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitCategoryWiseOverallMarkupPricing(data);
 
     // Logout
@@ -131,25 +74,8 @@ test.describe(moduleName, () => {
     test('Create a new pricing list - CategoryWise - Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitCategoryWiseOverallMarkdownPricing(data);
 
     // Logout
@@ -160,26 +86,8 @@ test.describe(moduleName, () => {
   test('Create a new pricing list - CategoryWise - Item Specific', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitCategoryWiseItemSpecificPricing(data);
 
     // Logout
@@ -190,26 +98,8 @@ test.describe(moduleName, () => {
   test('Create a new pricing list - ProfileWise - Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitProfileWiseOverallMarkupPricing(data);
 
     // Logout
@@ -221,26 +111,8 @@ test.describe(moduleName, () => {
     test('Create a new pricing list - ProfileWise - Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitProfileWiseOverallMarkdownPricing(data);
 
     // Logout
@@ -251,26 +123,8 @@ test.describe(moduleName, () => {
   test('Create a new pricing list - ProfileWise - Item Specific', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.fillAndSubmitProfileWiseItemSpecificPricing(data);
 
     // Logout
@@ -282,25 +136,8 @@ test.describe(moduleName, () => {
   test('Edit a pricing list - General - overallmarkup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.editGeneralOverallMarkupPricing(data);
 
     // Logout
@@ -311,25 +148,8 @@ test.describe(moduleName, () => {
   test('Edit a pricing list - General - overallmarkdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.editGeneralOverallMarkdownPricing(data);
 
     // Logout
@@ -341,25 +161,8 @@ test.describe(moduleName, () => {
     test('Edit a pricing list - General - item specific', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.editGeneralItemSpecificPricing(data);
 
     // Logout
@@ -370,25 +173,8 @@ test.describe(moduleName, () => {
    test('Edit a pricing list - CategoryWise - Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.editCategoryWiseOverallMarkupPricing(data);
 
     // Logout
@@ -400,25 +186,8 @@ test.describe(moduleName, () => {
     test('Edit a pricing list - CategoryWise - Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.editCategoryWiseOverallMarkdownPricing(data);
 
     // Logout
@@ -429,26 +198,8 @@ test.describe(moduleName, () => {
   test('Edit a pricing list - CategoryWise - Item Specific', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
-    // Login
-    await page.goto('https://invoice.test.vgts.xyz/');
-    await pom.loginButton.click();
-    await pom.emailField.fill(data.emailId);
-    await pom.passwordField.fill(data.password);
-    await pom.showPasswordCheckbox.check();
-    await pom.loginButtonFinal.click();
-
-    await pom.page.waitForTimeout(5000); // Wait for the page to load
-
-    // Verify org selection screen appears (precondition check)
-    await expect(pom.orgHeading).toBeVisible({ timeout: 5000 });
-
-    // Select org
-    await pom.orgSearchField.fill(data.searchByNameOrGST);
-    await pom.orgResult.click();
-    await pom.switchButton.click();
-
     // Navigate to product creation
-    await page.goto('https://invoice.test.vgts.xyz/2d9d0527d0d94b1ab010cc24eca9a5ab/sales?sales=1');
+    await page.goto(URLS.products);
     await pom.editCategoryWiseItemSpecificPricing(data);
 
     // Logout

@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../fixtures/base-test');
 const { Product_item_Create } = require('../pages/Product_item_Create');
 const { LoginFlow } = require('../pages/LoginFlow');
 const { generateProduct_item_CreateData } = require('../test-data/Product_item_Create-data');
@@ -8,16 +8,20 @@ const { URLS } = require('../config/urls');
 const moduleName = 'Product_item_Create';
 
 // URLs live in config/urls.js — override the host with BASE_URL, the org with ORG_ID.
+//
+// Every test logs in for itself: no session is cached or shared between tests,
+// so each one starts from a clean browser context at the login screen.
 
 const data = generateProduct_item_CreateData();
 
 
 test.describe(moduleName, () => {
+  test.beforeEach(async ({ page }) => {
+    await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
+  });
+
   test('Create a new product item and verify', async ({ page }) => {
     const pom = new Product_item_Create(page);
-    const login = new LoginFlow(page, URLS.base);
-
-    await login.loginAndSelectOrg(data);
 
     // Navigate to product creation
     await page.goto(URLS.products);
@@ -33,22 +37,15 @@ test.describe(moduleName, () => {
     // Run data persisted for downstream tests
     const savedData = getSection('productItemCreateData');
     expect(savedData.productName).toBe(data.productName);
-
-    // Logout
-    await login.logout();
   });
 
   test('Edit a new product item with all tabs', async ({ page }) => {
     const pom = new Product_item_Create(page);
-    const login = new LoginFlow(page, URLS.base);
 
-    await login.loginAndSelectOrg(data);
     await page.goto(URLS.products);
 
     // Open the product created by the first test
     const savedData = getSection('productItemCreateData');
     await pom.productRow(savedData.productName).click();
-
-    await login.logout();
   });
 });
