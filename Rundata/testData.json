@@ -28,13 +28,10 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "demum",
-    "productDescription": "Sperno spoliatio sustineo arguo.",
-    "salePricePerPcs": "233",
-    "updatedAt": "2026-09-22T10:31:18.047Z",
-    "productName2": "umbra",
-    "productDescription2": "Argentum thorax cui subvenio admoveo earum.",
-    "salePricePerUnit": "354"
+    "productName": "vulgivagus",
+    "productDescription": "Consequatur sint vociferor stultus blandior caritas sponte patior aspicio.",
+    "salePricePerPcs": "220",
+    "updatedAt": "2026-09-21T07:37:32.723Z"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -47,9 +44,9 @@
     "updatedAt": "2026-09-21T07:25:17.197Z"
   },
   "productItemCreateData": {
-    "productName": "vinum",
-    "productDescription": "Vado tabesco non thermae abstergo cibus.",
-    "salePricePerPcs": "348",
-    "updatedAt": "2026-09-22T05:50:14.424Z"
+    "productName": "vulgivagus",
+    "productDescription": "Consequatur sint vociferor stultus blandior caritas sponte patior aspicio.",
+    "salePricePerPcs": "220",
+    "updatedAt": "2026-09-21T07:37:48.995Z"
   }
 }
