@@ -1,5 +1,6 @@
 const { expect } = require('@playwright/test');
 const { SelfHealingBasePage } = require('./self-healing-base-page');
+const { TIMEOUTS } = require('../config/timeouts');
 
 const DEFAULT_BASE_URL = 'https://invoice.test.vgts.xyz/';
 
@@ -22,6 +23,9 @@ class LoginFlow extends SelfHealingBasePage {
     this.orgSearchField = this.page.getByRole('textbox', { name: 'Search by name or GST…' });
     this.orgResult = this.page.getByRole('button', { name: 'Automation Testing Org PVT' });
     this.switchButton = this.page.getByRole('button', { name: 'Switch' });
+
+    // Landing page shows this instead of "Log In" once a session is present.
+    this.goToDashboardButton = this.page.getByRole('button', { name: /Go to Dashboard/i });
 
     // Logout locators
     this.profileImage = this.page.getByRole('img', { name: 'profile' });
@@ -49,10 +53,32 @@ class LoginFlow extends SelfHealingBasePage {
   async loginAndSelectOrg(data) {
     await this.login(data);
 
-    // Verify org selection screen appears (precondition check)
-    await expect(this.orgHeading).toBeVisible({ timeout: 5000 });
+    // Verify org selection screen appears (precondition check). A cold login
+    // sits on a loading spinner for a while, so this gets the full expect
+    // budget from config/timeouts.js rather than a short hard-coded wait.
+    await expect(this.orgHeading).toBeVisible({ timeout: TIMEOUTS.expect });
 
     await this.selectOrg(data);
+  }
+
+  /**
+   * Get into the app without assuming which landing state we're in.
+   *
+   * With a session loaded from storageState the landing page shows "Go to
+   * Dashboard" and there is no "Log In" button — clicking through it is enough.
+   * Without one, fall back to the full credential flow. Specs that already know
+   * an in-app URL should just page.goto() it; this is for entering via the root.
+   */
+  async ensureLoggedIn(data) {
+    await this.page.goto(this.baseUrl);
+
+    if (await this.goToDashboardButton.isVisible().catch(() => false)) {
+      await this.goToDashboardButton.click();
+      await this.page.waitForLoadState('networkidle');
+      return;
+    }
+
+    await this.loginAndSelectOrg(data);
   }
 
   async logout() {

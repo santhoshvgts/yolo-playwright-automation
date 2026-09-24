@@ -19,6 +19,9 @@ const ORG_ID = process.env.ORG_ID || '2d9d0527d0d94b1ab010cc24eca9a5ab';
 // Paths, relative to BASE — usable directly with page.goto() thanks to baseURL.
 const PATHS = {
   home: '/',
+  // Landing on `home` while a session is loaded shows the marketing page with a
+  // "Go to Dashboard" button, not the app — go straight to an in-app path instead.
+  dashboard: `/${ORG_ID}`,
   products: `/${ORG_ID}/sales?sales=1`,
 };
 
@@ -26,6 +29,7 @@ const PATHS = {
 const URLS = {
   base: `${BASE}/`,
   home: `${BASE}${PATHS.home}`,
+  dashboard: `${BASE}${PATHS.dashboard}`,
   products: `${BASE}${PATHS.products}`,
 };
 

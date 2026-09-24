@@ -2,7 +2,6 @@
 import dotenv from 'dotenv';
 import { defineConfig } from '@playwright/test';
 import { TIMEOUTS } from './config/timeouts.js';
-import { STORAGE_STATE } from './config/auth.js';
 import { URLS } from './config/urls.js';
 
 // Resolves relative to CWD — always run `npx playwright test` from the project root.
@@ -15,12 +14,11 @@ const isUI = process.env.PLAYWRIGHT_UI_MODE === 'true'
           || process.argv.includes('--ui-host');
 
 export default defineConfig({
-  // ── One-Time Login ──────────────────────────────────
-  // Logs in once before the whole run and writes STORAGE_STATE. Unlike a setup
-  // project this still runs when you filter to one spec file or one project.
-  // Re-runs inside SESSION_MAX_AGE_MS reuse the saved session; FORCE_LOGIN=true
-  // forces a fresh login.
-  globalSetup: './config/global-setup.js',
+  // ── Login ───────────────────────────────────────────────────────
+  // No globalSetup and no storageState — every test logs in for itself in its
+  // own beforeEach, against a clean browser context. config/global-setup.js and
+  // config/auth.js are left in the repo unwired if you ever want session reuse
+  // back; wire them up again with `globalSetup` here plus `use.storageState`.
 
   // ── Test Discovery ──────────────────────────────────────────────
   testDir: './tests',
@@ -78,8 +76,6 @@ export default defineConfig({
       testIgnore: ['**/Mobile/**'],
       use: {
         browserName: 'chromium',
-        // Every test starts already logged in and inside the org.
-        storageState: STORAGE_STATE,
         viewport: null,
         launchOptions: {
           slowMo: process.env.SLOWMO ? 500 : 0,

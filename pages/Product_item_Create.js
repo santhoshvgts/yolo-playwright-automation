@@ -17,6 +17,10 @@ class Product_item_Create extends SelfHealingBasePage {
     this.orgResult = this.page.getByRole('button', { name: 'Automation Testing Org PVT' });
     this.switchButton = this.page.getByRole('button', { name: 'Switch' });
 
+    // The product form opens in an ant drawer — scope in-form locators to it so
+    // clicks never land on the masked page behind it.
+    this.productDrawer = this.page.locator('.ant-drawer-content').last();
+
     // Inventory/Product locators
     this.inventoryLink = this.page.getByRole('link', { name: 'Inventory' });
     this.productsLink = this.page.getByText('Products');
@@ -99,9 +103,11 @@ class Product_item_Create extends SelfHealingBasePage {
     // Fill product details
     await this.productNameField.fill(data.productName);
 
-    // Category (use healing wrapper for dynamic dropdown)
+    // Category (use healing wrapper for dynamic dropdown).
+    // Scope the search box to the open drawer: an unscoped `.first()` matches a
+    // select on the page behind the drawer, where ant's mask eats the click.
     await this.healingClick(this.categoryField, this._categoryStrategies);
-    await this.page.locator('.ant-select-selection-search').first().click();
+    await this.productDrawer.locator('.ant-select-selection-search').first().click();
 
     // Description
     await this.addDescriptionButton.click();

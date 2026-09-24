@@ -7,8 +7,7 @@ const { generateProduct_item_CreateData } = require('../test-data/Product_item_C
 const { STORAGE_STATE } = require('./auth');
 const { TIMEOUTS } = require('./timeouts');
 
-// How long a saved session stays good. Inside this window a re-run skips the
-// login entirely and reuses the file on disk.
+
 const SESSION_MAX_AGE_MS = Number(process.env.SESSION_MAX_AGE_MS) || 30 * 60 * 1000;
 
 function freshStateExists() {
@@ -21,14 +20,6 @@ function freshStateExists() {
   }
 }
 
-/**
- * One-time login for the whole run.
- *
- * Runs before any test, whatever you pass on the command line — a single spec
- * file, --project, --grep or UI mode all still get a session. The result is
- * written to STORAGE_STATE and picked up by `use.storageState`, so no test
- * logs in itself.
- */
 module.exports = async () => {
   if (freshStateExists()) {
     console.log(`[auth] reusing session ${path.relative(process.cwd(), STORAGE_STATE)}`);
