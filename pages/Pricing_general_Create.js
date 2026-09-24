@@ -38,8 +38,8 @@ class Pricing_general_Create extends SelfHealingBasePage {
     this.generalPriceListSuccessMsg = this.page.getByText('Price List Created Successfully', { exact: true }); 
     this.generalPriceListUpdatedSuccessMsg = this.page.getByText('Price List Updated Successfully', { exact: true }); 
     this.itemSelectionOption = this.page.locator('.ant-select-item-option-content > div');
-    this.itemAmountField = this.page.getByRole('textbox', { name: '313' });
-    this.editItemAmountField = this.page.getByRole('textbox', { name: '100' });
+    this.itemAmountField = this.page.locator('//input[@class="ant-input css-mncuj7"]');
+    this.editItemAmountField = this.page.locator('//input[@class="ant-input css-mncuj7"]');
     this.businessCategoryDropdown = this.page.locator('div:nth-child(2) > .ant-row > .ant-col.ant-form-item-control > .ant-form-item-control-input > .ant-form-item-control-input-content > .ant-select > .ant-select-selector > .ant-select-selection-wrap > .ant-select-selection-item');
     this.businessCategoryOption = this.page.getByTitle('All').nth(2);
     this.addProfilesField = this.page.locator('div').filter({ hasText: /^\+ Add Profile$/ }).nth(3);
@@ -301,7 +301,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
   }
 
-    async fillAndSubmitProfileWiseOverallMarkdownPricing(data) {     
+  async fillAndSubmitProfileWiseOverallMarkdownPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
     await this.page.waitForTimeout(2000);
@@ -375,6 +375,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     saveSection('ProfileWiseItemSpecificPricing', {
       priceListName: data.priceListName6,
       customRate: data.customRate,
+      profileName: data.profileName1,
       itemName: jsondata_productItem.productName,
       itemAmount: data.primaryUOM
 
@@ -560,7 +561,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
   }
 
-    async editCategoryWiseItemSpecificPricing(data) {     
+  async editCategoryWiseItemSpecificPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
     await this.page.waitForTimeout(2000);
@@ -600,6 +601,127 @@ class Pricing_general_Create extends SelfHealingBasePage {
       editedCustomRate: data.editedCustomRate,
       editedProductName: data.editedProductName,
       editedPrimaryUOM: data.editedPrimaryUOM
+    });
+
+  }
+
+    async editProfileWiseOverallMarkupPricing(data) {     
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+
+    const jsondata_editproductItem= getSection('ProfileWiseOverallMarkupPricing');
+
+    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.searchedField.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+    await this.editPricingButton.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.priceListNameField.fill(data.editedPriceListName5);
+    await this.descriptionInput.fill(data.editedDescription);
+
+    await this.assignPriceListToDropdown.click();
+    await this.page.waitForTimeout(2000);
+    await this.assignPriceListOption.click();
+
+    //await this.itemSelectionField.fill(data.editedProfileName);
+    await this.customRateField.fill(data.editedCustomRate);
+    await this.savePriceListButton.click();  
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+
+    saveSection('ProfileWiseOverallMarkupPricing', {
+      editedPriceListName: data.editedPriceListName5,
+      editedCustomRate: data.editedCustomRate
+    });
+
+  }
+
+  async editProfileWiseOverallMarkdownPricing(data) {     
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+
+    const jsondata_editproductItem= getSection('ProfileWiseOverallMarkdownPricing');
+
+    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.searchedField.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+    await this.editPricingButton.click();
+    await this.page.waitForTimeout(2000);
+
+    await this.priceListNameField.fill(data.editedMarkdownPriceListName3);
+    await this.descriptionInput.fill(data.editedDescription);
+
+    await this.assignPriceListToDropdown.click();
+    await this.page.waitForTimeout(2000);
+    await this.assignPriceListOption.click();
+
+    //await this.itemSelectionField.fill(data.editedProfileName);
+
+    await this.customRateField.fill(data.editedCustomRate);
+    await this.savePriceListButton.click();  
+
+    saveSection('ProfileWiseOverallMarkdownPricing', {
+      editedPriceListName: data.editedMarkdownPriceListName3,
+      editedCustomRate: data.editedCustomRate
+    });
+
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+
+
+  }
+
+  async editProfileWiseItemSpecificPricing(data) {     
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+
+    const jsondata_editproductItem= getSection('ProfileWiseItemSpecificPricing');
+
+    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.searchedField.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+    await this.editPricingButton.click();
+    await this.page.waitForTimeout(2000);
+
+    await this.priceListNameField.fill(data.editedPriceListName6);
+    await this.descriptionInput.fill(data.editedDescription);
+
+    await this.assignPriceListToDropdown.click();
+    await this.page.waitForTimeout(2000);
+    await this.assignPriceListOption.click();
+
+    await this.itemSelectionField.fill(data.profileName1);
+
+    await this.removeProductCloseButton.click();
+    await this.addNewItemButton.click();
+    await this.itemNameField.fill(data.editedProductName);
+    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+    await this.itemSelectionOption.first().click();
+
+    await this.page.waitForTimeout(2000);
+    await this.itemAmountField.fill(data.editedPrimaryUOM);
+
+    await this.savePriceListButton.click();  
+    //await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+
+    saveSection('ProfileWiseItemSpecificPricing', {
+      editedPriceListName: data.editedPriceListName6,
+      editedCustomRate: data.editedCustomRate,
+      editedProfileName: data.editedProfileName1,
+      editedProductName: data.editedProductName,
+      editedPrimaryUOM: data.editedPrimaryUOM
+
     });
 
   }
