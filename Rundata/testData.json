@@ -28,13 +28,13 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "admoveo",
-    "productDescription": "Volaticus vitae aliqua calco argumentum clarus virtus clam vehemens patrocinor.",
-    "salePricePerPcs": "937",
-    "updatedAt": "2026-09-24T07:07:05.499Z",
-    "productName2": "derideo",
-    "productDescription2": "Surgo teneo arceo carbo autus alii reprehenderit uberrime acceptus.",
-    "salePricePerUnit": "185"
+    "productName": "cresco",
+    "productDescription": "Vulticulus alioqui alveus tenetur adulatio.",
+    "salePricePerPcs": "607",
+    "updatedAt": "2026-09-24T09:19:31.151Z",
+    "productName2": "universe",
+    "productDescription2": "Bos animi acidus paulatim vomica accusator.",
+    "salePricePerUnit": "019"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -51,5 +51,82 @@
     "productDescription": "Labore totus truculenter.",
     "salePricePerPcs": "240",
     "updatedAt": "2026-09-24T06:49:26.091Z"
+  },
+  "GeneralOverallMarkupPricing": {
+    "priceListName": "Price List Incredible Plastic Computer",
+    "customRate": "42",
+    "updatedAt": "2026-09-24T09:23:44.422Z",
+    "editedPriceListName": "Price List Incredible Gold Towels",
+    "editedCustomRate": "50"
+  },
+  "GeneralOverallMarkdownPricing": {
+    "priceListName": "Price List Electronic Rubber Gloves",
+    "customRate": "42",
+    "updatedAt": "2026-09-24T09:24:06.897Z",
+    "editedPriceListName": "Price List Recycled Plastic Sausages",
+    "editedCustomRate": "50"
+  },
+  "CategoryWiseOverallMarkupPricing": {
+    "priceListName": "Price List Fantastic Rubber Table",
+    "customRate": "42",
+    "updatedAt": "2026-09-24T09:21:05.982Z",
+    "editedPriceListName": "Price List Fresh Silk Fish",
+    "editedCustomRate": "50"
+  },
+  "CategoryWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Small Marble Shirt",
+    "customRate": "42",
+    "updatedAt": "2026-09-24T09:25:13.793Z",
+    "editedPriceListName": "Price List Intelligent Plastic Sausages",
+    "editedCustomRate": "50"
+  },
+  "GeneralItemSpecificPricing": {
+    "priceListName": "Price List Incredible Rubber Computer",
+    "customRate": "42",
+    "itemName": "aspernatur",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-24T09:24:37.572Z",
+    "editedPriceListName": "Price List Handcrafted Ceramic Bike",
+    "editedCustomRate": "50",
+    "editedProductName": "Sonyu",
+    "editedPrimaryUOM": "150"
+  },
+  "CategoryWiseItemSpecificPricing": {
+    "priceListName": "Price List Elegant Metal Bacon",
+    "customRate": "42",
+    "itemName": "aspernatur",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-24T09:25:43.814Z",
+    "editedPriceListName": "Price List Ergonomic Silk Bacon",
+    "editedCustomRate": "50",
+    "editedProductName": "Sonyu",
+    "editedPrimaryUOM": "150"
+  },
+  "ProfileWiseOverallMarkupPricing": {
+    "priceListName": "Price List Oriental Bronze Bike",
+    "customRate": "42",
+    "updatedAt": "2026-09-24T09:26:11.371Z",
+    "editedPriceListName": "Price List Gorgeous Granite Bike",
+    "editedCustomRate": "50"
+  },
+  "ProfileWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Electronic Aluminum Mouse",
+    "customRate": "42",
+    "updatedAt": "2026-09-24T09:26:35.272Z",
+    "editedPriceListName": "Price List Electronic Silk Keyboard",
+    "editedCustomRate": "50"
+  },
+  "ProfileWiseItemSpecificPricing": {
+    "priceListName": "Price List Sleek Wooden Ball",
+    "customRate": "42",
+    "itemName": "aspernatur",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-24T09:27:04.179Z",
+    "profileName": "Profile Recycled Cotton Towels",
+    "editedPriceListName": "Price List Handmade Silk Chips",
+    "editedCustomRate": "50",
+    "editedProfileName": "",
+    "editedProductName": "Sonyu",
+    "editedPrimaryUOM": "150"
   }
 }
