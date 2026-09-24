@@ -1,18 +1,9 @@
 const { expect } = require('@playwright/test');
 const { SelfHealingBasePage } = require('./self-healing-base-page');
-const { URLS } = require('../config/urls');
 
-const DEFAULT_BASE_URL = URLS.base;
+const DEFAULT_BASE_URL = 'https://invoice.test.vgts.xyz/';
 
-/**
- * Shared login + organisation selection flow.
- *
- * Every test gets a fresh browser context, so nothing carries over between
- * tests — each test drives this flow itself.
- *
- *   const login = new LoginFlow(page);
- *   await login.loginAndSelectOrg(data);
- */
+
 class LoginFlow extends SelfHealingBasePage {
   constructor(page, baseUrl = DEFAULT_BASE_URL) {
     super(page);
@@ -59,7 +50,7 @@ class LoginFlow extends SelfHealingBasePage {
     await this.login(data);
 
     // Verify org selection screen appears (precondition check)
-    await expect(this.orgHeading).toBeVisible();
+    await expect(this.orgHeading).toBeVisible({ timeout: 5000 });
 
     await this.selectOrg(data);
   }
