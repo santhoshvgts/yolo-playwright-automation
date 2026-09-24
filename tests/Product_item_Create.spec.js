@@ -7,10 +7,6 @@ const { URLS } = require('../config/urls');
 
 const moduleName = 'Product_item_Create';
 
-// URLs live in config/urls.js — override the host with BASE_URL, the org with ORG_ID.
-//
-// Every test logs in for itself: no session is cached or shared between tests,
-// so each one starts from a clean browser context at the login screen.
 
 const data = generateProduct_item_CreateData();
 

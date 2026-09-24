@@ -28,13 +28,13 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "deduco",
-    "productDescription": "Tepesco absconditus conservo.",
-    "salePricePerPcs": "396",
-    "updatedAt": "2026-09-24T06:51:54.109Z",
-    "productName2": "patrocinor",
-    "productDescription2": "Succurro theca abutor bardus.",
-    "salePricePerUnit": "205"
+    "productName": "confugo",
+    "productDescription": "Admoveo cibo vociferor sulum agnosco earum sursum cognatus bardus.",
+    "salePricePerPcs": "950",
+    "updatedAt": "2026-09-24T06:52:30.263Z",
+    "productName2": "angelus",
+    "productDescription2": "Acervus mollitia tredecim libero.",
+    "salePricePerUnit": "613"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
