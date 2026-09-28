@@ -240,4 +240,28 @@ test.describe(moduleName, () => {
 
   });
 
+    test('Delete a edited pricing list - General - overallmarkup', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Navigate to product creation
+    await page.goto(URLS.products);
+    await pom.deleteGeneralOverallMarkupPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
+  test('Inactive and delete pricing list - General - overallmarkdown', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Navigate to product creation
+    await page.goto(URLS.products);
+    await pom.inactiveanddeleteGeneralOverallMarkdownPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
 });
