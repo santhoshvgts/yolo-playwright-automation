@@ -40,11 +40,7 @@ test.describe(moduleName, () => {
     // Logout
     //await pom.logout();
 
-    
-
   });
-
-
 
   test('Create a new pricing list - General - item specific', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
@@ -201,6 +197,43 @@ test.describe(moduleName, () => {
     // Navigate to product creation
     await page.goto(URLS.products);
     await pom.editCategoryWiseItemSpecificPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
+    test('Edit apricing list - ProfileWise - Overall Markup', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Navigate to product creation
+    await page.goto(URLS.products);
+    await pom.editProfileWiseOverallMarkupPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
+
+    test('Edit a pricing list - ProfileWise - Overall Markdown', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Navigate to product creation
+    await page.goto(URLS.products);
+    await pom.editProfileWiseOverallMarkdownPricing(data);
+
+    // Logout
+    //await pom.logout();
+
+  });
+
+  test('Edit a pricing list - ProfileWise - Item Specific', async ({ page }) => {
+    const pom = new Pricing_general_Create(page);
+
+    // Navigate to product creation
+    await page.goto(URLS.products);
+    await pom.editProfileWiseItemSpecificPricing(data);
 
     // Logout
     //await pom.logout();
