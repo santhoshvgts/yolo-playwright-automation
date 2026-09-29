@@ -28,14 +28,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "adstringo",
-    "productDescription": "Tres derideo ullus nihil debitis cotidie ultra acervus combibo.",
-    "salePricePerPcs": "911",
-    "updatedAt": "2026-09-29T06:49:05.867Z",
-    "productName2": "crapula",
-    "productDescription2": "Adhaero appono vallum texo tamquam absorbeo acsi.",
-    "salePricePerUnit": "165",
-    "quantity": "3"
+    "productName": "apparatus",
+    "productDescription": "Adsidue totam uberrime cornu bene.",
+    "salePricePerPcs": "825",
+    "updatedAt": "2026-09-29T12:29:31.919Z",
+    "productName2": "aperiam",
+    "productDescription2": "Vigilo ultra demoror.",
+    "salePricePerUnit": "190",
+    "quantity": "8"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -179,5 +179,27 @@
     "editedAutoCalculatePrimaryUOM1": "500",
     "editedAutoCalculatePrimaryUOM2": "600",
     "editedAutoCalculatePrimaryUOM3": "700"
+  },
+  "Business_Vendor_withGST": {
+    "vendorOrganisationName": "Torp, Roberts and Pfannerstill",
+    "openingBalance": "14420.77",
+    "organisationMobileNo": "3125975530",
+    "organisationEmail": "Joshua_Thiel33@hotmail.com",
+    "gstValue": "24AAAGM0289C1ZP",
+    "updatedAt": "2026-09-29T12:29:55.966Z"
+  },
+  "Business_Vendor_withoutGST": {
+    "vendorOrganisationName": "Gottlieb-Halvorson LLC",
+    "openingBalance": "2837.4498345113207",
+    "organisationMobileNo": "1937641780",
+    "organisationEmail": "Sydnie29@hotmail.com",
+    "updatedAt": "2026-09-29T12:30:16.660Z"
+  },
+  "Individual_Vendor": {
+    "vendorName": "Murray LLC",
+    "openingBalance": "14420.77",
+    "mobileNo": "2094702518",
+    "organisationEmail": "Maggie_West@hotmail.com",
+    "updatedAt": "2026-09-29T12:30:35.295Z"
   }
 }
