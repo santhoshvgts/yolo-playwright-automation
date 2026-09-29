@@ -1,70 +1,36 @@
 {
-  "recorded:Product_item_Create": {
-    "emailId": "santhosh@yoloworks.com",
-    "password": "***REDACTED***",
-    "searchByNameOrGST": "auto",
-    "fieldFile": "MZO9pvcB03.png",
-    "productName": "nequess",
-    "productDescription": "Ventosus ut solus eveniet amplitudo vsn.",
-    "salePricePerPcs": "100",
-    "recordedUrl": "https://invoice.test.vgts.xyz/",
-    "source": "codegen-recording",
-    "updatedAt": "2026-09-21T10:13:38.585Z",
-    "salePricePerUnit": "621"
-  },
-  "recorded:Product_item_Create:strategy": {
-    "emailId": "faker.internet.email()",
-    "password": "ENV: credential — process.env.PASSWORD, never faker, never a committed literal",
-    "searchByNameOrGST": "LITERAL: searches for an existing record — keep literal, a random term matches nothing",
-    "fieldFile": "LITERAL: uploaded file path — keep literal (or point at a fixture in the repo)",
-    "productName": "faker.lorem.words(1)",
-    "productDescription": "faker.lorem.sentence()",
-    "salePricePerPcs": "faker.string.numeric(3)",
-    "updatedAt": "2026-09-21T10:13:38.595Z",
-    "salePricePerUnit": "faker.string.numeric(3)"
-  },
   "Product_item_Create:generateProduct_item_CreateData": {
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
-    "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "adstringo",
-    "productDescription": "Tres derideo ullus nihil debitis cotidie ultra acervus combibo.",
-    "salePricePerPcs": "911",
-    "updatedAt": "2026-09-29T06:49:05.867Z",
-    "productName2": "crapula",
-    "productDescription2": "Adhaero appono vallum texo tamquam absorbeo acsi.",
-    "salePricePerUnit": "165",
-    "quantity": "3"
-  },
-  "testRuns": {
-    "tests_Product_item_Create_spec_js": {
-      "status": "failed",
-      "exitCode": 1,
-      "summary": "──────────────────────────────────────────────────────────────────────────────────────────────── | Error Context: test-results\\artifacts\\Product_item_Create-Produc-b67d2-new-product-item-and-verify-chromium-retry3\\error-context.md | 1 failed | [chromium] › tests\\Product_item_Create.spec.js:10:3 › Product_item_Create › Create a new product item and verify",
-      "snapshot": "Rundata\\runs\\tests_Product_item_Create_spec_js-2026-09-21T07-25-17-194Z.json",
-      "finishedAt": "2026-09-21T07:25:17.195Z"
-    },
-    "updatedAt": "2026-09-21T07:25:17.197Z"
+    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "clamo",
+    "productDescription": "Crepusculum aequus cavus.",
+    "salePricePerPcs": "434",
+    "quantity": "6",
+    "productName2": "aperiam",
+    "productDescription2": "Canis alo ars speciosus uredo texo amaritudo acies.",
+    "salePricePerUnit": "086",
+    "updatedAt": "2026-09-29T06:54:29.217Z"
   },
   "productItemCreateData": {
-    "productName": "quia",
-    "productDescription": "Vir sumptus aequitas synagoga timidus thymum adicio.",
-    "salePricePerPcs": "530",
-    "updatedAt": "2026-09-29T05:04:11.236Z"
+    "productName": "animus",
+    "productDescription": "Tametsi timor vehemens solus.",
+    "salePricePerPcs": "496",
+    "updatedAt": "2026-09-29T06:34:46.540Z"
   },
   "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Fresh Granite Chicken",
+    "priceListName": "Price List Awesome Granite Table",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:54:32.359Z",
-    "editedPriceListName": "Price List Incredible Aluminum Fish",
+    "updatedAt": "2026-09-29T06:29:57.767Z",
+    "editedPriceListName": "Price List Handmade Gold Chair",
     "editedCustomRate": "50"
   },
   "GeneralOverallMarkdownPricing": {
-    "priceListName": "Price List Refined Plastic Salad",
+    "priceListName": "Price List Fresh Ceramic Soap",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:54:53.667Z",
-    "editedPriceListName": "Price List Ergonomic Steel Towels",
+    "updatedAt": "2026-09-29T06:30:26.238Z",
+    "editedPriceListName": "Price List Ergonomic Marble Chicken",
     "editedCustomRate": "50"
   },
   "GeneralItemSpecificPricing": {
@@ -96,88 +62,31 @@
     "editedAutoCalculatePrimaryUOM3": "700"
   },
   "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Handmade Plastic Cheese",
+    "priceListName": "Price List Unbranded Aluminum Ball",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:56:20.549Z",
-    "editedPriceListName": "Price List Refined Plastic Towels",
+    "updatedAt": "2026-09-29T06:31:19.872Z",
+    "editedPriceListName": "Price List Unbranded Gold Hat",
     "editedCustomRate": "50"
   },
   "CategoryWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Practical Gold Shirt",
+    "priceListName": "Price List Intelligent Concrete Table",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:56:49.852Z",
-    "editedPriceListName": "Price List Intelligent Plastic Tuna",
+    "updatedAt": "2026-09-29T06:31:44.763Z",
+    "editedPriceListName": "Price List Unbranded Bronze Table",
     "editedCustomRate": "50"
   },
-  "CategoryWiseItemSpecificPricing": {
-    "priceListName": "Price List Bespoke Aluminum Bike",
-    "customRate": "42",
-    "itemName": "quia",
-    "itemAmount1": "100",
-    "itemAmount2": "150",
-    "itemAmount3": "200",
-    "updatedAt": "2026-09-29T06:57:22.347Z",
-    "editedPriceListName": "Price List Fresh Wooden Soap",
-    "editedCustomRate": "50",
-    "editedProductName": "TestProduct",
-    "editedPrimaryUOM1": "500",
-    "editedPrimaryUOM2": "600",
-    "editedPrimaryUOM3": "700"
-  },
-  "CategoryWiseItemSpecificPricing_ByAutoCalculating": {
-    "priceListName": "Price List Practical Granite Fish",
-    "customRate": "42",
-    "itemName": "quia",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-29T06:58:13.515Z",
-    "editedAutoCalculatePriceListName": "Price List Electronic Aluminum Chair",
-    "editedAutoCalculateCustomRate": "50",
-    "editedAutoCalculateProductName": "TestProduct",
-    "editedAutoCalculatePrimaryUOM": "500"
-  },
   "ProfileWiseOverallMarkupPricing": {
-    "priceListName": "Price List Ergonomic Metal Shoes",
+    "priceListName": "Price List Oriental Cotton Bacon",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:58:44.241Z",
-    "editedPriceListName": "Price List Refined Granite Chicken",
+    "updatedAt": "2026-09-29T06:32:37.887Z",
+    "editedPriceListName": "Price List Fantastic Concrete Car",
     "editedCustomRate": "50"
   },
   "ProfileWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Luxurious Marble Bike",
+    "priceListName": "Price List Sleek Concrete Chair",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:59:14.139Z",
-    "editedPriceListName": "Price List Rustic Plastic Towels",
+    "updatedAt": "2026-09-29T06:33:09.964Z",
+    "editedPriceListName": "Price List Fresh Plastic Cheese",
     "editedCustomRate": "50"
-  },
-  "ProfileWiseItemSpecificPricing": {
-    "priceListName": "Price List Elegant Bamboo Cheese",
-    "customRate": "42",
-    "itemName": "quia",
-    "itemAmount1": "100",
-    "itemAmount2": "150",
-    "itemAmount3": "200",
-    "updatedAt": "2026-09-29T06:59:51.299Z",
-    "profileName": "Profile Refined Silk Cheese",
-    "editedPriceListName": "Price List Elegant Plastic Tuna",
-    "editedCustomRate": "50",
-    "editedProfileName": "",
-    "editedProductName": "TestProduct",
-    "editedPrimaryUOM1": "",
-    "editedPrimaryUOM2": "",
-    "editedPrimaryUOM3": ""
-  },
-  "ProfileWiseItemSpecificPricing_ByAutoCalculating": {
-    "priceListName": "Price List Handcrafted Cotton Chicken",
-    "customRate": "42",
-    "profileName": "Profile Refined Silk Cheese",
-    "itemName": "quia",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-29T07:00:19.200Z",
-    "editedAutoCalculatePriceListName": "Price List Incredible Concrete Chips",
-    "editedAutoCalculateCustomRate": "50",
-    "editedAutoCalculateProductName": "TestProduct",
-    "editedAutoCalculatePrimaryUOM1": "500",
-    "editedAutoCalculatePrimaryUOM2": "600",
-    "editedAutoCalculatePrimaryUOM3": "700"
   }
 }
