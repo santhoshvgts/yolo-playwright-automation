@@ -59,6 +59,20 @@ Bash:
 BASE_URL=https://invoice.stage.vgts.xyz bunx playwright test
 ```
 
+## Running on GitHub Actions
+
+The workflow in `.github/workflows/playwright.yml` only runs when someone starts it by hand:
+
+1. On GitHub, open the repo's **Actions** tab.
+2. Pick **Playwright Tests** from the list on the left.
+3. Click **Run workflow**. Optionally fill in:
+   - **spec**: one spec file to run. Leave it blank to run everything.
+   - **grep**: run only tests whose title matches this text.
+   - **base_url**: the environment to test against.
+4. When the run finishes, download the **playwright-results** artifact. It holds the HTML report, traces, screenshots and videos.
+
+Optional: add a repository secret named `PASSWORD` under **Settings → Secrets and variables → Actions**. If it's missing, the tests use the password in `test-data/`.
+
 ## Adding packages
 
 ```bash

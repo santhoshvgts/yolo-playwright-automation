@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "verumtamen",
-    "productDescription": "Crepusculum aegre crux unde adversus vomer sortitus temporibus agnitio suus.",
-    "salePricePerPcs": "269",
-    "quantity": "7",
-    "productName2": "casso",
-    "productDescription2": "Tactus valetudo ustulo sonitus verbera patior valetudo solium.",
-    "salePricePerUnit": "090",
-    "updatedAt": "2026-09-29T05:47:25.535Z"
+    "productName": "defessus",
+    "productDescription": "Voluptas vociferor cariosus vapulus absconditus usque vespillo decor iusto.",
+    "salePricePerPcs": "236",
+    "quantity": "8",
+    "productName2": "vito",
+    "productDescription2": "Correptius ab deleo voluptatum.",
+    "salePricePerUnit": "675",
+    "updatedAt": "2026-09-29T05:49:56.163Z"
   },
   "productItemCreateData": {
     "productName": "tres",
@@ -33,5 +33,10 @@
     "priceListName": "Price List Small Metal Shirt",
     "customRate": "42",
     "updatedAt": "2026-09-29T05:48:56.958Z"
+  },
+  "CategoryWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Recycled Wooden Fish",
+    "customRate": "42",
+    "updatedAt": "2026-09-29T05:49:23.251Z"
   }
 }
