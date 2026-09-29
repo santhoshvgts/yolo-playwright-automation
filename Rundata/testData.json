@@ -28,14 +28,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "causa",
-    "productDescription": "Terror cicuta crebro accommodo ancilla esse comis communis cetera commodi.",
-    "salePricePerPcs": "414",
-    "updatedAt": "2026-09-28T14:04:59.668Z",
-    "productName2": "pecco",
-    "productDescription2": "Charisma vulnus minima arceo demo antea verumtamen contabesco socius carpo.",
-    "salePricePerUnit": "053",
-    "quantity": "4"
+    "productName": "adstringo",
+    "productDescription": "Tres derideo ullus nihil debitis cotidie ultra acervus combibo.",
+    "salePricePerPcs": "911",
+    "updatedAt": "2026-09-29T06:49:05.867Z",
+    "productName2": "crapula",
+    "productDescription2": "Adhaero appono vallum texo tamquam absorbeo acsi.",
+    "salePricePerUnit": "165",
+    "quantity": "3"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -48,86 +48,136 @@
     "updatedAt": "2026-09-21T07:25:17.197Z"
   },
   "productItemCreateData": {
-    "productName": "causa",
-    "productDescription": "Terror cicuta crebro accommodo ancilla esse comis communis cetera commodi.",
-    "salePricePerPcs": "414",
-    "updatedAt": "2026-09-28T14:05:16.053Z"
+    "productName": "quia",
+    "productDescription": "Vir sumptus aequitas synagoga timidus thymum adicio.",
+    "salePricePerPcs": "530",
+    "updatedAt": "2026-09-29T05:04:11.236Z"
   },
   "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Recycled Bamboo Pants",
+    "priceListName": "Price List Fresh Granite Chicken",
     "customRate": "42",
-    "updatedAt": "2026-09-28T10:29:31.597Z",
-    "editedPriceListName": "Price List Handcrafted Marble Shirt",
+    "updatedAt": "2026-09-29T06:54:32.359Z",
+    "editedPriceListName": "Price List Incredible Aluminum Fish",
     "editedCustomRate": "50"
   },
   "GeneralOverallMarkdownPricing": {
-    "priceListName": "Price List Ergonomic Wooden Gloves",
+    "priceListName": "Price List Refined Plastic Salad",
     "customRate": "42",
-    "updatedAt": "2026-09-28T10:29:58.459Z",
-    "editedPriceListName": "Price List Handcrafted Bronze Bike",
-    "editedCustomRate": "50"
-  },
-  "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Sleek Ceramic Shoes",
-    "customRate": "42",
-    "updatedAt": "2026-09-28T10:30:56.273Z",
-    "editedPriceListName": "Price List Awesome Bamboo Chicken",
-    "editedCustomRate": "50"
-  },
-  "CategoryWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Intelligent Metal Pants",
-    "customRate": "42",
-    "updatedAt": "2026-09-28T10:31:23.570Z",
-    "editedPriceListName": "Price List Unbranded Metal Pizza",
+    "updatedAt": "2026-09-29T06:54:53.667Z",
+    "editedPriceListName": "Price List Ergonomic Steel Towels",
     "editedCustomRate": "50"
   },
   "GeneralItemSpecificPricing": {
-    "priceListName": "Price List Small Granite Gloves",
+    "priceListName": "Price List Sleek Ceramic Shirt",
     "customRate": "42",
-    "itemName": "coerceo",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-28T10:30:29.731Z",
-    "editedPriceListName": "Price List Intelligent Metal Hat",
+    "itemName": "quia",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-09-29T06:55:19.413Z",
+    "editedPriceListName": "Price List Luxurious Plastic Table",
     "editedCustomRate": "50",
-    "editedProductName": "Sonyu",
-    "editedPrimaryUOM": "150"
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
+  },
+  "GeneralItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Rustic Granite Shoes",
+    "customRate": "42",
+    "itemName": "quia",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-29T06:55:47.210Z",
+    "editedAutoCalculatePriceListName": "Price List Frozen Bronze Shoes",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM1": "500",
+    "editedAutoCalculatePrimaryUOM2": "600",
+    "editedAutoCalculatePrimaryUOM3": "700"
+  },
+  "CategoryWiseOverallMarkupPricing": {
+    "priceListName": "Price List Handmade Plastic Cheese",
+    "customRate": "42",
+    "updatedAt": "2026-09-29T06:56:20.549Z",
+    "editedPriceListName": "Price List Refined Plastic Towels",
+    "editedCustomRate": "50"
+  },
+  "CategoryWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Practical Gold Shirt",
+    "customRate": "42",
+    "updatedAt": "2026-09-29T06:56:49.852Z",
+    "editedPriceListName": "Price List Intelligent Plastic Tuna",
+    "editedCustomRate": "50"
   },
   "CategoryWiseItemSpecificPricing": {
-    "priceListName": "Price List Handmade Wooden Keyboard",
+    "priceListName": "Price List Bespoke Aluminum Bike",
     "customRate": "42",
-    "itemName": "coerceo",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-28T10:31:53.079Z",
-    "editedPriceListName": "Price List Recycled Gold Chips",
+    "itemName": "quia",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-09-29T06:57:22.347Z",
+    "editedPriceListName": "Price List Fresh Wooden Soap",
     "editedCustomRate": "50",
-    "editedProductName": "Sonyu",
-    "editedPrimaryUOM": "150"
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
+  },
+  "CategoryWiseItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Practical Granite Fish",
+    "customRate": "42",
+    "itemName": "quia",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-29T06:58:13.515Z",
+    "editedAutoCalculatePriceListName": "Price List Electronic Aluminum Chair",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM": "500"
   },
   "ProfileWiseOverallMarkupPricing": {
-    "priceListName": "Price List Gorgeous Bronze Sausages",
+    "priceListName": "Price List Ergonomic Metal Shoes",
     "customRate": "42",
-    "updatedAt": "2026-09-28T10:32:18.878Z",
-    "editedPriceListName": "Price List Practical Metal Chicken",
+    "updatedAt": "2026-09-29T06:58:44.241Z",
+    "editedPriceListName": "Price List Refined Granite Chicken",
     "editedCustomRate": "50"
   },
   "ProfileWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Generic Silk Cheese",
+    "priceListName": "Price List Luxurious Marble Bike",
     "customRate": "42",
-    "updatedAt": "2026-09-28T10:32:47.342Z",
-    "editedPriceListName": "Price List Frozen Marble Sausages",
+    "updatedAt": "2026-09-29T06:59:14.139Z",
+    "editedPriceListName": "Price List Rustic Plastic Towels",
     "editedCustomRate": "50"
   },
   "ProfileWiseItemSpecificPricing": {
-    "priceListName": "Price List Licensed Plastic Pizza",
+    "priceListName": "Price List Elegant Bamboo Cheese",
     "customRate": "42",
-    "itemName": "coerceo",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-28T10:37:01.077Z",
-    "profileName": "Profile Elegant Wooden Hat",
-    "editedPriceListName": "Price List Oriental Plastic Shirt",
+    "itemName": "quia",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-09-29T06:59:51.299Z",
+    "profileName": "Profile Refined Silk Cheese",
+    "editedPriceListName": "Price List Elegant Plastic Tuna",
     "editedCustomRate": "50",
     "editedProfileName": "",
-    "editedProductName": "Sonyu",
-    "editedPrimaryUOM": "150"
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "",
+    "editedPrimaryUOM2": "",
+    "editedPrimaryUOM3": ""
+  },
+  "ProfileWiseItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Handcrafted Cotton Chicken",
+    "customRate": "42",
+    "profileName": "Profile Refined Silk Cheese",
+    "itemName": "quia",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-29T07:00:19.200Z",
+    "editedAutoCalculatePriceListName": "Price List Incredible Concrete Chips",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM1": "500",
+    "editedAutoCalculatePrimaryUOM2": "600",
+    "editedAutoCalculatePrimaryUOM3": "700"
   }
 }
