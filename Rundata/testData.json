@@ -1,141 +1,37 @@
 {
-  "recorded:Product_item_Create": {
-    "emailId": "santhosh@yoloworks.com",
-    "password": "***REDACTED***",
-    "searchByNameOrGST": "auto",
-    "fieldFile": "MZO9pvcB03.png",
-    "productName": "nequess",
-    "productDescription": "Ventosus ut solus eveniet amplitudo vsn.",
-    "salePricePerPcs": "100",
-    "recordedUrl": "https://invoice.test.vgts.xyz/",
-    "source": "codegen-recording",
-    "updatedAt": "2026-09-21T10:13:38.585Z",
-    "salePricePerUnit": "621"
-  },
-  "recorded:Product_item_Create:strategy": {
-    "emailId": "faker.internet.email()",
-    "password": "ENV: credential — process.env.PASSWORD, never faker, never a committed literal",
-    "searchByNameOrGST": "LITERAL: searches for an existing record — keep literal, a random term matches nothing",
-    "fieldFile": "LITERAL: uploaded file path — keep literal (or point at a fixture in the repo)",
-    "productName": "faker.lorem.words(1)",
-    "productDescription": "faker.lorem.sentence()",
-    "salePricePerPcs": "faker.string.numeric(3)",
-    "updatedAt": "2026-09-21T10:13:38.595Z",
-    "salePricePerUnit": "faker.string.numeric(3)"
-  },
   "Product_item_Create:generateProduct_item_CreateData": {
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
-    "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "causa",
-    "productDescription": "Terror cicuta crebro accommodo ancilla esse comis communis cetera commodi.",
-    "salePricePerPcs": "414",
-    "updatedAt": "2026-09-28T14:04:59.668Z",
-    "productName2": "pecco",
-    "productDescription2": "Charisma vulnus minima arceo demo antea verumtamen contabesco socius carpo.",
-    "salePricePerUnit": "053",
-    "quantity": "4"
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "aegrus",
-    "productDescription": "Acies valde temporibus copiose vulgivagus debilito adiuvo.",
-    "salePricePerPcs": "286",
-    "updatedAt": "2026-09-28T04:24:11.822Z",
-    "productName2": "bellum",
-    "productDescription2": "Demum attollo tempus volup talis trucido verbum cunae studio bis.",
-    "salePricePerUnit": "520"
-  },
-  "testRuns": {
-    "tests_Product_item_Create_spec_js": {
-      "status": "failed",
-      "exitCode": 1,
-      "summary": "──────────────────────────────────────────────────────────────────────────────────────────────── | Error Context: test-results\\artifacts\\Product_item_Create-Produc-b67d2-new-product-item-and-verify-chromium-retry3\\error-context.md | 1 failed | [chromium] › tests\\Product_item_Create.spec.js:10:3 › Product_item_Create › Create a new product item and verify",
-      "snapshot": "Rundata\\runs\\tests_Product_item_Create_spec_js-2026-09-21T07-25-17-194Z.json",
-      "finishedAt": "2026-09-21T07:25:17.195Z"
-    },
-    "updatedAt": "2026-09-21T07:25:17.197Z"
+    "productName": "verumtamen",
+    "productDescription": "Crepusculum aegre crux unde adversus vomer sortitus temporibus agnitio suus.",
+    "salePricePerPcs": "269",
+    "quantity": "7",
+    "productName2": "casso",
+    "productDescription2": "Tactus valetudo ustulo sonitus verbera patior valetudo solium.",
+    "salePricePerUnit": "090",
+    "updatedAt": "2026-09-29T05:47:25.535Z"
   },
   "productItemCreateData": {
-    "productName": "causa",
-    "productDescription": "Terror cicuta crebro accommodo ancilla esse comis communis cetera commodi.",
-    "salePricePerPcs": "414",
-    "updatedAt": "2026-09-28T14:05:16.053Z"
+    "productName": "tres",
+    "productDescription": "Damno trans quidem asperiores.",
+    "salePricePerPcs": "297",
+    "updatedAt": "2026-09-29T05:34:21.570Z"
   },
   "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Recycled Bamboo Pants",
+    "priceListName": "Price List Unbranded Rubber Towels",
     "customRate": "42",
-    "updatedAt": "2026-09-28T10:29:31.597Z",
-    "editedPriceListName": "Price List Handcrafted Marble Shirt",
-    "editedCustomRate": "50"
+    "updatedAt": "2026-09-29T05:47:45.176Z"
   },
   "GeneralOverallMarkdownPricing": {
-    "priceListName": "Price List Ergonomic Wooden Gloves",
+    "priceListName": "Price List Fantastic Wooden Pizza",
     "customRate": "42",
-    "updatedAt": "2026-09-28T10:29:58.459Z",
-    "editedPriceListName": "Price List Handcrafted Bronze Bike",
-    "editedCustomRate": "50"
+    "updatedAt": "2026-09-29T05:48:08.381Z"
   },
   "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Sleek Ceramic Shoes",
+    "priceListName": "Price List Small Metal Shirt",
     "customRate": "42",
-    "updatedAt": "2026-09-28T10:30:56.273Z",
-    "editedPriceListName": "Price List Awesome Bamboo Chicken",
-    "editedCustomRate": "50"
-  },
-  "CategoryWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Intelligent Metal Pants",
-    "customRate": "42",
-    "updatedAt": "2026-09-28T10:31:23.570Z",
-    "editedPriceListName": "Price List Unbranded Metal Pizza",
-    "editedCustomRate": "50"
-  },
-  "GeneralItemSpecificPricing": {
-    "priceListName": "Price List Small Granite Gloves",
-    "customRate": "42",
-    "itemName": "coerceo",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-28T10:30:29.731Z",
-    "editedPriceListName": "Price List Intelligent Metal Hat",
-    "editedCustomRate": "50",
-    "editedProductName": "Sonyu",
-    "editedPrimaryUOM": "150"
-  },
-  "CategoryWiseItemSpecificPricing": {
-    "priceListName": "Price List Handmade Wooden Keyboard",
-    "customRate": "42",
-    "itemName": "coerceo",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-28T10:31:53.079Z",
-    "editedPriceListName": "Price List Recycled Gold Chips",
-    "editedCustomRate": "50",
-    "editedProductName": "Sonyu",
-    "editedPrimaryUOM": "150"
-  },
-  "ProfileWiseOverallMarkupPricing": {
-    "priceListName": "Price List Gorgeous Bronze Sausages",
-    "customRate": "42",
-    "updatedAt": "2026-09-28T10:32:18.878Z",
-    "editedPriceListName": "Price List Practical Metal Chicken",
-    "editedCustomRate": "50"
-  },
-  "ProfileWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Generic Silk Cheese",
-    "customRate": "42",
-    "updatedAt": "2026-09-28T10:32:47.342Z",
-    "editedPriceListName": "Price List Frozen Marble Sausages",
-    "editedCustomRate": "50"
-  },
-  "ProfileWiseItemSpecificPricing": {
-    "priceListName": "Price List Licensed Plastic Pizza",
-    "customRate": "42",
-    "itemName": "coerceo",
-    "itemAmount": "100",
-    "updatedAt": "2026-09-28T10:37:01.077Z",
-    "profileName": "Profile Elegant Wooden Hat",
-    "editedPriceListName": "Price List Oriental Plastic Shirt",
-    "editedCustomRate": "50",
-    "editedProfileName": "",
-    "editedProductName": "Sonyu",
-    "editedPrimaryUOM": "150"
+    "updatedAt": "2026-09-29T05:48:56.958Z"
   }
 }
