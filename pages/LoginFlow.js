@@ -53,22 +53,11 @@ class LoginFlow extends SelfHealingBasePage {
   async loginAndSelectOrg(data) {
     await this.login(data);
 
-    // Verify org selection screen appears (precondition check). A cold login
-    // sits on a loading spinner for a while, so this gets the full expect
-    // budget from config/timeouts.js rather than a short hard-coded wait.
     await expect(this.orgHeading).toBeVisible({ timeout: TIMEOUTS.expect });
 
     await this.selectOrg(data);
   }
 
-  /**
-   * Get into the app without assuming which landing state we're in.
-   *
-   * With a session loaded from storageState the landing page shows "Go to
-   * Dashboard" and there is no "Log In" button — clicking through it is enough.
-   * Without one, fall back to the full credential flow. Specs that already know
-   * an in-app URL should just page.goto() it; this is for entering via the root.
-   */
   async ensureLoggedIn(data) {
     await this.page.goto(this.baseUrl);
 

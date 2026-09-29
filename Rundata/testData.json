@@ -36,6 +36,14 @@
     "productDescription2": "Charisma vulnus minima arceo demo antea verumtamen contabesco socius carpo.",
     "salePricePerUnit": "053",
     "quantity": "4"
+    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "aegrus",
+    "productDescription": "Acies valde temporibus copiose vulgivagus debilito adiuvo.",
+    "salePricePerPcs": "286",
+    "updatedAt": "2026-09-28T04:24:11.822Z",
+    "productName2": "bellum",
+    "productDescription2": "Demum attollo tempus volup talis trucido verbum cunae studio bis.",
+    "salePricePerUnit": "520"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
