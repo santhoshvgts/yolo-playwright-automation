@@ -33,6 +33,34 @@
     "editedPriceListName": "Price List Ergonomic Marble Chicken",
     "editedCustomRate": "50"
   },
+  "GeneralItemSpecificPricing": {
+    "priceListName": "Price List Sleek Ceramic Shirt",
+    "customRate": "42",
+    "itemName": "quia",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-09-29T06:55:19.413Z",
+    "editedPriceListName": "Price List Luxurious Plastic Table",
+    "editedCustomRate": "50",
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
+  },
+  "GeneralItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Rustic Granite Shoes",
+    "customRate": "42",
+    "itemName": "quia",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-29T06:55:47.210Z",
+    "editedAutoCalculatePriceListName": "Price List Frozen Bronze Shoes",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM1": "500",
+    "editedAutoCalculatePrimaryUOM2": "600",
+    "editedAutoCalculatePrimaryUOM3": "700"
+  },
   "CategoryWiseOverallMarkupPricing": {
     "priceListName": "Price List Unbranded Aluminum Ball",
     "customRate": "42",
