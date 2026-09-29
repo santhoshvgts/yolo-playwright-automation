@@ -53,6 +53,14 @@ class Pricing_general_Create extends SelfHealingBasePage {
     this.markdownDropdown = this.page.getByTitle('Markdown');
     this.removeProductCloseButton = this.page.getByRole('img').nth(4);
     this.addNewItemButton = this.page.locator('div').filter({ hasText: /^Add Item$/ }).nth(1);
+    this.kebabMenuButton = this.page.locator('.ant-dropdown-trigger');
+    this.deleteButton = this.page.getByRole('menuitem', { name: 'Delete' });
+    this.confirmDeleteButton = this.page.getByRole('button', { name: 'Delete' });
+    this.deleteSuccessMsg = this.page.getByText('Price Deleted Successfully', { exact: true }); 
+    this.activeInactiveToggle = this.page.getByRole('switch');
+    this.activeInactiveSuccessMsg = this.page.getByText('Status changed Successfully', { exact: true });
+    this.closeButton = this.page.getByRole('button', { name: 'Close', exact: true });
+    
 
   }
 
@@ -383,15 +391,15 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
   }
 
-    async editGeneralOverallMarkupPricing(data) { 
+    async editGeneralOverallMarkupPricing(data) {                                        
     // Navigate to pricing creation
     await this.inventoryLink.click();
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
 
-    const jsondata_editproductItem= getSection('GeneralOverallMarkupPricing');
+    const jsondata_editPricing= getSection('GeneralOverallMarkupPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -420,9 +428,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
     
-    const jsondata_editproductItem= getSection('GeneralOverallMarkdownPricing');
+    const jsondata_editPricing= getSection('GeneralOverallMarkdownPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -454,9 +462,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
     
-    const jsondata_editproductItem= getSection('GeneralItemSpecificPricing');
+    const jsondata_editPricing= getSection('GeneralItemSpecificPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -499,9 +507,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
 
-    const jsondata_editproductItem= getSection('CategoryWiseOverallMarkupPricing');
+    const jsondata_editPricing= getSection('CategoryWiseOverallMarkupPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -533,9 +541,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
 
-    const jsondata_editproductItem= getSection('CategoryWiseOverallMarkdownPricing');
+    const jsondata_editPricing= getSection('CategoryWiseOverallMarkdownPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -567,9 +575,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
 
-    const jsondata_editproductItem= getSection('CategoryWiseItemSpecificPricing');
+    const jsondata_editPricing= getSection('CategoryWiseItemSpecificPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -611,9 +619,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
 
-    const jsondata_editproductItem= getSection('ProfileWiseOverallMarkupPricing');
+    const jsondata_editPricing= getSection('ProfileWiseOverallMarkupPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -646,9 +654,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
 
-    const jsondata_editproductItem= getSection('ProfileWiseOverallMarkdownPricing');
+    const jsondata_editPricing= getSection('ProfileWiseOverallMarkdownPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -684,9 +692,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000);
     await this.pricingLink.click();
 
-    const jsondata_editproductItem= getSection('ProfileWiseItemSpecificPricing');
+    const jsondata_editPricing= getSection('ProfileWiseItemSpecificPricing');
 
-    await this.searchField.fill(jsondata_editproductItem.priceListName);
+    await this.searchField.fill(jsondata_editPricing.priceListName);
     await this.page.waitForTimeout(2000); // Wait for modal to appear
 
     await this.searchedField.click();
@@ -723,6 +731,53 @@ class Pricing_general_Create extends SelfHealingBasePage {
       editedPrimaryUOM: data.editedPrimaryUOM
 
     });
+
+  }
+
+    async deleteGeneralOverallMarkupPricing(data) {                                        
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+
+    const jsondata_editPricing= getSection('GeneralOverallMarkupPricing');
+
+    await this.searchField.fill(jsondata_editPricing.editedPriceListName);
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.searchedField.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+    await this.kebabMenuButton.click();
+    await this.deleteButton.click();
+    await this.confirmDeleteButton.click();
+    await expect(this.deleteSuccessMsg).toBeVisible({ timeout: 5000 });
+
+  }
+
+    async inactiveanddeleteGeneralOverallMarkdownPricing(data) {                                           
+    // Navigate to pricing creation
+    await this.inventoryLink.click();
+    await this.page.waitForTimeout(2000);
+    await this.pricingLink.click();
+
+    const jsondata_editPricing= getSection('GeneralOverallMarkdownPricing');
+
+    await this.searchField.fill(jsondata_editPricing.editedPriceListName);
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+
+    await this.searchedField.click();
+    await this.page.waitForTimeout(2000); // Wait for modal to appear
+    await this.activeInactiveToggle.click();
+    await expect(this.activeInactiveSuccessMsg).toBeVisible({ timeout: 5000 });
+    await this.closeButton.click();
+    await expect(this.page.locator('(//td[@class="ant-table-cell"])[4]')).toHaveText('Not Active');
+
+    await this.searchedField.click();
+    await this.page.waitForTimeout(2000); 
+    await this.kebabMenuButton.click();
+    await this.deleteButton.click();
+    await this.confirmDeleteButton.click();
+    await expect(this.deleteSuccessMsg).toBeVisible({ timeout: 5000 });
 
   }
 

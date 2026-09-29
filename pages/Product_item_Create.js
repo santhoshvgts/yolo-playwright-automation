@@ -67,6 +67,14 @@ class Product_item_Create extends SelfHealingBasePage {
     this.switch = this.page.getByRole('switch');
     this.closeButton = this.page.getByRole('button', { name: 'Close' });
     this.nequeDiv = this.page.locator('div').filter({ hasText: /^neque$/ }).first();
+    this.addAlternateUOM = this.page.getByRole('button', { name: 'Add Alternate UOM\'s' });
+    this.addUOM = this.page.getByRole('button', { name: 'Add UOM' });
+    this.alternateUOM1 = this.page.locator('#unit_array_0_alter_unit');
+    this.alternateUOM2 = this.page.locator('#unit_array_1_alter_unit');
+    this.alternateQuantityField1 = this.page.getByRole('textbox', { name: 'Quantity' });
+    this.alternateQuantityField2 = this.page.locator('#unit_array_1_quantity');
+    this.alternateSalesPriceField1 = this.page.getByRole('textbox', { name: 'Sales Price' });
+    this.alternateSalesPriceField2 = this.page.locator('#unit_array_1_sales_price');
 
     // Strategies for dynamic locators (none needed here — all locators are role/label-based and stable)
     this._categoryComboboxStrategies = [];
@@ -120,6 +128,19 @@ class Product_item_Create extends SelfHealingBasePage {
 
     // Sale Price
     await this.salePriceField.fill(data.salePricePerPcs);
+    await this.addAlternateUOM.click();
+    await this.waitForTimeout(1000); // Wait for the alternate UOM modal to appear
+    await this.alternateUOM1.fill('box');
+    await this.page.getByText('box', { exact: true }).click();
+    await this.alternateQuantityField1.fill(data.quantity);
+    await this.alternateSalesPriceField1.fill(data.salePricePerPcs);
+
+    await this.addUOM.click();
+    await this.waitForTimeout(1000); // Wait for the alternate UOM modal to appear
+    await this.alternateUOM2.fill('bundle');
+    await this.page.getByText('bundle', { exact: true }).click();
+    await this.alternateQuantityField2.fill(data.quantity);
+    //await this.alternateSalesPriceField2.fill(data.salePricePerPcs);
 
     // Tax Preference
     await this.healingClick(this.taxPreferenceField, [

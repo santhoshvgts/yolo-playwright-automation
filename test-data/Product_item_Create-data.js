@@ -10,6 +10,7 @@ function generateProduct_item_CreateData() {
     productName: faker.lorem.words(1),
     productDescription: faker.lorem.sentence(),
     salePricePerPcs: faker.string.numeric(3),
+    quantity: faker.string.numeric(1),
     productName2: faker.lorem.words(1),
     productDescription2: faker.lorem.sentence(),
     salePricePerUnit: faker.string.numeric(3)
