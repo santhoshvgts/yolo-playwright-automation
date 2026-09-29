@@ -4,39 +4,61 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "defessus",
-    "productDescription": "Voluptas vociferor cariosus vapulus absconditus usque vespillo decor iusto.",
-    "salePricePerPcs": "236",
-    "quantity": "8",
-    "productName2": "vito",
-    "productDescription2": "Correptius ab deleo voluptatum.",
-    "salePricePerUnit": "675",
-    "updatedAt": "2026-09-29T05:49:56.163Z"
+    "productName": "clamo",
+    "productDescription": "Crepusculum aequus cavus.",
+    "salePricePerPcs": "434",
+    "quantity": "6",
+    "productName2": "aperiam",
+    "productDescription2": "Canis alo ars speciosus uredo texo amaritudo acies.",
+    "salePricePerUnit": "086",
+    "updatedAt": "2026-09-29T06:54:29.217Z"
   },
   "productItemCreateData": {
-    "productName": "tres",
-    "productDescription": "Damno trans quidem asperiores.",
-    "salePricePerPcs": "297",
-    "updatedAt": "2026-09-29T05:34:21.570Z"
+    "productName": "animus",
+    "productDescription": "Tametsi timor vehemens solus.",
+    "salePricePerPcs": "496",
+    "updatedAt": "2026-09-29T06:34:46.540Z"
   },
   "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Unbranded Rubber Towels",
+    "priceListName": "Price List Awesome Granite Table",
     "customRate": "42",
-    "updatedAt": "2026-09-29T05:47:45.176Z"
+    "updatedAt": "2026-09-29T06:29:57.767Z",
+    "editedPriceListName": "Price List Handmade Gold Chair",
+    "editedCustomRate": "50"
   },
   "GeneralOverallMarkdownPricing": {
-    "priceListName": "Price List Fantastic Wooden Pizza",
+    "priceListName": "Price List Fresh Ceramic Soap",
     "customRate": "42",
-    "updatedAt": "2026-09-29T05:48:08.381Z"
+    "updatedAt": "2026-09-29T06:30:26.238Z",
+    "editedPriceListName": "Price List Ergonomic Marble Chicken",
+    "editedCustomRate": "50"
   },
   "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Small Metal Shirt",
+    "priceListName": "Price List Unbranded Aluminum Ball",
     "customRate": "42",
-    "updatedAt": "2026-09-29T05:48:56.958Z"
+    "updatedAt": "2026-09-29T06:31:19.872Z",
+    "editedPriceListName": "Price List Unbranded Gold Hat",
+    "editedCustomRate": "50"
   },
   "CategoryWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Recycled Wooden Fish",
+    "priceListName": "Price List Intelligent Concrete Table",
     "customRate": "42",
-    "updatedAt": "2026-09-29T05:49:23.251Z"
+    "updatedAt": "2026-09-29T06:31:44.763Z",
+    "editedPriceListName": "Price List Unbranded Bronze Table",
+    "editedCustomRate": "50"
+  },
+  "ProfileWiseOverallMarkupPricing": {
+    "priceListName": "Price List Oriental Cotton Bacon",
+    "customRate": "42",
+    "updatedAt": "2026-09-29T06:32:37.887Z",
+    "editedPriceListName": "Price List Fantastic Concrete Car",
+    "editedCustomRate": "50"
+  },
+  "ProfileWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Sleek Concrete Chair",
+    "customRate": "42",
+    "updatedAt": "2026-09-29T06:33:09.964Z",
+    "editedPriceListName": "Price List Fresh Plastic Cheese",
+    "editedCustomRate": "50"
   }
 }
