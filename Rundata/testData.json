@@ -3,15 +3,25 @@
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
-    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "clamo",
-    "productDescription": "Crepusculum aequus cavus.",
-    "salePricePerPcs": "434",
-    "quantity": "6",
+    "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "apparatus",
+    "productDescription": "Adsidue totam uberrime cornu bene.",
+    "salePricePerPcs": "825",
+    "updatedAt": "2026-09-29T12:29:31.919Z",
     "productName2": "aperiam",
-    "productDescription2": "Canis alo ars speciosus uredo texo amaritudo acies.",
-    "salePricePerUnit": "086",
-    "updatedAt": "2026-09-29T06:54:29.217Z"
+    "productDescription2": "Vigilo ultra demoror.",
+    "salePricePerUnit": "190",
+    "quantity": "8"
+  },
+  "testRuns": {
+    "tests_Product_item_Create_spec_js": {
+      "status": "failed",
+      "exitCode": 1,
+      "summary": "──────────────────────────────────────────────────────────────────────────────────────────────── | Error Context: test-results\\artifacts\\Product_item_Create-Produc-b67d2-new-product-item-and-verify-chromium-retry3\\error-context.md | 1 failed | [chromium] › tests\\Product_item_Create.spec.js:10:3 › Product_item_Create › Create a new product item and verify",
+      "snapshot": "Rundata\\runs\\tests_Product_item_Create_spec_js-2026-09-21T07-25-17-194Z.json",
+      "finishedAt": "2026-09-21T07:25:17.195Z"
+    },
+    "updatedAt": "2026-09-21T07:25:17.197Z"
   },
   "productItemCreateData": {
     "productName": "animus",
@@ -88,5 +98,58 @@
     "updatedAt": "2026-09-29T06:33:09.964Z",
     "editedPriceListName": "Price List Fresh Plastic Cheese",
     "editedCustomRate": "50"
+  },
+  "ProfileWiseItemSpecificPricing": {
+    "priceListName": "Price List Elegant Bamboo Cheese",
+    "customRate": "42",
+    "itemName": "quia",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-09-29T06:59:51.299Z",
+    "profileName": "Profile Refined Silk Cheese",
+    "editedPriceListName": "Price List Elegant Plastic Tuna",
+    "editedCustomRate": "50",
+    "editedProfileName": "",
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "",
+    "editedPrimaryUOM2": "",
+    "editedPrimaryUOM3": ""
+  },
+  "ProfileWiseItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Handcrafted Cotton Chicken",
+    "customRate": "42",
+    "profileName": "Profile Refined Silk Cheese",
+    "itemName": "quia",
+    "itemAmount": "100",
+    "updatedAt": "2026-09-29T07:00:19.200Z",
+    "editedAutoCalculatePriceListName": "Price List Incredible Concrete Chips",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM1": "500",
+    "editedAutoCalculatePrimaryUOM2": "600",
+    "editedAutoCalculatePrimaryUOM3": "700"
+  },
+  "Business_Vendor_withGST": {
+    "vendorOrganisationName": "Torp, Roberts and Pfannerstill",
+    "openingBalance": "14420.77",
+    "organisationMobileNo": "3125975530",
+    "organisationEmail": "Joshua_Thiel33@hotmail.com",
+    "gstValue": "24AAAGM0289C1ZP",
+    "updatedAt": "2026-09-29T12:29:55.966Z"
+  },
+  "Business_Vendor_withoutGST": {
+    "vendorOrganisationName": "Gottlieb-Halvorson LLC",
+    "openingBalance": "2837.4498345113207",
+    "organisationMobileNo": "1937641780",
+    "organisationEmail": "Sydnie29@hotmail.com",
+    "updatedAt": "2026-09-29T12:30:16.660Z"
+  },
+  "Individual_Vendor": {
+    "vendorName": "Murray LLC",
+    "openingBalance": "14420.77",
+    "mobileNo": "2094702518",
+    "organisationEmail": "Maggie_West@hotmail.com",
+    "updatedAt": "2026-09-29T12:30:35.295Z"
   }
 }

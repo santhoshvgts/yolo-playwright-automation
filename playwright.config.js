@@ -30,9 +30,7 @@ export default defineConfig({
   fullyParallel: true,
   workers: 1,
   maxFailures: 0,
-  // CI: 1 retry — enough to absorb a flaky run without re-running a real
-  // failure five times over (that alone added ~15 min per CI run).
-  retries: process.env.CI ? 1 : 3,
+  retries: process.env.CI ? 5 : 3,
 
   // ── Timeouts ─────────────────────────────────────────────────────
   // All values live in config/timeouts.js — tune them there, or per run via
@@ -62,8 +60,7 @@ export default defineConfig({
     baseURL: URLS.base,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    // CI records video only on the retry, so passing tests pay no recording cost.
-    video: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
+    video: 'retain-on-failure',
     navigationTimeout: TIMEOUTS.navigation,
     actionTimeout: TIMEOUTS.action,
     ignoreHTTPSErrors: true,
