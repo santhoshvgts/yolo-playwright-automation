@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "apparatus",
-    "productDescription": "Adsidue totam uberrime cornu bene.",
-    "salePricePerPcs": "825",
-    "updatedAt": "2026-09-29T12:29:31.919Z",
-    "productName2": "aperiam",
-    "productDescription2": "Vigilo ultra demoror.",
-    "salePricePerUnit": "190",
-    "quantity": "8"
+    "productName": "sunt",
+    "productDescription": "Vilis venustas depulso vespillo animus aestivus patruus absque acervus arca.",
+    "salePricePerPcs": "717",
+    "updatedAt": "2026-09-30T11:10:07.759Z",
+    "productName2": "virtus",
+    "productDescription2": "Vester alienus alii sponte ventosus velum approbo defleo.",
+    "salePricePerUnit": "003",
+    "quantity": "7"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -131,25 +131,29 @@
     "editedAutoCalculatePrimaryUOM3": "700"
   },
   "Business_Vendor_withGST": {
-    "vendorOrganisationName": "Torp, Roberts and Pfannerstill",
-    "openingBalance": "14420.77",
-    "organisationMobileNo": "3125975530",
-    "organisationEmail": "Joshua_Thiel33@hotmail.com",
+    "vendorOrganisationName": "Waelchi - Mertz",
+    "openingBalance": "35805",
+    "organisationMobileNo": "0604806082",
+    "organisationEmail": "Dorthy_Barton@hotmail.com",
     "gstValue": "24AAAGM0289C1ZP",
-    "updatedAt": "2026-09-29T12:29:55.966Z"
+    "updatedAt": "2026-09-30T11:04:22.460Z",
+    "editedVendorOrganisationName": "Keon Ledner",
+    "editedopeningBalance": "53778",
+    "editedOrganisationMobileNo": "7462493284",
+    "editedOrganisationEmail": "Garth.Heidenreich28@hotmail.com"
   },
   "Business_Vendor_withoutGST": {
-    "vendorOrganisationName": "Gottlieb-Halvorson LLC",
-    "openingBalance": "2837.4498345113207",
-    "organisationMobileNo": "1937641780",
-    "organisationEmail": "Sydnie29@hotmail.com",
-    "updatedAt": "2026-09-29T12:30:16.660Z"
+    "vendorOrganisationName": "Conn - Paucek",
+    "openingBalance": "3755.764614492155",
+    "organisationMobileNo": "7743231845",
+    "organisationEmail": "Hailey31@hotmail.com",
+    "updatedAt": "2026-09-30T08:10:51.488Z"
   },
   "Individual_Vendor": {
-    "vendorName": "Murray LLC",
-    "openingBalance": "14420.77",
-    "mobileNo": "2094702518",
-    "organisationEmail": "Maggie_West@hotmail.com",
-    "updatedAt": "2026-09-29T12:30:35.295Z"
+    "vendorName": "Bogisich and Sons",
+    "openingBalance": "68416",
+    "mobileNo": "0010463478",
+    "organisationEmail": "Guiseppe_Fahey@yahoo.com",
+    "updatedAt": "2026-09-30T11:10:27.544Z"
   }
 }
