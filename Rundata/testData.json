@@ -3,15 +3,15 @@
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
-    "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "apparatus",
-    "productDescription": "Adsidue totam uberrime cornu bene.",
-    "salePricePerPcs": "825",
-    "updatedAt": "2026-09-29T12:29:31.919Z",
-    "productName2": "aperiam",
-    "productDescription2": "Vigilo ultra demoror.",
-    "salePricePerUnit": "190",
-    "quantity": "8"
+    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "civitas",
+    "productDescription": "Cribro sodalitas texo quas soleo consuasor talio umquam audentia tenuis.",
+    "salePricePerPcs": "388",
+    "updatedAt": "2026-09-30T05:12:01.455Z",
+    "productName2": "molestias",
+    "productDescription2": "Vir quae corona cur.",
+    "salePricePerUnit": "125",
+    "quantity": "9"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
