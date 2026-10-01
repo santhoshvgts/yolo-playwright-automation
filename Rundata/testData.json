@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "civitas",
-    "productDescription": "Cribro sodalitas texo quas soleo consuasor talio umquam audentia tenuis.",
-    "salePricePerPcs": "388",
-    "updatedAt": "2026-09-30T05:12:01.455Z",
-    "productName2": "molestias",
-    "productDescription2": "Vir quae corona cur.",
-    "salePricePerUnit": "125",
-    "quantity": "9"
+    "productName": "curo",
+    "productDescription": "Calcar turpis tamdiu decipio ocer antiquus cruciamentum alias.",
+    "salePricePerPcs": "037",
+    "updatedAt": "2026-10-01T11:35:32.881Z",
+    "productName2": "cubitum",
+    "productDescription2": "Cunctatio sponte canto commemoro eum peior sustineo spargo quasi.",
+    "salePricePerUnit": "452",
+    "quantity": "7"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
