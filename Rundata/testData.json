@@ -131,43 +131,29 @@
     "editedAutoCalculatePrimaryUOM3": "700"
   },
   "Business_Vendor_withGST": {
-    "vendorOrganisationName": "Torp, Roberts and Pfannerstill",
-    "openingBalance": "14420.77",
-    "organisationMobileNo": "3125975530",
-    "organisationEmail": "Joshua_Thiel33@hotmail.com",
+    "vendorOrganisationName": "Waelchi - Mertz",
+    "openingBalance": "35805",
+    "organisationMobileNo": "0604806082",
+    "organisationEmail": "Dorthy_Barton@hotmail.com",
     "gstValue": "24AAAGM0289C1ZP",
-    "updatedAt": "2026-09-29T12:29:55.966Z"
+    "updatedAt": "2026-09-30T11:04:22.460Z",
+    "editedVendorOrganisationName": "Keon Ledner",
+    "editedopeningBalance": "53778",
+    "editedOrganisationMobileNo": "7462493284",
+    "editedOrganisationEmail": "Garth.Heidenreich28@hotmail.com"
   },
   "Business_Vendor_withoutGST": {
-    "vendorOrganisationName": "Gottlieb-Halvorson LLC",
-    "openingBalance": "2837.4498345113207",
-    "organisationMobileNo": "1937641780",
-    "organisationEmail": "Sydnie29@hotmail.com",
-    "updatedAt": "2026-09-29T12:30:16.660Z"
+    "vendorOrganisationName": "Conn - Paucek",
+    "openingBalance": "3755.764614492155",
+    "organisationMobileNo": "7743231845",
+    "organisationEmail": "Hailey31@hotmail.com",
+    "updatedAt": "2026-09-30T08:10:51.488Z"
   },
   "Individual_Vendor": {
-    "vendorName": "Murray LLC",
-    "openingBalance": "14420.77",
-    "mobileNo": "2094702518",
-    "organisationEmail": "Maggie_West@hotmail.com",
-    "updatedAt": "2026-09-29T12:30:35.295Z"
-  },
-  "flowItemCreateData": {
-    "productName": "Frozen Aluminum Table oByN",
-    "productDescription": "Ergonomic Chips made with Metal for all-day yellowish support",
-    "salePricePerPcs": "40",
-    "updatedAt": "2026-10-01T10:07:38.414Z"
-  },
-  "purchaseFlowData": {
-    "itemName": "Sleek Steel Tuna sBsx",
-    "boxconversion": 11,
-    "bundleconversion": 11,
-    "updatedAt": "2026-10-01T09:51:50.669Z"
-  },
-  "salesFlowData": {
-    "itemName": "Frozen Aluminum Table oByN",
-    "boxconversion": 6,
-    "bundleconversion": 6,
-    "updatedAt": "2026-10-01T10:07:41.444Z"
+    "vendorName": "Bogisich and Sons",
+    "openingBalance": "68416",
+    "mobileNo": "0010463478",
+    "organisationEmail": "Guiseppe_Fahey@yahoo.com",
+    "updatedAt": "2026-09-30T11:10:27.544Z"
   }
 }

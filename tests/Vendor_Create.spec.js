@@ -43,4 +43,13 @@ test.describe(moduleName, () => {
     
   });
 
+  test('Edit Business Vendor with GST', async ({ page }) => {
+
+    const pom = new Vendor_Create(page);
+
+    await page.goto(URLS.products);
+
+    await pom.editBusinessVendorwithGST(data);
+  });
+
 });
