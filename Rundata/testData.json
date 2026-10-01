@@ -3,15 +3,15 @@
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
-    "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "sunt",
-    "productDescription": "Vilis venustas depulso vespillo animus aestivus patruus absque acervus arca.",
-    "salePricePerPcs": "717",
-    "updatedAt": "2026-09-30T11:10:07.759Z",
-    "productName2": "virtus",
-    "productDescription2": "Vester alienus alii sponte ventosus velum approbo defleo.",
-    "salePricePerUnit": "003",
-    "quantity": "7"
+    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "civitas",
+    "productDescription": "Cribro sodalitas texo quas soleo consuasor talio umquam audentia tenuis.",
+    "salePricePerPcs": "388",
+    "updatedAt": "2026-09-30T05:12:01.455Z",
+    "productName2": "molestias",
+    "productDescription2": "Vir quae corona cur.",
+    "salePricePerUnit": "125",
+    "quantity": "9"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
