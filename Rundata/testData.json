@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "civitas",
-    "productDescription": "Cribro sodalitas texo quas soleo consuasor talio umquam audentia tenuis.",
-    "salePricePerPcs": "388",
-    "updatedAt": "2026-09-30T05:12:01.455Z",
-    "productName2": "molestias",
-    "productDescription2": "Vir quae corona cur.",
-    "salePricePerUnit": "125",
-    "quantity": "9"
+    "productName": "curo",
+    "productDescription": "Calcar turpis tamdiu decipio ocer antiquus cruciamentum alias.",
+    "salePricePerPcs": "037",
+    "updatedAt": "2026-10-01T11:35:32.881Z",
+    "productName2": "cubitum",
+    "productDescription2": "Cunctatio sponte canto commemoro eum peior sustineo spargo quasi.",
+    "salePricePerUnit": "452",
+    "quantity": "7"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -151,5 +151,23 @@
     "mobileNo": "2094702518",
     "organisationEmail": "Maggie_West@hotmail.com",
     "updatedAt": "2026-09-29T12:30:35.295Z"
+  },
+  "flowItemCreateData": {
+    "productName": "Frozen Aluminum Table oByN",
+    "productDescription": "Ergonomic Chips made with Metal for all-day yellowish support",
+    "salePricePerPcs": "40",
+    "updatedAt": "2026-10-01T10:07:38.414Z"
+  },
+  "purchaseFlowData": {
+    "itemName": "Sleek Steel Tuna sBsx",
+    "boxconversion": 11,
+    "bundleconversion": 11,
+    "updatedAt": "2026-10-01T09:51:50.669Z"
+  },
+  "salesFlowData": {
+    "itemName": "Frozen Aluminum Table oByN",
+    "boxconversion": 6,
+    "bundleconversion": 6,
+    "updatedAt": "2026-10-01T10:07:41.444Z"
   }
 }
