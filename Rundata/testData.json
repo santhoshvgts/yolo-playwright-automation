@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "dicta",
-    "productDescription": "Allatus campana conventus calcar tamquam incidunt vindico.",
-    "salePricePerPcs": "046",
-    "updatedAt": "2026-10-05T13:31:59.527Z",
-    "productName2": "versus",
-    "productDescription2": "Acerbitas cubitum solum alioqui.",
-    "salePricePerUnit": "290",
-    "quantity": "9"
+    "productName": "pax",
+    "productDescription": "Deleniti aeneus decretum suppellex ut deludo.",
+    "salePricePerPcs": "408",
+    "updatedAt": "2026-10-05T13:34:42.353Z",
+    "productName2": "theologus",
+    "productDescription2": "Certus numquam tot assumenda aperte adhaero eveniet custodia nihil.",
+    "salePricePerUnit": "026",
+    "quantity": "0"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
