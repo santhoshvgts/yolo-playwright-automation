@@ -43,9 +43,7 @@ openingBalance: String(
   })
 ),
     
-    //search: 'Turner - Armstrong', // KEEP literal
     displayName: faker.person.fullName(),
-    fieldFile: 'e35781dd85c7e86ccf98f3647780dbe1.0000000.jpg', // KEEP literal
     emailId_2: faker.internet.email(),
     phoneNumber: faker.string.numeric(10),
     panNumber: 'ABCDE1234Z',
@@ -64,6 +62,44 @@ openingBalance: String(
     accountNumber: faker.string.numeric(12),
     ifscCode: 'INDB0001067',
     recipientName: faker.lorem.words(1),
+
+    editinviDisplayName: faker.person.fullName(),
+
+editinviEmailId_2: faker.internet.email(),
+
+editinviPhoneNumber: faker.string.numeric(10),
+
+editinviPanNumber: 'ABCDE1234Z',
+
+editinviOpeningBalance: faker.string.numeric(5),
+
+editinviContactName: faker.person.fullName(),
+
+editinviContactMobileNumber: faker.string.numeric(10),
+
+editinviExampleEmailCom: faker.internet.email(),
+
+editinviContactName_2: faker.lorem.words(1),
+
+editinviContactMobileNumber_2: faker.string.numeric(10),
+
+editinviExampleEmailCom_2: faker.internet.email(),
+
+editinviAddressLine1: faker.location.streetAddress(),
+
+editinviAddressLine2Optional: faker.location.streetAddress(),
+
+editinviCityTown: faker.location.city(),
+
+editinviPincode: faker.string.numeric(6),
+
+editinviBankName: faker.lorem.words(1),
+
+editinviAccountNumber: faker.string.numeric(12),
+
+editinviIfscCode: 'INDB0001067',
+
+editinviRecipientName: faker.lorem.words(1),
     
   };
 }

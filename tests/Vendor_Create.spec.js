@@ -52,4 +52,13 @@ test.describe(moduleName, () => {
     await pom.editBusinessVendorwithGST(data);
   });
 
+  test('Edit Individual Vendor', async ({ page }) => {
+
+    const pom = new Vendor_Create(page);
+
+    await page.goto(URLS.products);
+
+    await pom.editIndividualVendor(data);
+  });
+
 });

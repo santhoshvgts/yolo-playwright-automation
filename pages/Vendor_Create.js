@@ -32,7 +32,7 @@ class Vendor_Create extends SelfHealingBasePage {
     this.addAddressButton = this.page.getByRole('button', { name: 'Add Address' });
     this.addressLine1 = this.page.locator('#billing_address1');
     this.addressLine2 = this.page.locator('#billing_address2');
-    this.cityField = this.page.locator('#billing_city');
+    this.cityField = this.page.getByRole('textbox', { name: 'City/Town' });
     this.stateDropdown = this.page.locator('.ant-select.ant-select-lg.ant-select-outlined.ant-select-in-form-item.css-mncuj7.ant-select-single.ant-select-show-arrow.ant-select-show-search > .ant-select-selector > .ant-select-selection-wrap > .ant-select-selection-item');
     this.stateOption = this.page.getByTitle('Meghalaya', { exact: true });
     this.shippingStateOption = this.page.getByTitle('Haryana').nth(1);
@@ -54,8 +54,6 @@ class Vendor_Create extends SelfHealingBasePage {
     // individual vendor
     this.vendorNameField = this.page.locator('#name');
     this.vendorMobileNo = this.page.locator('#phone');
-
-    // edit flow
     // Edit Business Vendor
 
     // Vendor search
@@ -414,6 +412,143 @@ await expect(this.verifyEditedVendorName).toContainText(data.displayName);
 
 
 }
+
+async editIndividualVendor(data) {
+
+  // Navigate to Vendor
+  await this.purchaseLink.click();
+  await this.vendorLink.click();
+
+  // Get existing Individual Vendor data
+  const jsondata_editVendor = getSection('Individual_Vendor');
+
+  // Search Vendor
+  await this.searchVendorInput.fill(
+    jsondata_editVendor.vendorName
+  );
+
+  await this.vendorResult.click();
+
+  // View Vendor Details
+  await this.viewDetailsButton.click();
+
+  await this.page.waitForTimeout(5000);
+
+  // Edit Display Name
+  await this.editButtons.first().click();
+  await this.displayNameInput.fill(data.editinviDisplayName);
+  await this.saveButton.click();
+
+  // Edit Email
+  await this.editButtons.nth(1).click();
+  await this.emailInput.fill(data.editinviEmailId_2);
+  await this.saveButton.click();
+
+  // Edit Phone Number
+  await this.editButtons.nth(2).click();
+  await this.phoneNumberInput.fill(data.editinviPhoneNumber);
+  await this.saveButton.click();
+
+  // Edit GST
+  await this.editButtons.nth(4).click();
+  await this.gstCheckbox.check();
+  await this.saveButton.click();
+
+  // Edit Tags
+  await this.editButtons.nth(5).click();
+  await this.businessTagDropdown.click();
+  await this.tagOption.click();
+  await this.saveButton.click();
+
+  // Edit PAN Number
+  await this.panButton.click();
+  await this.panInput.fill(data.editinviPanNumber);
+  await this.saveButton.click();
+
+  // Edit Opening Balance
+  await this.openingBalanceButton.click();
+  await this.openingBalanceInput.fill(data.editinviOpeningBalance);
+  await this.saveButton.click();
+
+  // Edit Contact Info
+  //await this.contactInfoButton.click();
+  // await this.contactEditButton.click();
+
+  // await this.contactNameInput.fill(data.editinviContactName);
+  // await this.contactMobileInput.fill(data.editinviContactMobileNumber);
+  // await this.contactEmailInput.fill(data.editinviExampleEmailCom);
+
+  // await this.saveButton.click();
+
+  // Add Contact
+  await this.addContactButton.click();
+
+  await this.contactNameInput.fill(data.editinviContactName_2);
+  await this.contactMobileInput.fill(data.editinviContactMobileNumber_2);
+  await this.contactEmailInput.fill(data.editinviExampleEmailCom_2);
+
+  await this.saveButton.click();
+
+  // Edit Address
+  await this.editAddressButton.click();
+
+  await this.addressLine1Input.fill(data.editinviAddressLine1);
+  await this.addressLine2Input.fill(data.editinviAddressLine2Optional);
+  await this.cityInput.fill(data.editinviCityTown);
+
+  await this.stateMeghalaya.click();
+  await this.statePuducherry.click();
+
+  await this.pincodeInput.fill(data.editinviPincode);
+
+  await this.saveAddressButton.click();
+
+  // Back from Address
+  const backFromAddressDialog = this.page
+    .getByRole('dialog')
+    .getByRole('button', { name: 'Back' });
+
+  await backFromAddressDialog.click();
+
+  // Add Bank Details
+  await this.addBankButton.click();
+
+  await this.bankNameInput.fill(data.editinviBankName);
+  await this.accountNumberInput.fill(data.editinviAccountNumber);
+  await this.ifscCodeInput.fill(data.editinviIfscCode);
+  await this.recipientNameInput.fill(data.editinviRecipientName);
+
+  await this.saveBankButton.click();
+  await this.backFromBankDialog.click();
+
+  // Close Vendor Details
+  await this.closeButton.click();
+
+  // Save edited Individual Vendor data
+  saveSection('Edit_Individual_Vendor', {
+    editedVendorOrganisationName: data.editinviDisplayName,
+    editedOpeningBalance: data.editinviOpeningBalance,
+    editedOrganisationMobileNo: data.editinviContactMobileNumber_2,
+    editedOrganisationEmail: data.editinviExampleEmailCom_2
+  });
+
+  // Get edited Individual Vendor data
+  const jsondata_editVendor1 = getSection(
+    'Edit_Individual_Vendor'
+  );
+
+  // Search edited vendor
+  await this.searchVendorInput.fill(
+    jsondata_editVendor1.editedVendorOrganisationName
+  );
+
+  // Verify edited vendor name
+  await expect(this.verifyEditedVendorName)
+    .toContainText(
+      jsondata_editVendor1.editedVendorOrganisationName
+    );
+}
+
 }
 
 module.exports = { Vendor_Create };

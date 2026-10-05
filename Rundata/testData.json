@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "C:\\Yolo_Automation\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "sunt",
-    "productDescription": "Vilis venustas depulso vespillo animus aestivus patruus absque acervus arca.",
-    "salePricePerPcs": "717",
-    "updatedAt": "2026-09-30T11:10:07.759Z",
-    "productName2": "virtus",
-    "productDescription2": "Vester alienus alii sponte ventosus velum approbo defleo.",
-    "salePricePerUnit": "003",
-    "quantity": "7"
+    "productName": "dicta",
+    "productDescription": "Allatus campana conventus calcar tamquam incidunt vindico.",
+    "salePricePerPcs": "046",
+    "updatedAt": "2026-10-05T13:31:59.527Z",
+    "productName2": "versus",
+    "productDescription2": "Acerbitas cubitum solum alioqui.",
+    "salePricePerUnit": "290",
+    "quantity": "9"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -131,29 +131,36 @@
     "editedAutoCalculatePrimaryUOM3": "700"
   },
   "Business_Vendor_withGST": {
-    "vendorOrganisationName": "Waelchi - Mertz",
-    "openingBalance": "35805",
-    "organisationMobileNo": "0604806082",
-    "organisationEmail": "Dorthy_Barton@hotmail.com",
+    "vendorOrganisationName": "Ortiz - Oberbrunner",
+    "openingBalance": "70435",
+    "organisationMobileNo": "5982082232",
+    "organisationEmail": "Sonny39@yahoo.com",
     "gstValue": "24AAAGM0289C1ZP",
-    "updatedAt": "2026-09-30T11:04:22.460Z",
-    "editedVendorOrganisationName": "Keon Ledner",
-    "editedopeningBalance": "53778",
-    "editedOrganisationMobileNo": "7462493284",
-    "editedOrganisationEmail": "Garth.Heidenreich28@hotmail.com"
+    "updatedAt": "2026-10-05T13:23:21.215Z",
+    "editedVendorOrganisationName": "Becky Auer",
+    "editedopeningBalance": "42382",
+    "editedOrganisationMobileNo": "8165590382",
+    "editedOrganisationEmail": "Anastasia74@gmail.com"
   },
   "Business_Vendor_withoutGST": {
-    "vendorOrganisationName": "Conn - Paucek",
-    "openingBalance": "3755.764614492155",
-    "organisationMobileNo": "7743231845",
-    "organisationEmail": "Hailey31@hotmail.com",
-    "updatedAt": "2026-09-30T08:10:51.488Z"
+    "vendorOrganisationName": "Reynolds, Cummings-Shields and Hilll",
+    "openingBalance": "4104.878980475322",
+    "organisationMobileNo": "2913618502",
+    "organisationEmail": "Valentin.Wilkinson@yahoo.com",
+    "updatedAt": "2026-10-05T13:21:45.455Z"
   },
   "Individual_Vendor": {
-    "vendorName": "Bogisich and Sons",
-    "openingBalance": "68416",
-    "mobileNo": "0010463478",
-    "organisationEmail": "Guiseppe_Fahey@yahoo.com",
-    "updatedAt": "2026-09-30T11:10:27.544Z"
+    "vendorName": "Schneider and Sons",
+    "openingBalance": "64097",
+    "mobileNo": "3951522221",
+    "organisationEmail": "Quinn57@hotmail.com",
+    "updatedAt": "2026-10-05T13:31:54.110Z"
+  },
+  "Edit_Individual_Vendor": {
+    "editedVendorOrganisationName": "Quinton Conn-Heaney",
+    "editedOpeningBalance": "77781",
+    "editedOrganisationMobileNo": "1522551929",
+    "editedOrganisationEmail": "Kyleigh97@hotmail.com",
+    "updatedAt": "2026-10-05T13:32:33.448Z"
   }
 }
