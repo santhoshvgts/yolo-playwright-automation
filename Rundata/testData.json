@@ -4,13 +4,13 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "curo",
-    "productDescription": "Calcar turpis tamdiu decipio ocer antiquus cruciamentum alias.",
-    "salePricePerPcs": "037",
-    "updatedAt": "2026-10-01T11:35:32.881Z",
-    "productName2": "cubitum",
-    "productDescription2": "Cunctatio sponte canto commemoro eum peior sustineo spargo quasi.",
-    "salePricePerUnit": "452",
+    "productName": "candidus",
+    "productDescription": "Nam impedit turbo absconditus verbum cruentus.",
+    "salePricePerPcs": "271",
+    "updatedAt": "2026-10-05T10:00:35.249Z",
+    "productName2": "urbanus",
+    "productDescription2": "Varius vulgo auxilium vulgivagus sollers aranea dolore versus est.",
+    "salePricePerUnit": "725",
     "quantity": "7"
   },
   "testRuns": {
@@ -24,34 +24,34 @@
     "updatedAt": "2026-09-21T07:25:17.197Z"
   },
   "productItemCreateData": {
-    "productName": "animus",
-    "productDescription": "Tametsi timor vehemens solus.",
-    "salePricePerPcs": "496",
-    "updatedAt": "2026-09-29T06:34:46.540Z"
+    "productName": "aro",
+    "productDescription": "Conatus ultra conculco cogito vinum tollo solus trepide crudelis thorax.",
+    "salePricePerPcs": "916",
+    "updatedAt": "2026-10-05T06:56:44.004Z"
   },
   "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Awesome Granite Table",
+    "priceListName": "Price List Luxurious Granite Soap",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:29:57.767Z",
-    "editedPriceListName": "Price List Handmade Gold Chair",
+    "updatedAt": "2026-10-05T06:50:07.180Z",
+    "editedPriceListName": "Price List Fresh Aluminum Towels",
     "editedCustomRate": "50"
   },
   "GeneralOverallMarkdownPricing": {
-    "priceListName": "Price List Fresh Ceramic Soap",
+    "priceListName": "Price List Fresh Bamboo Towels",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:30:26.238Z",
-    "editedPriceListName": "Price List Ergonomic Marble Chicken",
+    "updatedAt": "2026-10-05T06:50:49.955Z",
+    "editedPriceListName": "Price List Unbranded Silk Hat",
     "editedCustomRate": "50"
   },
   "GeneralItemSpecificPricing": {
-    "priceListName": "Price List Sleek Ceramic Shirt",
+    "priceListName": "Price List Modern Metal Car",
     "customRate": "42",
-    "itemName": "quia",
+    "itemName": "valens",
     "itemAmount1": "100",
     "itemAmount2": "150",
     "itemAmount3": "200",
-    "updatedAt": "2026-09-29T06:55:19.413Z",
-    "editedPriceListName": "Price List Luxurious Plastic Table",
+    "updatedAt": "2026-10-05T06:51:25.598Z",
+    "editedPriceListName": "Price List Recycled Ceramic Fish",
     "editedCustomRate": "50",
     "editedProductName": "TestProduct",
     "editedPrimaryUOM1": "500",
@@ -59,12 +59,12 @@
     "editedPrimaryUOM3": "700"
   },
   "GeneralItemSpecificPricing_ByAutoCalculating": {
-    "priceListName": "Price List Rustic Granite Shoes",
+    "priceListName": "Price List Handcrafted Granite Soap",
     "customRate": "42",
-    "itemName": "quia",
+    "itemName": "valens",
     "itemAmount": "100",
-    "updatedAt": "2026-09-29T06:55:47.210Z",
-    "editedAutoCalculatePriceListName": "Price List Frozen Bronze Shoes",
+    "updatedAt": "2026-10-05T06:51:58.551Z",
+    "editedAutoCalculatePriceListName": "Price List Gorgeous Rubber Tuna",
     "editedAutoCalculateCustomRate": "50",
     "editedAutoCalculateProductName": "TestProduct",
     "editedAutoCalculatePrimaryUOM1": "500",
@@ -72,102 +72,152 @@
     "editedAutoCalculatePrimaryUOM3": "700"
   },
   "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Unbranded Aluminum Ball",
+    "priceListName": "Price List Handcrafted Cotton Towels",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:31:19.872Z",
-    "editedPriceListName": "Price List Unbranded Gold Hat",
+    "updatedAt": "2026-10-05T06:52:25.035Z",
+    "editedPriceListName": "Price List Elegant Cotton Cheese",
     "editedCustomRate": "50"
   },
   "CategoryWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Intelligent Concrete Table",
+    "priceListName": "Price List Handmade Wooden Mouse",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:31:44.763Z",
-    "editedPriceListName": "Price List Unbranded Bronze Table",
+    "updatedAt": "2026-10-05T06:52:45.925Z",
+    "editedPriceListName": "Price List Unbranded Silk Mouse",
     "editedCustomRate": "50"
   },
   "ProfileWiseOverallMarkupPricing": {
-    "priceListName": "Price List Oriental Cotton Bacon",
+    "priceListName": "Price List Luxurious Silk Bike",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:32:37.887Z",
-    "editedPriceListName": "Price List Fantastic Concrete Car",
+    "updatedAt": "2026-10-05T06:54:05.523Z",
+    "editedPriceListName": "Price List Recycled Concrete Mouse",
     "editedCustomRate": "50"
   },
   "ProfileWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Sleek Concrete Chair",
+    "priceListName": "Price List Elegant Rubber Shoes",
     "customRate": "42",
-    "updatedAt": "2026-09-29T06:33:09.964Z",
-    "editedPriceListName": "Price List Fresh Plastic Cheese",
+    "updatedAt": "2026-10-05T06:54:28.454Z",
+    "editedPriceListName": "Price List Sleek Concrete Gloves",
     "editedCustomRate": "50"
   },
   "ProfileWiseItemSpecificPricing": {
-    "priceListName": "Price List Elegant Bamboo Cheese",
+    "priceListName": "Price List Oriental Silk Salad",
     "customRate": "42",
-    "itemName": "quia",
+    "itemName": "valens",
     "itemAmount1": "100",
     "itemAmount2": "150",
     "itemAmount3": "200",
-    "updatedAt": "2026-09-29T06:59:51.299Z",
-    "profileName": "Profile Refined Silk Cheese",
-    "editedPriceListName": "Price List Elegant Plastic Tuna",
+    "updatedAt": "2026-10-05T06:55:12.088Z",
+    "profileName": "Profile Intelligent Cotton Chips",
+    "editedPriceListName": "Price List Frozen Aluminum Tuna",
     "editedCustomRate": "50",
-    "editedProfileName": "",
+    "editedProfileName": "Profile Intelligent Cotton Chips",
     "editedProductName": "TestProduct",
-    "editedPrimaryUOM1": "",
-    "editedPrimaryUOM2": "",
-    "editedPrimaryUOM3": ""
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
   },
   "ProfileWiseItemSpecificPricing_ByAutoCalculating": {
-    "priceListName": "Price List Handcrafted Cotton Chicken",
+    "priceListName": "Price List Rustic Wooden Shirt",
     "customRate": "42",
-    "profileName": "Profile Refined Silk Cheese",
-    "itemName": "quia",
+    "profileName": "Profile Intelligent Cotton Chips",
+    "itemName": "valens",
     "itemAmount": "100",
-    "updatedAt": "2026-09-29T07:00:19.200Z",
-    "editedAutoCalculatePriceListName": "Price List Incredible Concrete Chips",
+    "updatedAt": "2026-10-05T06:55:45.699Z",
+    "editedAutoCalculatePriceListName": "Price List Gorgeous Bronze Soap",
     "editedAutoCalculateCustomRate": "50",
     "editedAutoCalculateProductName": "TestProduct",
     "editedAutoCalculatePrimaryUOM1": "500",
     "editedAutoCalculatePrimaryUOM2": "600",
-    "editedAutoCalculatePrimaryUOM3": "700"
+    "editedAutoCalculatePrimaryUOM3": "700",
+    "editedAutoCalculateProfileName": "Profile Intelligent Cotton Chips"
   },
   "Business_Vendor_withGST": {
-    "vendorOrganisationName": "Torp, Roberts and Pfannerstill",
-    "openingBalance": "14420.77",
-    "organisationMobileNo": "3125975530",
-    "organisationEmail": "Joshua_Thiel33@hotmail.com",
+    "vendorOrganisationName": "Hilpert, Lynch and Rosenbaum",
+    "openingBalance": "12430.58",
+    "organisationMobileNo": "0408686258",
+    "organisationEmail": "Norene.Pfannerstill7@hotmail.com",
     "gstValue": "24AAAGM0289C1ZP",
-    "updatedAt": "2026-09-29T12:29:55.966Z"
+    "updatedAt": "2026-10-05T05:41:00.706Z"
   },
   "Business_Vendor_withoutGST": {
-    "vendorOrganisationName": "Gottlieb-Halvorson LLC",
-    "openingBalance": "2837.4498345113207",
-    "organisationMobileNo": "1937641780",
-    "organisationEmail": "Sydnie29@hotmail.com",
-    "updatedAt": "2026-09-29T12:30:16.660Z"
+    "vendorOrganisationName": "Kuvalis, Cummerata and Mraz",
+    "openingBalance": "3607.500890693345",
+    "organisationMobileNo": "2896735213",
+    "organisationEmail": "Sonja.Jacobi64@hotmail.com",
+    "updatedAt": "2026-10-05T07:04:47.055Z"
   },
   "Individual_Vendor": {
-    "vendorName": "Murray LLC",
-    "openingBalance": "14420.77",
-    "mobileNo": "2094702518",
-    "organisationEmail": "Maggie_West@hotmail.com",
-    "updatedAt": "2026-09-29T12:30:35.295Z"
+    "vendorName": "Watsica Group",
+    "openingBalance": "47311.1",
+    "mobileNo": "5947009580",
+    "organisationEmail": "Eldora_Jakubowski24@gmail.com",
+    "updatedAt": "2026-10-05T07:05:11.255Z"
   },
   "flowItemCreateData": {
-    "productName": "Frozen Aluminum Table oByN",
-    "productDescription": "Ergonomic Chips made with Metal for all-day yellowish support",
-    "salePricePerPcs": "40",
-    "updatedAt": "2026-10-01T10:07:38.414Z"
+    "productName": "Handmade Cotton Tuna rCwT",
+    "productDescription": "The Proactive local adapter Gloves offers reliable performance and likable design",
+    "salePricePerPcs": "12",
+    "updatedAt": "2026-10-05T11:10:28.520Z"
+  },
+  "customerPaymentData": {
+    "paymentNumber": "RCPT-AUTO/0001",
+    "existingDue": 0,
+    "existingAdvance": 0,
+    "existingClosingBalance": 0,
+    "amtReceived": 30071,
+    "amtUsedForPayment": 0,
+    "excessAmt": 30071,
+    "updatedAt": "2026-10-05T06:41:49.372Z",
+    "updatedamtReceived": 5935,
+    "updatedamtUsedForPayment": 0,
+    "updatedexcessAmt": 5935,
+    "finalDue": 0,
+    "finalAdvance": 0,
+    "finalClosingBalance": 0,
+    "finalTSCB": 0
+  },
+  "CategoryWiseItemSpecificPricing": {
+    "priceListName": "Price List Practical Granite Hat",
+    "customRate": "42",
+    "itemName": "valens",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-10-05T06:53:15.005Z",
+    "editedPriceListName": "Price List Unbranded Ceramic Shoes",
+    "editedCustomRate": "50",
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
+  },
+  "CategoryWiseItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Unbranded Marble Hat",
+    "customRate": "42",
+    "itemName": "valens",
+    "itemAmount": "100",
+    "updatedAt": "2026-10-05T06:53:42.214Z",
+    "editedAutoCalculatePriceListName": "Price List Incredible Steel Towels",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM": "500"
   },
   "purchaseFlowData": {
-    "itemName": "Sleek Steel Tuna sBsx",
-    "boxconversion": 11,
-    "bundleconversion": 11,
-    "updatedAt": "2026-10-01T09:51:50.669Z"
+    "itemName": "Handmade Plastic Sausages bFko",
+    "boxconversion": 8,
+    "bundleconversion": 8,
+    "updatedAt": "2026-10-05T07:31:38.482Z",
+    "newtotalqty": 1555.29,
+    "initialtotalqty": 0,
+    "updatedTotalqty": 1658.7,
+    "editTotalqty": 1658.7,
+    "finalTotalqty": 0,
+    "billNo": "PINV-AUTO/0018"
   },
   "salesFlowData": {
-    "itemName": "Frozen Aluminum Table oByN",
-    "boxconversion": 6,
-    "bundleconversion": 6,
-    "updatedAt": "2026-10-01T10:07:41.444Z"
+    "itemName": "Handmade Cotton Tuna rCwT",
+    "boxconversion": 15,
+    "bundleconversion": 15,
+    "updatedAt": "2026-10-05T11:10:32.352Z"
   }
 }

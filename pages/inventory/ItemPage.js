@@ -24,7 +24,6 @@ class ItemPage extends AppBasePage {
     this.inventoryLink = this.page.getByRole('link', { name: 'Inventory' });
     this.productsLink  = this.page.getByText('Products');
     this.itemButton    = this.page.getByRole('button', { name: 'Item' });
-    this.inventoryTab  = this.page.locator('#tab_inventory');   // used by the stock read
 
     // Product drawer — basics
     this.addProductImage         = this.page.getByRole('button', { name: 'Add Product Image' });
@@ -66,10 +65,8 @@ class ItemPage extends AppBasePage {
     this.itemsTab    = this.page.getByRole('tab', { name: 'Items' });
     this.closeButton = this.page.getByRole('button', { name: 'Close' });
 
-    // Inventory list (stock read)
+    // Products list search (stock read)
     this.searchInput = this.page.locator('input[placeholder="Search"]');
-    // BRITTLE: first row's 2nd cell (stock status) by position
-    this.firstRowStock = this.loc('(//td[@class="ant-table-cell"])[2]');
   }
 
   async _openInvoiceApp() {
@@ -194,10 +191,16 @@ class ItemPage extends AppBasePage {
    * Returns { box, bundle, pcs, total, outOfStock } in pieces.
    */
   async readItemStock(itemName, boxconversion, bundleconversion) {
-    await this.inventoryTab.click();
-    await this.fillInto(this.searchInput, itemName);
-    await this.settle(3000, 'search results refresh');
-    const text = await this.readText(this.firstRowStock, 10000);
+    await this.inventoryLink.click();
+    await this.productsLink.click();
+    await this.itemsTab.click();
+    if (await this.searchInput.first().isVisible().catch(() => false)) {
+      await this.fillInto(this.searchInput.first(), itemName);
+      await this.settle(3000, 'search results refresh');
+    }
+    // Cells: [name, stock status, HSN, GST rate, price] — match by name, not row position
+    const stockCell = this.productRow(itemName).first().locator('td').nth(1);
+    const text = await this.readText(stockCell, 10000);
     const stock = parseStock(text, boxconversion, bundleconversion);
     console.log(`Stock "${text}" → box ${stock.box}, bundle ${stock.bundle}, pcs ${stock.pcs}, total ${stock.total}`);
     return stock;
