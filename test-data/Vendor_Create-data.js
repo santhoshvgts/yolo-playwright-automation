@@ -43,6 +43,27 @@ openingBalance: String(
   })
 ),
     
+    //search: 'Turner - Armstrong', // KEEP literal
+    displayName: faker.person.fullName(),
+    fieldFile: 'e35781dd85c7e86ccf98f3647780dbe1.0000000.jpg', // KEEP literal
+    emailId_2: faker.internet.email(),
+    phoneNumber: faker.string.numeric(10),
+    panNumber: 'ABCDE1234Z',
+    openingBalance: faker.string.numeric(5),
+    contactName: faker.person.fullName(),
+    contactMobileNumber: faker.string.numeric(10),
+    exampleEmailCom: faker.internet.email(),
+    contactName_2: faker.lorem.words(1),
+    contactMobileNumber_2: faker.string.numeric(10),
+    exampleEmailCom_2: faker.internet.email(),
+    addressLine1: faker.location.streetAddress(),
+    addressLine2Optional: faker.location.streetAddress(),
+    cityTown: faker.location.city(),
+    pincode: faker.string.numeric(6),
+    bankName: faker.lorem.words(1),
+    accountNumber: faker.string.numeric(12),
+    ifscCode: 'INDB0001067',
+    recipientName: faker.lorem.words(1),
     
   };
 }
