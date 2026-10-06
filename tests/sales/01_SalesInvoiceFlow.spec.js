@@ -2,6 +2,8 @@ const { test } = require('@playwright/test');
 const { runSafely } = require('../../utils/testHelpers');
 const { ItemPage } = require('../../pages/inventory/ItemPage');
 const { SalesInvoicePage } = require('../../pages/sales/SalesInvoicePage');
+const { PurchaseInvoicePage } = require('../../pages/purchase/PurchaseInvoicePage');
+const { masterData } = require('../../test-data/UserData');
 const { StockStatementPage } = require('../../pages/reports/StockStatementPage');
 const { SalesStockAlertPage } = require('../../pages/sales/SalesStockAlertPage');
 const { StockAdjustmentPage } = require('../../pages/inventory/StockAdjustmentPage');
@@ -37,6 +39,10 @@ test.describe.serial('Sales Module Flow', () => {
   test('TC01 - Creating an Item with Open Stock in Invoice Module', { tag: ['@smoke', '@sales'] }, runSafely(async () => {
     test.setTimeout(600000);
     await new ItemPage(page).createItemWithOpeningStock(itemData);
+    // New item has no stock — the app blocks a Sales Invoice that exceeds it, so stock up first
+    await new PurchaseInvoicePage(page).addStockViaPurchaseInvoice({
+      section: SECTION, vendorName: masterData.vendorName, pcs: '100', box: '50', bundle: '50',
+    });
   }));
 
   // ── Sales Invoice create ──

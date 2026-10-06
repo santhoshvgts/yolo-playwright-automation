@@ -43,7 +43,7 @@ const generateSalesInvoiceData = () => ({
   placeOfSupplyQuery: 'Tamil',
   placeOfSupply:      'Tamil Nadu',
   discountType:       'Amount',
-  tdsOption:          'Dividend',
+  tdsOption:          'TDS',
   adjustmentType:     'Addition',
 });
 

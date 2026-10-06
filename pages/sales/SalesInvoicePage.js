@@ -86,9 +86,14 @@ class SalesInvoicePage extends AppBasePage {
     this.salesTotal      = this.page.locator('#sales_total');
     // BRITTLE: generic primary-button CSS
     this.saveBtn = this.page.locator('.ant-btn-primary > span');
+    // Only present while the invoice form is open — used to confirm the save went through
+    this.saveDraftBtn = this.page.getByRole('button', { name: 'Save As Draft' });
+    // "<n> <uom> left" hint under each line qty (red when the line exceeds stock)
+    this.stockLeftHints = this.page.getByText(/ left$/);
 
     // Invoice preview drawer
-    this.previewDrawer = this.loc('//div[@id="billsDrawer"]');
+    // A cancelled invoice opens in a plain dialog (no #billsDrawer) that shows the cancel reason
+    this.cancelledPreview = this.page.getByRole('dialog').filter({ hasText: 'CANCELLED REASON' });
     this.editBtn       = this.loc("//span[text()='Edit']");
     this.cancelBtn     = this.loc("//span[text()='Cancel']");
     this.deleteBtn     = this.loc("//*[normalize-space(text())='Delete']");
@@ -195,8 +200,21 @@ class SalesInvoicePage extends AppBasePage {
     }
   }
 
+  /**
+   * Save, then make sure the form actually closed. The app blocks the save without a
+   * message when a line asks for more than the stock — fail here with the stock hints
+   * instead of timing out on the next navigation click.
+   */
   async _saveInvoice() {
+    const formOpen = await this.saveDraftBtn.isVisible().catch(() => false);
     await this.saveBtn.click();
+    if (!formOpen) return;
+    try {
+      await expect(this.saveDraftBtn).toBeHidden({ timeout: 15000 });
+    } catch {
+      const hints = await this.stockLeftHints.allInnerTexts().catch(() => []);
+      throw new Error(`Sales Invoice was not saved — form still open. Line stock: ${hints.join(', ') || 'n/a'}`);
+    }
   }
 
   /** Open the newest invoice's preview from the Sales Bill list. */
@@ -248,10 +266,20 @@ class SalesInvoicePage extends AppBasePage {
     expectClose(dueAmt, expectedAmount, 0.011, `${label} dueAmt vs invoice amount`);
   }
 
+  /**
+   * Open the customer profile and wait for its balances API. client-info can take 6s+;
+   * until it answers the header shows ₹ 0 for Due / Advance, which a fixed wait misread.
+   */
   async _openCustomerProfile(customerName) {
     await this.customerTab.click();
+    await this.settle(2000, 'customer list loads');
+    const clientInfo = this.page.waitForResponse(
+      (res) => res.url().includes('/client/client-info/') && res.ok(),
+      { timeout: 60000 },
+    );
     await this.customerProfile(customerName).click();
-    await this.settle(5000, 'customer profile balances load');
+    await clientInfo;
+    await this.settle(2000, 'customer profile balances render');
   }
 
   async _readCustomerDue() {
@@ -428,10 +456,7 @@ class SalesInvoicePage extends AppBasePage {
     // ── existing balances ──
     console.log('Capturing existing customer balances...');
     await this.salesTab.click();
-    await this.customerTab.click();
-    await this.settle(4000, 'customer list loads');
-    await this.customerProfile(data.customerName).click();
-    await this.settle(5000, 'customer profile balances load');
+    await this._openCustomerProfile(data.customerName);
     const existingDue = await this._readCustomerDue();
     console.log(`Existing Due captured: ${existingDue}`);
     const existingAdvance = await this._readCustomerAdvance();
@@ -550,7 +575,8 @@ class SalesInvoicePage extends AppBasePage {
     // ── delete ──
     console.log('Deleting the cancelled Sales Invoice...');
     await this._openFirstInvoiceFromSalesBill();
-    await expect(this.previewDrawer).not.toContainText('Journal');
+    await expect(this.cancelledPreview).toBeVisible();
+    await expect(this.cancelledPreview).not.toContainText('Journal');
     await this._deleteOpenInvoice();
     await this.settle(4000, 'delete + ledger posting');
 

@@ -290,6 +290,22 @@ class PurchaseInvoicePage extends AppBasePage {
   // Test cases
   // ══════════════════════════════════════════════════════════════════════════
 
+  /**
+   * Stock up the flow's item with a plain PI (no verification). The item is created
+   * without opening stock, so a sales flow needs this before it can invoice the item.
+   * data: { section, vendorName, pcs, box, bundle }
+   */
+  async addStockViaPurchaseInvoice(data) {
+    const saved = requireSection(data.section, ['itemName']);
+    await this._openInvoiceApp(2000);
+    await this._startNewPurchaseInvoice(data.vendorName);
+    await this._addItemLines(saved.itemName, data);
+    await this.settle(2000, 'line amounts recalculate');
+    await this._save();
+    await this.settle(5000, 'PI save + stock posting');
+    console.log(`Stocked up ${saved.itemName}: ${data.pcs} pcs, ${data.box} box, ${data.bundle} bundle`);
+  }
+
   /** TC: read opening stock, create a PI (pcs/box/bundle), stock == initial + added. */
   async createPurchaseInvoiceAndVerifyStock(data) {
     const saved = requireSection(data.section, ['itemName', 'boxconversion', 'bundleconversion']);

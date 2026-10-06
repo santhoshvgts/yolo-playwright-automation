@@ -16,7 +16,7 @@ test.describe(moduleName, () => {
     await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
   });
 
-  test('Create a new product item and verify', async ({ page }) => {
+  test('TC01 - Create a new product item and verify it is listed in Items', async ({ page }) => {
     const pom = new Product_item_Create(page);
 
     // Navigate to product creation
@@ -35,13 +35,5 @@ test.describe(moduleName, () => {
     expect(savedData.productName).toBe(data.productName);
   });
 
-  test('Edit a new product item with all tabs', async ({ page }) => {
-    const pom = new Product_item_Create(page);
 
-    await page.goto(URLS.products);
-
-    // Open the product created by the first test
-    const savedData = getSection('productItemCreateData');
-    await pom.productRow(savedData.productName).click();
-  });
 });

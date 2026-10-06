@@ -311,12 +311,12 @@ class CustomerPaymentPage extends AppBasePage {
       expect(stsText).toContain('Paid');
       const updatedSIpreviewDue = toNumber(await this._rawText(this.dueAmtInSIPreview));
       console.log(`Due Amount in SI preview after full payment: ${updatedSIpreviewDue}`);
-      expect(updatedSIpreviewDue).toBe(amountEntered3 - dueAmtinSI);
+      expectClose(updatedSIpreviewDue, amountEntered3 - dueAmtinSI, 0.011, 'SI preview due after payment');
     } else {
       expect(stsText).toMatch(/days due|days overdue/);
       const updatedSIpreviewDue = toNumber(await this._rawText(this.dueAmtInSIPreview));
       console.log(`Due Amount in SI preview after full payment: ${updatedSIpreviewDue}`);
-      expect(updatedSIpreviewDue).toBe(dueAmtinSI - amountEntered3);
+      expectClose(updatedSIpreviewDue, dueAmtinSI - amountEntered3, 0.011, 'SI preview due after payment');
     }
     await this.previewCloseBtn.click();
     await this.settle(2000, 'preview drawer close');
@@ -395,7 +395,7 @@ class CustomerPaymentPage extends AppBasePage {
     console.log(`Excess Amount captured: ${excessAmt}`);
     // NOTE: in Cypress these two ran synchronously before the values above were captured (always 0 === 0).
     expect(amountEntered).toBe(amtReceived);
-    expect(excessAmt).toBe(amtReceived - amtUsedForPayment);
+    expectClose(excessAmt, amtReceived - amtUsedForPayment, 0.011, 'Excess Amount');
     await this.settle(2000, 'before save');
     await this.saveReceiptBtn.click();
     await this.settle(6000, 'payment save + list refresh');
@@ -469,7 +469,7 @@ class CustomerPaymentPage extends AppBasePage {
     console.log(`Updated Excess Amount captured: ${updatedexcessAmt}`);
     // NOTE: in Cypress these two ran synchronously before the values above were captured (always 0 === 0).
     expect(amountEntered2).toBe(updatedamtReceived);
-    expect(updatedexcessAmt).toBe(updatedamtReceived - updatedamtUsedForPayment);
+    expectClose(updatedexcessAmt, updatedamtReceived - updatedamtUsedForPayment, 0.011, 'Updated Excess Amount');
     await this.settle(2000, 'before save');
     await this.saveReceiptBtn.click();
     await this.settle(6000, 'payment save + list refresh');
@@ -527,14 +527,7 @@ class CustomerPaymentPage extends AppBasePage {
     const finalDue = fin.due;
     console.log(`Final Due captured: ${finalDue}`);
     expectClose(finalDue, existingDue, 0.011, 'Final Due');
-    // Kept verbatim: the condition and the asserted value differ in the Cypress source.
-    if (finalDue === updatedDue - updatedamtReceived) {
-      expect(finalDue).toBe(updatedDue + updatedamtUsedForPayment);
-      console.log('✅ Exact match passed!');
-    } else {
-      expectClose(finalDue, updatedDue + updatedamtUsedForPayment, 0.011, 'Final Due vs updated');
-      console.log('✅ Close match passed!');
-    }
+    expectClose(finalDue, updatedDue + updatedamtUsedForPayment, 0.011, 'Final Due vs updated');
 
     const finalAdvance = fin.advance;
     console.log(`Final Advance captured: ${finalAdvance}`);

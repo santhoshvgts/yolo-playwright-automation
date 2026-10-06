@@ -18,7 +18,7 @@ test.describe(moduleName, () => {
     await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
   });
 
-  test('Create a new pricing list - General - overallmarkup', async ({ page }) => {
+  test('TC01 - Create a General price list with Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -30,7 +30,7 @@ test.describe(moduleName, () => {
 
   });
   
-  test('Create a new pricing list - General - overallmarkdown', async ({ page }) => {
+  test('TC02 - Create a General price list with Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -42,7 +42,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Create a new pricing list - General - item specific', async ({ page }) => {
+  test('TC03 - Create a General price list with Item Specific pricing', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -54,7 +54,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Create a new pricing list - General - item specific - by auto calculating', async ({ page }) => {
+  test('TC04 - Create a General price list with Item Specific pricing by auto calculation', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -66,7 +66,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Create a new pricing list - CategoryWise - Overall Markup', async ({ page }) => {
+  test('TC05 - Create a Category Wise price list with Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -79,7 +79,7 @@ test.describe(moduleName, () => {
   });
 
 
-    test('Create a new pricing list - CategoryWise - Overall Markdown', async ({ page }) => {
+    test('TC06 - Create a Category Wise price list with Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -91,7 +91,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Create a new pricing list - CategoryWise - Item Specific', async ({ page }) => {  
+  test('TC07 - Create a Category Wise price list with Item Specific pricing', async ({ page }) => {  
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -103,7 +103,7 @@ test.describe(moduleName, () => {
 
   });
 
-    test('Create a new pricing list - CategoryWise - Item Specific - By Auto Calculating', async ({ page }) => {  
+    test('TC08 - Create a Category Wise price list with Item Specific pricing by auto calculation', async ({ page }) => {  
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -115,7 +115,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Create a new pricing list - ProfileWise - Overall Markup', async ({ page }) => {
+  test('TC09 - Create a Profile Wise price list with Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -128,7 +128,7 @@ test.describe(moduleName, () => {
   });
 
 
-    test('Create a new pricing list - ProfileWise - Overall Markdown', async ({ page }) => {
+    test('TC10 - Create a Profile Wise price list with Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -140,7 +140,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Create a new pricing list - ProfileWise - Item Specific', async ({ page }) => {
+  test('TC11 - Create a Profile Wise price list with Item Specific pricing', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -152,7 +152,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Create a new pricing list - ProfileWise - Item Specific - By Auto Calculating', async ({ page }) => {
+  test('TC12 - Create a Profile Wise price list with Item Specific pricing by auto calculation', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -165,7 +165,7 @@ test.describe(moduleName, () => {
   });
 
 
-  test('Edit a pricing list - General - overallmarkup', async ({ page }) => {
+  test('TC13 - Edit the General price list with Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -177,7 +177,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Edit a pricing list - General - overallmarkdown', async ({ page }) => {
+  test('TC14 - Edit the General price list with Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -190,7 +190,7 @@ test.describe(moduleName, () => {
 
   });
 
-    test('Edit a pricing list - General - item specific', async ({ page }) => {
+    test('TC15 - Edit the General price list with Item Specific pricing', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -202,7 +202,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Edit a pricing list - General - item specific - By Auto Calculating', async ({ page }) => {
+  test('TC16 - Edit the General price list with Item Specific pricing by auto calculation', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -214,7 +214,7 @@ test.describe(moduleName, () => {
 
   });
 
-   test('Edit a pricing list - CategoryWise - Overall Markup', async ({ page }) => {
+   test('TC17 - Edit the Category Wise price list with Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -227,7 +227,7 @@ test.describe(moduleName, () => {
   });
 
 
-    test('Edit a pricing list - CategoryWise - Overall Markdown', async ({ page }) => {
+    test('TC18 - Edit the Category Wise price list with Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -239,7 +239,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Edit a pricing list - CategoryWise - Item Specific', async ({ page }) => {
+  test('TC19 - Edit the Category Wise price list with Item Specific pricing', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -251,7 +251,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Edit a pricing list - CategoryWise - Item Specific - By Auto Calculating', async ({ page }) => {
+  test('TC20 - Edit the Category Wise price list with Item Specific pricing by auto calculation', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -263,7 +263,7 @@ test.describe(moduleName, () => {
 
   });
 
-    test('Edit a pricing list - ProfileWise - Overall Markup', async ({ page }) => {
+    test('TC21 - Edit the Profile Wise price list with Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -276,7 +276,7 @@ test.describe(moduleName, () => {
   });
 
 
-    test('Edit a pricing list - ProfileWise - Overall Markdown', async ({ page }) => {
+    test('TC22 - Edit the Profile Wise price list with Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -288,7 +288,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Edit a pricing list - ProfileWise - Item Specific', async ({ page }) => {
+  test('TC23 - Edit the Profile Wise price list with Item Specific pricing', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -300,7 +300,7 @@ test.describe(moduleName, () => {
 
   });
   
-  test('Edit a pricing list - ProfileWise - Item Specific - By Auto Calculating', async ({ page }) => {
+  test('TC24 - Edit the Profile Wise price list with Item Specific pricing by auto calculation', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -312,7 +312,7 @@ test.describe(moduleName, () => {
 
   });
 
-    test('Delete a edited pricing list - General - overallmarkup', async ({ page }) => {
+    test('TC25 - Delete the edited General price list with Overall Markup', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
@@ -324,7 +324,7 @@ test.describe(moduleName, () => {
 
   });
 
-  test('Inactive and delete pricing list - General - overallmarkdown', async ({ page }) => {
+  test('TC26 - Inactivate and delete the General price list with Overall Markdown', async ({ page }) => {
     const pom = new Pricing_general_Create(page);
 
     // Navigate to product creation
