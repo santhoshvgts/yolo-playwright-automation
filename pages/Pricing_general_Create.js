@@ -126,7 +126,29 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
   }
 
-  async fillAndSubmitGeneralItemSpecificPricing(data) {         
+  /**
+   * Pick the item for an item-specific price list and return its name. Tries the last
+   * product Product_item_Create saved, then the fixed master item (data.editedProductName).
+   * Rundata can hold a product that never saved, and on a fresh CI run this spec runs
+   * before Product_item_Create, so the saved name alone is not reliable.
+   */
+  async _pickItem(field, data) {
+    const saved = getSection('productItemCreateData').productName;
+    const candidates = [...new Set([saved, data.editedProductName].filter(Boolean))];
+    for (const name of candidates) {
+      await field.fill(name);
+      const option = this.itemSelectionOption.first();
+      if (await option.waitFor({ state: 'visible', timeout: 10000 }).then(() => true, () => false)) {
+        await option.click();
+        console.log(`Item-specific pricing item: ${name}`);
+        return name;
+      }
+      console.log(`Item "${name}" not found in the item search — trying the next one`);
+    }
+    throw new Error(`No item found for item-specific pricing (tried: ${candidates.join(', ')})`);
+  }
+
+  async fillAndSubmitGeneralItemSpecificPricing(data) {
     // Navigate to pricing creation
     await this.inventoryLink.click();
     await this.page.waitForTimeout(2000);
@@ -142,13 +164,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
 
-    const jsondata_productItem= getSection('productItemCreateData');
 
     await this.itemSpecificCard.click();
     await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
-    await this.itemSelectionField.fill(jsondata_productItem.productName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
-    await this.itemSelectionOption.first().click();
+    const itemName = await this._pickItem(this.itemSelectionField, data);
     await this.page.waitForTimeout(2000);
     await this.itemAmountField1.fill(data.primaryUOM1);
     await this.itemAmountField2.fill(data.primaryUOM2);
@@ -159,7 +178,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     saveSection('GeneralItemSpecificPricing', {
       priceListName: data.priceListName2,
       customRate: data.customRate,
-      itemName: jsondata_productItem.productName,
+      itemName,
       itemAmount1: data.primaryUOM1,
       itemAmount2: data.primaryUOM2,
       itemAmount3: data.primaryUOM3
@@ -184,13 +203,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
 
-    const jsondata_productItem= getSection('productItemCreateData');
 
     await this.itemSpecificCard.click();
     await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
-    await this.itemSelectionField.fill(jsondata_productItem.productName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
-    await this.itemSelectionOption.first().click();
+    const itemName = await this._pickItem(this.itemSelectionField, data);
     await this.page.waitForTimeout(2000);
     await this.autoCalculateCheckbox.check();
     await this.itemAmountField1.fill(data.primaryUOM1);
@@ -201,7 +217,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     saveSection('GeneralItemSpecificPricing_ByAutoCalculating', {
       priceListName: data.autoCalculatePriceListName1,
       customRate: data.customRate,
-      itemName: jsondata_productItem.productName,
+      itemName,
       itemAmount: data.primaryUOM1
 
     });
@@ -302,13 +318,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
     await this.businessCategoryOption.click();
 
-    const jsondata_productItem= getSection('productItemCreateData');
 
     await this.itemSpecificCard.click();
     await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
-    await this.itemSelectionField1.fill(jsondata_productItem.productName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
-    await this.itemSelectionOption.first().click();
+    const itemName = await this._pickItem(this.itemSelectionField1, data);
     await this.page.waitForTimeout(2000);
     await this.itemAmountField1.fill(data.primaryUOM1);
     await this.itemAmountField2.fill(data.primaryUOM2);
@@ -319,7 +332,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     saveSection('CategoryWiseItemSpecificPricing', {
       priceListName: data.priceListName4,
       customRate: data.customRate,
-      itemName: jsondata_productItem.productName,
+      itemName,
       itemAmount1: data.primaryUOM1,
       itemAmount2: data.primaryUOM2,
       itemAmount3: data.primaryUOM3
@@ -350,13 +363,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
     await this.businessCategoryOption.click();
 
-    const jsondata_productItem= getSection('productItemCreateData');
 
     await this.itemSpecificCard.click();
     await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
-    await this.itemSelectionField1.fill(jsondata_productItem.productName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
-    await this.itemSelectionOption.first().click();
+    const itemName = await this._pickItem(this.itemSelectionField1, data);
     await this.page.waitForTimeout(2000);
     await this.autoCalculateCheckbox.check();
     await this.itemAmountField1.fill(data.primaryUOM1);
@@ -367,7 +377,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     saveSection('CategoryWiseItemSpecificPricing_ByAutoCalculating', {
       priceListName: data.autoCalculatePriceListName2,
       customRate: data.customRate,
-      itemName: jsondata_productItem.productName,
+      itemName,
       itemAmount: data.primaryUOM1
 
     });
@@ -464,13 +474,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.assignPriceListOption.click();
     await this.itemSelectionField.fill(data.profileName1);
 
-    const jsondata_productItem= getSection('productItemCreateData');
 
     await this.itemSpecificCard.click();
     await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
-    await this.itemNameField.fill(jsondata_productItem.productName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
-    await this.itemSelectionOption.first().click();
+    const itemName = await this._pickItem(this.itemNameField, data);
     await this.page.waitForTimeout(2000);
     await this.itemAmountField1.fill(data.primaryUOM1);
     await this.itemAmountField2.fill(data.primaryUOM2);
@@ -482,7 +489,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
       priceListName: data.priceListName6,
       customRate: data.customRate,
       profileName: data.profileName1,
-      itemName: jsondata_productItem.productName,
+      itemName,
       itemAmount1: data.primaryUOM1,
       itemAmount2: data.primaryUOM2,
       itemAmount3: data.primaryUOM3
@@ -511,13 +518,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.assignPriceListOption.click();
     await this.itemSelectionField.fill(data.profileName1);
 
-    const jsondata_productItem= getSection('productItemCreateData');
 
     await this.itemSpecificCard.click();
     await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
-    await this.itemNameField.fill(jsondata_productItem.productName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
-    await this.itemSelectionOption.first().click();
+    const itemName = await this._pickItem(this.itemNameField, data);
     await this.page.waitForTimeout(2000);
     await this.autoCalculateCheckbox.check();
     await this.itemAmountField1.fill(data.primaryUOM1);
@@ -528,7 +532,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
       priceListName: data.autoCalculatePriceListName3,
       customRate: data.customRate,
       profileName: data.profileName1,
-      itemName: jsondata_productItem.productName,
+      itemName,
       itemAmount: data.primaryUOM1
 
     });

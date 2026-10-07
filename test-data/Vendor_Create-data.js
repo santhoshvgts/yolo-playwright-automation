@@ -1,6 +1,9 @@
 const path = require('path');
 const { faker } = require('@faker-js/faker');
 
+// The app rejects names with punctuation ("Invalid Name") — faker gives e.g. "O'Keefe, Durgan and Koch".
+const cleanName = (name) => name.replace(/[^A-Za-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+
 function generateVendor_CreateData() {
   return {
     emailId:'santhosh@yoloworks.com',
@@ -8,13 +11,13 @@ function generateVendor_CreateData() {
     searchByNameOrGST: 'auto', // KEEP literal — searches for existing org
 
     // business vendor
-    vendorOrganisationName: faker.company.name(),
+    vendorOrganisationName: cleanName(faker.company.name()),
     openingBalance: String(faker.number.float({ min: 1000, max: 5000 })),
     organisationPhoneNo: faker.string.numeric(10),
     organisationEmailID: faker.internet.email(),
     gstNo: '24AAAGM0289C1ZP',
 
-    vendorOrganisationName1: faker.company.name(),
+    vendorOrganisationName1: cleanName(faker.company.name()),
     openingBalance1: String(faker.number.float({ min: 1000, max: 5000 })),
     organisationPhoneNo1: faker.string.numeric(10),
     organisationEmailID1: faker.internet.email(),
@@ -32,7 +35,7 @@ tagDescription: faker.lorem.sentence(),
     shippingpincode: faker.string.numeric(6),
 
     // individual 
-    vendorName: faker.company.name(),
+    vendorName: cleanName(faker.person.fullName()),
 mobileNo: faker.string.numeric(10),
 email: faker.internet.email(),
 openingBalance: String(
@@ -44,7 +47,7 @@ openingBalance: String(
 ),
     
     //search: 'Turner - Armstrong', // KEEP literal
-    displayName: faker.person.fullName(),
+    displayName: cleanName(faker.person.fullName()),
     fieldFile: 'e35781dd85c7e86ccf98f3647780dbe1.0000000.jpg', // KEEP literal
     emailId_2: faker.internet.email(),
     phoneNumber: faker.string.numeric(10),

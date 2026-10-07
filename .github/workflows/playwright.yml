@@ -85,6 +85,11 @@ jobs:
         env:
           BASE_URL: ${{ inputs.base_url }}
           PASSWORD: ${{ secrets.PASSWORD }}
+          # Login for the flow specs (purchase / sales / payment) — repo secrets
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          # Without this, runSafely swallows errors and failed flow tests report as passed
+          STRICT: 'true'
           SPEC: ${{ inputs.spec }}
           GREP: ${{ inputs.grep }}
           RETRIES: ${{ inputs.retries }}

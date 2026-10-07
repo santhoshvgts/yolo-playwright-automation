@@ -47,6 +47,11 @@ class LoginFlow extends SelfHealingBasePage {
     await this.orgSearchField.fill(data.searchByNameOrGST);
     await this.orgResult.click();
     await this.switchButton.click();
+    // Switch redirects to the org home (/<32-hex org id>) on its own. Wait for it, or a
+    // spec's page.goto() right after login is "interrupted by another navigation".
+    await expect(this.orgHeading).toBeHidden({ timeout: TIMEOUTS.expect });
+    await this.page.waitForURL(/\/[0-9a-f]{32}(\/|$|\?)/, { timeout: TIMEOUTS.expect });
+    await this.page.waitForLoadState('load');
   }
 
   /** Full flow: log in, verify the org screen, then switch into the test org. */
