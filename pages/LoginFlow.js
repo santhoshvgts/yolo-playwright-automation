@@ -4,6 +4,9 @@ const { TIMEOUTS } = require('../config/timeouts');
 
 const DEFAULT_BASE_URL = 'https://invoice.test.vgts.xyz/';
 
+// A cold login (esp. on CI) can sit on the spinner well past 30s before the org screen.
+const ORG_WAIT = Math.max(TIMEOUTS.expect, 60_000);
+
 
 class LoginFlow extends SelfHealingBasePage {
   constructor(page, baseUrl = DEFAULT_BASE_URL) {
@@ -45,12 +48,17 @@ class LoginFlow extends SelfHealingBasePage {
   /** Search for the org and switch into it. Assumes the org screen is shown. */
   async selectOrg(data) {
     await this.orgSearchField.fill(data.searchByNameOrGST);
-    await this.orgResult.click();
-    await this.switchButton.click();
+    await expect(this.orgResult).toBeVisible();
+    // The account remembers its last org, and that org's row is rendered disabled —
+    // clicking it just hangs. Already in it, so only wait for the screen to close.
+    if (!(await this.orgResult.isDisabled())) {
+      await this.orgResult.click();
+      await this.switchButton.click();
+    }
     // Switch redirects to the org home (/<32-hex org id>) on its own. Wait for it, or a
     // spec's page.goto() right after login is "interrupted by another navigation".
-    await expect(this.orgHeading).toBeHidden({ timeout: TIMEOUTS.expect });
-    await this.page.waitForURL(/\/[0-9a-f]{32}(\/|$|\?)/, { timeout: TIMEOUTS.expect });
+    await expect(this.orgHeading).toBeHidden({ timeout: ORG_WAIT });
+    await this.page.waitForURL(/\/[0-9a-f]{32}(\/|$|\?)/, { timeout: ORG_WAIT });
     await this.page.waitForLoadState('load');
   }
 
@@ -59,9 +67,8 @@ class LoginFlow extends SelfHealingBasePage {
     await this.login(data);
 
     // Verify org selection screen appears (precondition check). A cold login
-    // sits on a loading spinner for a while, so this gets the full expect
-    // budget from config/timeouts.js rather than a short hard-coded wait.
-    await expect(this.orgHeading).toBeVisible({ timeout: TIMEOUTS.expect });
+    // sits on a loading spinner for a while, so this gets ORG_WAIT (>= 60s).
+    await expect(this.orgHeading).toBeVisible({ timeout: ORG_WAIT });
 
     await this.selectOrg(data);
   }
