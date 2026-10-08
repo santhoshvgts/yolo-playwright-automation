@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "amet",
-    "productDescription": "Valeo canonicus derelinquo catena depono tredecim.",
-    "salePricePerPcs": "813",
-    "updatedAt": "2026-10-07T06:40:21.904Z",
-    "productName2": "deprimo",
-    "productDescription2": "Subito aspicio repudiandae stultus studio.",
-    "salePricePerUnit": "783",
-    "quantity": "0"
+    "productName": "demens",
+    "productDescription": "Caries auctor temeritas tabella cervus cunae tumultus.",
+    "salePricePerPcs": "130",
+    "updatedAt": "2026-10-08T04:47:25.195Z",
+    "productName2": "tenuis",
+    "productDescription2": "Vestigium sublime sperno basium cernuus antea.",
+    "salePricePerUnit": "177",
+    "quantity": "5"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -158,31 +158,31 @@
     "updatedAt": "2026-10-07T04:57:27.426Z"
   },
   "flowItemCreateData": {
-    "productName": "Awesome Cotton Salad Ceyw",
-    "productDescription": "Handcrafted Towels designed with Metal for kosher performance",
-    "salePricePerPcs": "3",
-    "updatedAt": "2026-10-06T08:00:04.071Z"
+    "productName": "Ergonomic Concrete Soap dvWT",
+    "productDescription": "Savor the zesty essence in our Salad, designed for lumbering culinary adventures",
+    "salePricePerPcs": "65",
+    "updatedAt": "2026-10-07T11:11:09.718Z"
   },
   "customerPaymentData": {
     "paymentNumber": "RCPT-AUTO/0005",
-    "existingDue": 12954.96,
+    "existingDue": 16084.51,
     "existingAdvance": 97431.41,
-    "existingClosingBalance": -84476.45,
-    "amtReceived": 25406,
-    "amtUsedForPayment": 12954.96,
-    "excessAmt": 12451.04,
-    "updatedAt": "2026-10-06T11:44:37.758Z",
-    "updatedamtReceived": 97853,
-    "updatedamtUsedForPayment": 12954.96,
-    "updatedexcessAmt": 84898.04,
-    "finalDue": 12954.96,
+    "existingClosingBalance": -81346.9,
+    "amtReceived": 4741,
+    "amtUsedForPayment": 4741,
+    "excessAmt": 0,
+    "updatedAt": "2026-10-07T11:03:23.465Z",
+    "updatedamtReceived": 76255,
+    "updatedamtUsedForPayment": 16084.51,
+    "updatedexcessAmt": 60170.49,
+    "finalDue": 16084.51,
     "finalAdvance": 97431.41,
-    "finalClosingBalance": -84476.45,
-    "finalTSCB": -84476.45,
-    "billNo": "SINV-AUTO/0002",
+    "finalClosingBalance": -81346.9,
+    "finalTSCB": -81346.9,
+    "billNo": "SINV-AUTO/0004",
     "invoiceStatus": "7 days due",
-    "dueAmtinSIpreview": 7306.47,
-    "amountEntered3": 7306.47
+    "dueAmtinSIpreview": 3129.55,
+    "amountEntered3": 3129.55
   },
   "CategoryWiseItemSpecificPricing": {
     "priceListName": "Price List Practical Bamboo Tuna",
@@ -211,28 +211,28 @@
     "editedAutoCalculatePrimaryUOM": "500"
   },
   "purchaseFlowData": {
-    "itemName": "Unbranded Rubber Computer rBLE",
-    "boxconversion": 8,
-    "bundleconversion": 8,
-    "updatedAt": "2026-10-06T07:55:35.887Z",
-    "newtotalqty": 1421.19,
+    "itemName": "Rustic Steel Ball ZVXL",
+    "boxconversion": 18,
+    "bundleconversion": 18,
+    "updatedAt": "2026-10-07T11:08:11.901Z",
+    "newtotalqty": 3970.15,
     "initialtotalqty": 0,
-    "updatedTotalqty": 1159.8,
-    "editTotalqty": 1159.8,
+    "updatedTotalqty": 4929.5,
+    "editTotalqty": 4929.5,
     "finalTotalqty": 0,
-    "billNo": "PINV-AUTO/0020"
+    "billNo": "PINV-AUTO/0026"
   },
   "salesFlowData": {
-    "itemName": "Awesome Cotton Salad Ceyw",
-    "boxconversion": 16,
-    "bundleconversion": 16,
-    "updatedAt": "2026-10-06T08:09:34.855Z",
-    "newtotalqty": 1558.2,
-    "initialtotalqty": 1700,
-    "updatedTotalqty": 1648.73,
-    "editTotalqty": 51.27,
-    "finalTotalqty": 1700,
-    "billNo": "SINV-AUTO/0004",
-    "endTotalqty": 1700
+    "itemName": "Ergonomic Concrete Soap dvWT",
+    "boxconversion": 19,
+    "bundleconversion": 19,
+    "updatedAt": "2026-10-07T11:17:30.401Z",
+    "newtotalqty": 1745.63,
+    "initialtotalqty": 2000,
+    "updatedTotalqty": 1901.49,
+    "editTotalqty": 98.50999999999999,
+    "finalTotalqty": 2000,
+    "billNo": "SINV-AUTO/0005",
+    "endTotalqty": 2000
   }
 }

@@ -85,15 +85,23 @@ jobs:
         env:
           BASE_URL: ${{ inputs.base_url }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          # Login for the flow specs (purchase / sales / payment) — repo secrets
-          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          # Login for the flow specs (purchase / sales / payment).
+          # Password: repo SECRET only. Email + master data: repo variables (Settings → Variables).
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || vars.ADMIN_EMAIL }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ORG_NAME: ${{ vars.ORG_NAME }}
+          ORG_SEARCH: ${{ vars.ORG_SEARCH }}
+          CUSTOMER_NAME: ${{ vars.CUSTOMER_NAME }}
+          VENDOR_NAME: ${{ vars.VENDOR_NAME }}
           # Without this, runSafely swallows errors and failed flow tests report as passed
-          STRICT: 'true'
+          STRICT: ${{ vars.STRICT || 'true' }}
           SPEC: ${{ inputs.spec }}
           GREP: ${{ inputs.grep }}
           RETRIES: ${{ inputs.retries }}
         run: |
+          # Fail in seconds, not after a 30-min run of login failures
+          [ -n "$ADMIN_EMAIL" ]    || { echo "::error::ADMIN_EMAIL not set — add it under Settings → Secrets and variables → Actions"; exit 1; }
+          [ -n "$ADMIN_PASSWORD" ] || { echo "::error::ADMIN_PASSWORD secret not set — add it under Settings → Secrets and variables → Actions → Secrets"; exit 1; }
           args=(--retries="$RETRIES")
           # Word-split SPEC on purpose so several files can be passed.
           [ -n "$SPEC" ] && read -ra specs <<< "$SPEC" && args+=("${specs[@]}")
