@@ -407,8 +407,20 @@ class PurchaseInvoicePage extends AppBasePage {
   /**
    * TC: create → edit → delete a PI with discounts / shipping / TDS / adjustment and check
    * vendor Due, Advance, Closing Balance, Transaction Statement closing balance and the journal.
+   * Runs the three step methods below in order; each can also run as its own test.
    */
   async createEditDeletePurchaseInvoiceAndVerifyVendorBalances(data) {
+    await this.createPurchaseInvoiceWithChargesAndVerifyVendorBalances(data);
+    await this.editPurchaseInvoiceWithChargesAndVerifyVendorBalances(data);
+    await this.deletePurchaseInvoiceAndVerifyVendorBalances(data);
+  }
+
+  /**
+   * Vendor-balance step 1: capture existing vendor balances, create a PI with discounts /
+   * shipping / TDS / adjustment, verify Due / Advance / Closing Balance / TS closing balance.
+   * Writes to `data.section`: vbExistingDue, vbExistingAdvance, vbExistingClosing, piAmount.
+   */
+  async createPurchaseInvoiceWithChargesAndVerifyVendorBalances(data) {
     await this._openInvoiceApp(2000);
     const vendor = data.vendorName;
 
@@ -465,9 +477,25 @@ class PurchaseInvoicePage extends AppBasePage {
     const currentTSCB = await this._readStatementClosingBalance('Current');
     expectClose(currentTSCB, current.closing, 0.011, 'Current TSCB vs closing balance');
     expectClose(currentTSCB, (existingDue + piAmount) - current.advance, 0.011, 'Current TSCB vs expected');
-    await this.settle(1000, 'before edit');
+    saveSection(data.section, {
+      vbExistingDue: existingDue,
+      vbExistingAdvance: existingAdvance,
+      vbExistingClosing: existingClosingBalance,
+      piAmount,
+    });
+  }
 
-    // ── Edit flow ──
+  /**
+   * Vendor-balance step 2: edit the latest PI (qty / rate / discount / charges), verify balances.
+   * Reads vbExistingDue, vbExistingAdvance; writes edpiAmount, vbUpdatedDue.
+   */
+  async editPurchaseInvoiceWithChargesAndVerifyVendorBalances(data) {
+    await this._openInvoiceApp(2000);
+    const vendor = data.vendorName;
+    const saved = requireSection(data.section, ['vbExistingDue', 'vbExistingAdvance']);
+    const existingDue = Number(saved.vbExistingDue);
+    const existingAdvance = Number(saved.vbExistingAdvance);
+
     console.log('Edit flow: opening the created PI...');
     await this.purchaseTab.click();
     await this.settle(2000, 'PI list loads');
@@ -503,7 +531,24 @@ class PurchaseInvoicePage extends AppBasePage {
     expectClose(updatedTSCB, updated.closing, 0.011, 'Updated TSCB vs closing balance');
     expectClose(updatedTSCB, (existingDue + edpiAmount) - updated.advance, 0.011, 'Updated TSCB vs expected');
 
-    // ── Delete flow ──
+    saveSection(data.section, { edpiAmount, vbUpdatedDue: updated.due });
+  }
+
+  /**
+   * Vendor-balance step 3: delete the latest PI, verify balances return to the pre-create values.
+   * Reads vbExistingDue, vbExistingAdvance, vbExistingClosing, edpiAmount, vbUpdatedDue.
+   */
+  async deletePurchaseInvoiceAndVerifyVendorBalances(data) {
+    await this._openInvoiceApp(2000);
+    const vendor = data.vendorName;
+    const saved = requireSection(data.section,
+      ['vbExistingDue', 'vbExistingAdvance', 'vbExistingClosing', 'edpiAmount', 'vbUpdatedDue']);
+    const existingDue = Number(saved.vbExistingDue);
+    const existingAdvance = Number(saved.vbExistingAdvance);
+    const existingClosingBalance = Number(saved.vbExistingClosing);
+    const edpiAmount = Number(saved.edpiAmount);
+    const updated = { due: Number(saved.vbUpdatedDue) };
+
     console.log('Delete flow: opening the edited PI...');
     await this.purchaseTab.click();
     await this.settle(2000, 'PI list loads');

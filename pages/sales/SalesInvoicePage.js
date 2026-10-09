@@ -449,8 +449,29 @@ class SalesInvoicePage extends AppBasePage {
   /**
    * TC: create → edit → cancel → delete an SI with discounts / shipping / TDS / adjustment and
    * verify customer Due, Advance, Closing Balance, Transaction Statement closing balance and journal.
+   * Runs the four step methods below in order; each can also run as its own test.
    */
   async createEditCancelDeleteAndVerifyCustomerBalances(data) {
+    await this.createSalesInvoiceWithChargesAndVerifyCustomerBalances(data);
+    await this.editSalesInvoiceWithChargesAndVerifyCustomerBalances(data);
+    await this.cancelSalesInvoiceAndVerifyCustomerBalances(data);
+    await this.deleteCancelledSalesInvoiceAndVerifyCustomerBalances(data);
+  }
+
+  /** Open the invoice app on the Sales tab and read back the balances an earlier step saved. */
+  async _resumeCustomerBalanceFlow(data, keys) {
+    await this._openInvoiceApp(2000);
+    await this.salesTab.click();
+    const saved = requireSection(data.section, keys);
+    return Object.fromEntries(keys.map((k) => [k, Number(saved[k])]));
+  }
+
+  /**
+   * Customer-balance step 1: capture existing balances, create an SI with discounts /
+   * shipping / TDS / adjustment, verify Due / Advance / Closing Balance / TS closing balance.
+   * Writes to `data.section`: cbExistingDue, cbExistingAdvance, cbExistingClosing, siAmount.
+   */
+  async createSalesInvoiceWithChargesAndVerifyCustomerBalances(data) {
     await this._openInvoiceApp(2000);
 
     // ── existing balances ──
@@ -509,9 +530,22 @@ class SalesInvoicePage extends AppBasePage {
     console.log(`Current TSCB captured: ${CurrentTSCB}`);
     expectClose(CurrentTSCB, CurrentClosingBalance, 0.011, 'CurrentTSCB vs CurrentClosingBalance');
     expectClose(CurrentTSCB, (existingDue + siAmount) - CurrentAdvance, 0.011, 'CurrentTSCB vs expected');
-    await this.settle(1000, 'statement settles');
+    saveSection(data.section, {
+      cbExistingDue: existingDue,
+      cbExistingAdvance: existingAdvance,
+      cbExistingClosing: existingClosingBalance,
+      siAmount,
+    });
+  }
 
-    // ── edit ──
+  /**
+   * Customer-balance step 2: edit the newest SI (qty / discount / charges), verify balances.
+   * Reads cbExistingDue, cbExistingAdvance; writes edsiAmount, cbUpdatedDue.
+   */
+  async editSalesInvoiceWithChargesAndVerifyCustomerBalances(data) {
+    const { cbExistingDue: existingDue, cbExistingAdvance: existingAdvance } =
+      await this._resumeCustomerBalanceFlow(data, ['cbExistingDue', 'cbExistingAdvance']);
+
     console.log('Editing the Sales Invoice...');
     await this._openFirstInvoiceFromSalesBill();
     await this._verifyJournalBalanced('Created');
@@ -548,7 +582,21 @@ class SalesInvoicePage extends AppBasePage {
     expectClose(updatedTSCB, updatedClosingBalance, 0.011, 'updatedTSCB vs updatedClosingBalance');
     expectClose(updatedTSCB, (existingDue + edsiAmount) - updatedAdvance, 0.011, 'updatedTSCB vs expected');
 
-    // ── cancel ──
+    saveSection(data.section, { edsiAmount, cbUpdatedDue: updatedDue });
+  }
+
+  /**
+   * Customer-balance step 3: cancel the newest SI, verify balances return to the pre-create values.
+   * Reads cbExistingDue, cbExistingAdvance, cbExistingClosing, edsiAmount, cbUpdatedDue;
+   * writes cbFinalAdvance, cbFinalClosing.
+   */
+  async cancelSalesInvoiceAndVerifyCustomerBalances(data) {
+    const {
+      cbExistingDue: existingDue, cbExistingAdvance: existingAdvance,
+      cbExistingClosing: existingClosingBalance, edsiAmount, cbUpdatedDue: updatedDue,
+    } = await this._resumeCustomerBalanceFlow(data,
+      ['cbExistingDue', 'cbExistingAdvance', 'cbExistingClosing', 'edsiAmount', 'cbUpdatedDue']);
+
     console.log('Cancelling the Sales Invoice...');
     await this._openFirstInvoiceFromSalesBill();
     await this._verifyJournalBalanced('Edited');
@@ -572,7 +620,24 @@ class SalesInvoicePage extends AppBasePage {
     expect(finalTSCB).toBe(finalClosingBalance);
     expectClose(finalTSCB, updatedDue - edsiAmount - finalAdvance, 0.011, 'finalTSCB vs expected');
 
-    // ── delete ──
+    saveSection(data.section, { cbFinalAdvance: finalAdvance, cbFinalClosing: finalClosingBalance });
+  }
+
+  /**
+   * Customer-balance step 4: delete the cancelled SI, verify balances are unchanged by it.
+   * Reads cbExistingDue, cbExistingAdvance, cbExistingClosing, edsiAmount, cbUpdatedDue,
+   * cbFinalAdvance, cbFinalClosing.
+   */
+  async deleteCancelledSalesInvoiceAndVerifyCustomerBalances(data) {
+    const {
+      cbExistingDue: existingDue, cbExistingAdvance: existingAdvance,
+      cbExistingClosing: existingClosingBalance, edsiAmount, cbUpdatedDue: updatedDue,
+      cbFinalAdvance: finalAdvance, cbFinalClosing: finalClosingBalance,
+    } = await this._resumeCustomerBalanceFlow(data, [
+      'cbExistingDue', 'cbExistingAdvance', 'cbExistingClosing', 'edsiAmount', 'cbUpdatedDue',
+      'cbFinalAdvance', 'cbFinalClosing',
+    ]);
+
     console.log('Deleting the cancelled Sales Invoice...');
     await this._openFirstInvoiceFromSalesBill();
     await expect(this.cancelledPreview).toBeVisible();

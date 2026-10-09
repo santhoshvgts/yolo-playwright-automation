@@ -2,10 +2,11 @@
 
 const { expect } = require('@playwright/test');
 const { AppBasePage } = require('../base/app-base-page');
-const { saveSection } = require('../../utils/flowStore');
+const { saveSection, requireSection } = require('../../utils/flowStore');
 const { toNumber, expectClose } = require('../../utils/stockMath');
 
-const SECTION = 'customerPaymentData';
+// Rundata section when the caller's data has no `section` (the old serial spec's name).
+const DEFAULT_SECTION = 'customerPaymentData';
 
 /** Same parse as the Cypress placeholder blocks: match number, strip commas, trim, parseFloat. */
 function parsePlaceholder(val) {
@@ -114,7 +115,10 @@ class CustomerPaymentPage extends AppBasePage {
     this.paymentLinkedDeleteMsg = this.loc('//div[text()="Payments or Credits or Debit Notes have been applied to this Invoice. You must delete all the associated payments to delete the Invoice. Do you wish to proceed?"]');
     this.paymentLinkedDeleteYes = this.loc('//span[text()="Yes"]');
     this.unlinkPaymentIcons  = this.page.locator('span.anticon.anticon-delete');
-    this.unlinkPaymentConfirm = this.loc('//span[text()="Delete"]');
+    // The previous unlink's popconfirm can still be in the DOM — confirm on the newest one only.
+    this.unlinkPaymentConfirm = this.page
+      .getByRole('tooltip', { name: /Are you sure to delete the payment/ }).last()
+      .getByRole('button', { name: 'Delete' });
     // BRITTLE: paymentBox — exact utility class
     this.paymentBox = this.loc('//div[@class="px-24"]');
 
@@ -128,6 +132,24 @@ class CustomerPaymentPage extends AppBasePage {
   }
 
   // ── private helpers ───────────────────────────────────────────────────────
+
+  _section(data) {
+    return data.section || DEFAULT_SECTION;
+  }
+
+  async _openInvoiceApp() {
+    await this.openApp('invoice');
+    await this.selectOrg();
+    await this.settle(5000, 'org switch reloads data');
+  }
+
+  /** Open the invoice app on the Sales tab and read back the numbers an earlier step saved. */
+  async _resumeBulkPaymentFlow(data, keys) {
+    await this._openInvoiceApp();
+    await this.salesTab.click();
+    const saved = requireSection(this._section(data), keys);
+    return Object.fromEntries(keys.map((k) => [k, Number(saved[k])]));
+  }
 
   /** cy.get/xpath(sel).invoke('text') without a visibility check. */
   async _rawText(locator) {
@@ -313,7 +335,8 @@ class CustomerPaymentPage extends AppBasePage {
       console.log(`Due Amount in SI preview after full payment: ${updatedSIpreviewDue}`);
       expectClose(updatedSIpreviewDue, amountEntered3 - dueAmtinSI, 0.011, 'SI preview due after payment');
     } else {
-      expect(stsText).toMatch(/days due|days overdue/);
+      // A partial receipt shows "Partially paid"; older builds showed the due-days text instead.
+      expect(stsText).toMatch(/partially paid|days due|days overdue/i);
       const updatedSIpreviewDue = toNumber(await this._rawText(this.dueAmtInSIPreview));
       console.log(`Due Amount in SI preview after full payment: ${updatedSIpreviewDue}`);
       expectClose(updatedSIpreviewDue, dueAmtinSI - amountEntered3, 0.011, 'SI preview due after payment');
@@ -337,11 +360,22 @@ class CustomerPaymentPage extends AppBasePage {
    * TC01: bulk Payment Received against the customer's due invoices → edit → delete,
    * verifying invoice dues, customer Due / Advance / Closing Balance and TS closing balance at each stage.
    * data: generateCustomerPaymentData()
+   * Runs the three step methods below in order; each can also run as its own test.
    */
   async createEditDeleteBulkPaymentAndVerifyBalances(data) {
-    await this.openApp('invoice');
-    await this.selectOrg();
-    await this.settle(5000, 'org switch reloads data');
+    await this.createBulkPaymentAndVerifyBalances(data);
+    await this.editBulkPaymentAndVerifyBalances(data);
+    await this.deleteBulkPaymentAndVerifyBalances(data);
+  }
+
+  /**
+   * Bulk-payment step 1: capture existing balances, create a Payment Received against the
+   * customer's due invoices, verify invoice dues + Due / Advance / Closing / TS closing balance.
+   * Writes paymentNumber, existingDue, existingAdvance, existingClosingBalance, amtReceived,
+   * amtUsedForPayment, excessAmt.
+   */
+  async createBulkPaymentAndVerifyBalances(data) {
+    await this._openInvoiceApp();
 
     // ── Existing balances ──
     console.log('Reading existing customer balances...');
@@ -412,7 +446,7 @@ class CustomerPaymentPage extends AppBasePage {
       console.log(`Excess Amount in Table captured: ${excsAmtininTable}`);
       expect(excsAmtininTable).toBe(excessAmt);
     }
-    saveSection(SECTION, { paymentNumber, existingDue, existingAdvance, existingClosingBalance, amtReceived, amtUsedForPayment, excessAmt });
+    saveSection(this._section(data), { paymentNumber, existingDue, existingAdvance, existingClosingBalance, amtReceived, amtUsedForPayment, excessAmt });
 
     // STEP 2: verify the due amount on each sales invoice
     console.log('Verifying invoice dues after payment...');
@@ -438,9 +472,17 @@ class CustomerPaymentPage extends AppBasePage {
     console.log(`Current TSCB captured: ${currentTSCB}`);
     expectClose(currentTSCB, currentClosingBalance, 0.011, 'Current TSCB');
     expectClose(currentTSCB, (existingDue - currentAdvance) - amtUsedForPayment, 0.011, 'Current TSCB vs existing');
-    await this.settle(2000, 'before edit flow');
+  }
 
-    // ── Edit payment ──
+  /**
+   * Bulk-payment step 2: edit the newest payment's amount, verify invoice dues + balances.
+   * Reads existingDue, existingAdvance; writes updatedamtReceived, updatedamtUsedForPayment,
+   * updatedexcessAmt, updatedDue, updatedAdvance.
+   */
+  async editBulkPaymentAndVerifyBalances(data) {
+    const { existingDue, existingAdvance } =
+      await this._resumeBulkPaymentFlow(data, ['existingDue', 'existingAdvance']);
+
     console.log('Editing the payment...');
     await this.salesBillTab.click();
     await this.paymentTab.click();
@@ -483,7 +525,7 @@ class CustomerPaymentPage extends AppBasePage {
       console.log(`Excess Amount in Table captured: ${excsAmtininTable}`);
       expect(excsAmtininTable).toBe(updatedexcessAmt);
     }
-    saveSection(SECTION, { updatedamtReceived, updatedamtUsedForPayment, updatedexcessAmt });
+    saveSection(this._section(data), { updatedamtReceived, updatedamtUsedForPayment, updatedexcessAmt });
 
     // STEP 4: repeat Step 2 for the edit flow
     console.log('Verifying invoice dues after edit...');
@@ -509,9 +551,23 @@ class CustomerPaymentPage extends AppBasePage {
     console.log(`Updated TSCB captured: ${updatedTSCB}`);
     expectClose(updatedTSCB, updatedClosingBalance, 0.011, 'Updated TSCB');
     expectClose(updatedTSCB, (existingDue - updatedAdvance) - updatedamtUsedForPayment, 0.011, 'Updated TSCB vs existing');
-    await this.settle(2000, 'before delete flow');
+    saveSection(this._section(data), { updatedDue, updatedAdvance });
+  }
 
-    // ── Delete payment ──
+  /**
+   * Bulk-payment step 3: delete the newest payment, verify balances return to the pre-payment values.
+   * Reads existingDue, existingAdvance, existingClosingBalance, updatedDue, updatedAdvance,
+   * updatedamtUsedForPayment, updatedexcessAmt.
+   */
+  async deleteBulkPaymentAndVerifyBalances(data) {
+    const {
+      existingDue, existingAdvance, existingClosingBalance,
+      updatedDue, updatedAdvance, updatedamtUsedForPayment, updatedexcessAmt,
+    } = await this._resumeBulkPaymentFlow(data, [
+      'existingDue', 'existingAdvance', 'existingClosingBalance',
+      'updatedDue', 'updatedAdvance', 'updatedamtUsedForPayment', 'updatedexcessAmt',
+    ]);
+
     console.log('Deleting the payment...');
     await this.salesBillTab.click();
     await this.paymentTab.click();
@@ -546,7 +602,7 @@ class CustomerPaymentPage extends AppBasePage {
     console.log(`Final TSCB captured: ${finalTSCB}`);
     expectClose(finalTSCB, finalClosingBalance, 0.011, 'Final TSCB');
     expectClose(finalTSCB, (updatedDue - finalAdvance) + updatedamtUsedForPayment, 0.011, 'Final TSCB vs updated');
-    saveSection(SECTION, { finalDue, finalAdvance, finalClosingBalance, finalTSCB });
+    saveSection(this._section(data), { finalDue, finalAdvance, finalClosingBalance, finalTSCB });
     console.log('Bulk payment create / edit / delete verified.');
   }
 
@@ -567,7 +623,7 @@ class CustomerPaymentPage extends AppBasePage {
     const status = (await this._rawText(this.statusRowStatus)).trim();
     console.log(`Invoice status: ${status}`);
     const ctx = { billNo, dueAmtinSIpreview: 0 };
-    saveSection(SECTION, { billNo, invoiceStatus: status });
+    saveSection(this._section(data), { billNo, invoiceStatus: status });
 
     if (status === 'Paid') {
       console.log('Invoice is Paid — unlinking existing payments first...');
@@ -584,7 +640,7 @@ class CustomerPaymentPage extends AppBasePage {
 
       console.log('Receiving partial payment...');
       const amountEntered3 = await this._receivePartialPaymentAndVerify(data, ctx);
-      saveSection(SECTION, { dueAmtinSIpreview: ctx.dueAmtinSIpreview, amountEntered3 });
+      saveSection(this._section(data), { dueAmtinSIpreview: ctx.dueAmtinSIpreview, amountEntered3 });
 
       console.log('Unlinking the payment...');
       await this.statusRow.click();
@@ -611,7 +667,7 @@ class CustomerPaymentPage extends AppBasePage {
 
       console.log('Receiving partial payment...');
       const amountEntered3 = await this._receivePartialPaymentAndVerify(data, ctx);
-      saveSection(SECTION, { dueAmtinSIpreview: ctx.dueAmtinSIpreview, amountEntered3 });
+      saveSection(this._section(data), { dueAmtinSIpreview: ctx.dueAmtinSIpreview, amountEntered3 });
 
       console.log('Unlinking the payment...');
       await this.statusRow.click();
