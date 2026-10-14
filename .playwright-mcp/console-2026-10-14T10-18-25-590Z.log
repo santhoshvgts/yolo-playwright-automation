@@ -1,0 +1,39 @@
+[   -3470ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[   -1308ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  125674ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=20&client=11&unit=3&item_unit=282&total_qty=14744&warehouse=433:0
+[  134663ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/sales-invoice/:0
+[  134734ms] AxiosError: Request failed with status code 400
+    at settle (https://invoice.test.vgts.xyz/assets/index-hFak9M74.js:78:12791)
+    at XMLHttpRequest.Ct (https://invoice.test.vgts.xyz/assets/index-hFak9M74.js:78:20633)
+[  144456ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=1000&client=11&unit=1&item_unit=280&total_qty=13744&warehouse=433:0
+[  144720ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=5&client=11&unit=2&item_unit=281&total_qty=13805&warehouse=433:0
+[  186596ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=1446&client=11&unit=1&item_unit=280&total_qty=1446&warehouse=433:0
+[  190780ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=10000&client=11&unit=1&item_unit=280&total_qty=10000&warehouse=433:0
+[  191350ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=100000&client=11&unit=1&item_unit=280&total_qty=100000&warehouse=433:0
+[  191745ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=1000000&client=11&unit=1&item_unit=280&total_qty=1000000&warehouse=433:0
+[  192170ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=10000000&client=11&unit=1&item_unit=280&total_qty=10000000&warehouse=433:0
+[  192396ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=100000000&client=11&unit=1&item_unit=280&total_qty=100000000&warehouse=433:0
+[  192616ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=1000000000&client=11&unit=1&item_unit=280&total_qty=1000000000&warehouse=433:0
+[  192781ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=1000000000.&client=11&unit=1&item_unit=280&total_qty=1000000000&warehouse=433:0
+[  192822ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=1000000000.4&client=11&unit=1&item_unit=280&total_qty=1000000000.4&warehouse=433:0
+[  192997ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=1000000000.46&client=11&unit=1&item_unit=280&total_qty=1000000000.46&warehouse=433:0
+[  298800ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  299931ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  352798ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://invoice.test.api.vgts.xyz/bills/bill-template/120/:0
+[  392895ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://invoice.test.api.vgts.xyz/bills/bill-template/121/:0
+[  430725ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/115/?quantity=1&client=11&unit=2&item_unit=283&total_qty=1&warehouse=433:0
+[  461331ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=65.58&client=11&unit=2&item_unit=281&total_qty=4000.38&warehouse=433:0
+[  501938ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://invoice.test.api.vgts.xyz/bills/bill-template/122/:0
+[  569637ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://invoice.test.api.vgts.xyz/bills/bill-template/123/:0
+[  599999ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  601076ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  901412ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  902556ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 1202881ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 1204327ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 1504685ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 1505786ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 1806132ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 1807204ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 2107664ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[ 2108731ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0

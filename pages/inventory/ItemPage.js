@@ -48,6 +48,15 @@ class ItemPage extends AppBasePage {
     this.alternateQuantityField2   = this.page.locator('#unit_array_1_quantity');
     this.alternateSalesPriceField1 = this.page.getByRole('textbox', { name: 'Sales Price' });
     this.uomOption                 = (unit) => this.page.getByText(unit, { exact: true });
+    // Any base UOM / any number of alternate UOM rows (createItemWithUoms)
+    this.baseUomField     = this.page.getByRole('combobox', { name: 'Unit of Measure' });
+    this.salePriceAnyUnit = this.page.getByRole('textbox', { name: /^Sale Price Per / });
+    this.alternateUom     = (i) => this.page.locator(`#unit_array_${i}_alter_unit`);
+    this.alternateQty     = (i) => this.page.locator(`#unit_array_${i}_quantity`);
+    this.alternatePrice   = (i) => this.page.locator(`#unit_array_${i}_price`);
+    // Option in the dropdown that is OPEN now (closed antd dropdowns stay in the DOM)
+    this.openOption = (title) => this.page.locator(`.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option[title="${title}"]`);
+    this.toast      = this.page.locator('.ant-message');
 
     // Tax
     this.taxPreferenceField = this.page.getByRole('combobox', { name: 'Tax Preference' });
@@ -191,6 +200,14 @@ class ItemPage extends AppBasePage {
    * Returns { box, bundle, pcs, total, outOfStock } in pieces.
    */
   async readItemStock(itemName, boxconversion, bundleconversion) {
+    const text = await this.readItemStockText(itemName);
+    const stock = parseStock(text, boxconversion, bundleconversion);
+    console.log(`Stock "${text}" → box ${stock.box}, bundle ${stock.bundle}, pcs ${stock.pcs}, total ${stock.total}`);
+    return stock;
+  }
+
+  /** Raw stock cell of an item on the Inventory list, e.g. "1445 pcs Left" (must already be on the invoice app). */
+  async readItemStockText(itemName) {
     await this.inventoryLink.click();
     await this.productsLink.click();
     await this.itemsTab.click();
@@ -200,10 +217,58 @@ class ItemPage extends AppBasePage {
     }
     // Cells: [name, stock status, HSN, GST rate, price] — match by name, not row position
     const stockCell = this.productRow(itemName).first().locator('td').nth(1);
-    const text = await this.readText(stockCell, 10000);
-    const stock = parseStock(text, boxconversion, bundleconversion);
-    console.log(`Stock "${text}" → box ${stock.box}, bundle ${stock.bundle}, pcs ${stock.pcs}, total ${stock.total}`);
-    return stock;
+    return this.readText(stockCell, 10000);
+  }
+
+  /**
+   * Create an item with any base UOM and any alternate UOMs (must already be on the invoice app).
+   * spec: { name, baseUnit = 'pcs', price = '10', alternates = [{ unit, qty }], gstRate = 'GST18' }
+   * Each alternate's sales price is set to qty × price, so every UOM sells at the same price per base unit.
+   * Returns { itemName, baseUnit, price, conversions: { [baseUnit]: 1, [alt.unit]: alt.qty, ... } }.
+   */
+  async createItemWithUoms(spec) {
+    const { name, baseUnit = 'pcs', price = '10', alternates = [], gstRate = 'GST18' } = spec;
+    console.log(`Creating item "${name}" (base ${baseUnit}${alternates.map((a) => `, ${a.unit}=${a.qty}`).join('')})...`);
+    await this.inventoryLink.click();
+    await this.productsLink.click();
+    await this.itemButton.click();
+    await this.productNameField.fill(name);
+
+    if (baseUnit !== 'pcs') {
+      await this.clickSelect(this.baseUomField);
+      await this.openOption(baseUnit).click();
+    }
+    await this.fillInto(this.salePriceAnyUnit, price);
+
+    for (const [i, alt] of alternates.entries()) {
+      await (i === 0 ? this.addAlternateUOM : this.addUOM).click();
+      await this.settle(800, 'alternate UOM row appears');
+      await this.clickSelect(this.alternateUom(i));
+      await this.page.keyboard.type(alt.unit);
+      await this.openOption(alt.unit).click();
+      // The new row sometimes re-renders after the first fill and drops the quantity
+      // ("Required"), so fill until both values stick.
+      const altPrice = (Number(alt.qty) * Number(price)).toFixed(2);
+      await expect(async () => {
+        if (await this.alternateQty(i).inputValue() !== String(alt.qty)) await this.fillInto(this.alternateQty(i), alt.qty);
+        if (await this.alternatePrice(i).inputValue() !== altPrice) await this.fillInto(this.alternatePrice(i), altPrice);
+        await this.settle(500, 'alternate UOM row settles');
+        await expect(this.alternateQty(i)).toHaveValue(String(alt.qty), { timeout: 1000 });
+        await expect(this.alternatePrice(i)).toHaveValue(altPrice, { timeout: 1000 });
+      }).toPass({ timeout: 20_000 });
+    }
+
+    await this.clickSelect(this.taxPreferenceField);
+    await this.taxableOption.click();
+    await this.clickSelect(this.gstRateField);
+    await this.gstOption(gstRate).click();
+    await this.saveButton.click();
+    await expect(this.toast.filter({ hasText: 'Item created successfully' })).toBeVisible();
+    await this.settle(1500, 'drawer closes, items list refresh');
+
+    const conversions = { [baseUnit]: 1 };
+    for (const alt of alternates) conversions[alt.unit] = Number(alt.qty);
+    return { itemName: name, baseUnit, price: Number(price), conversions };
   }
 
   /** Open the invoice app and read the current stock of the flow's item. */

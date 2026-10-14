@@ -20,6 +20,21 @@ function parseStock(stockText, boxconversion, bundleconversion) {
   return { box, bundle, pcs, total: box * boxconversion + bundle * bundleconversion + pcs, outOfStock: false };
 }
 
+/**
+ * Parse a stock cell like "1445 pcs Left" / "-0.19 pcs Left" / "3 box Left" into base units,
+ * using `conversions` = { <uom>: base units per uom } (the base unit maps to 1).
+ */
+function parseStockByUnits(stockText, conversions) {
+  const text = String(stockText || '').trim();
+  if (text.toLowerCase() === 'out of stocks') return 0;
+  let total = 0;
+  for (const [, qty, unit] of text.matchAll(/(-?\d[\d,]*(?:\.\d+)?)\s*([a-zA-Z]\w*)/g)) {
+    if (!(unit in conversions)) throw new Error(`Unknown UOM "${unit}" in stock "${text}"`);
+    total += parseFloat(qty.replace(/,/g, '')) * conversions[unit];
+  }
+  return total;
+}
+
 /** Parse a money/number string like "₹ -1,234.50" -> -1234.5 */
 function toNumber(str) {
   const m = String(str).match(/-?\d[\d,]*(?:\.\d+)?/);
@@ -36,4 +51,4 @@ function expectClose(actual, expected, delta = 0.01, label = '') {
   expect(Math.abs(actual - expected), `${label} actual=${actual} expected=${expected}`).toBeLessThanOrEqual(delta);
 }
 
-module.exports = { parseStock, toNumber, money, expectClose };
+module.exports = { parseStock, parseStockByUnits, toNumber, money, expectClose };

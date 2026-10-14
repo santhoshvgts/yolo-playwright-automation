@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "correptius",
-    "productDescription": "Cubitum tego voluptatibus reprehenderit caecus.",
-    "salePricePerPcs": "968",
-    "updatedAt": "2026-10-09T12:55:18.471Z",
-    "productName2": "super",
-    "productDescription2": "Thesaurus stips casus advenio damno apparatus desino corona.",
-    "salePricePerUnit": "258",
-    "quantity": "7"
+    "productName": "statua",
+    "productDescription": "Aureus tracto tergum.",
+    "salePricePerPcs": "041",
+    "updatedAt": "2026-10-14T12:00:17.233Z",
+    "productName2": "aut",
+    "productDescription2": "Arbitro approbo approbo tubineus.",
+    "salePricePerUnit": "057",
+    "quantity": "2"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
