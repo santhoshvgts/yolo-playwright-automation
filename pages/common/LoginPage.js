@@ -100,9 +100,13 @@ class LoginPage extends BasePage {
       await expect(this.orgHeading).toBeVisible({ timeout: WAIT.org });
     }
     console.log(`Selecting organisation "${data.organization}"...`);
-    await this.orgSearchField.fill(data.searchByNameOrGST);
     const orgRow = this.orgResult(data.organization);
-    await expect(orgRow).toBeVisible();
+    // Under load the org search sometimes returns nothing the first time — search again
+    await expect(async () => {
+      await this.orgSearchField.fill('');
+      await this.orgSearchField.fill(data.searchByNameOrGST);
+      await expect(orgRow).toBeVisible({ timeout: 15_000 });
+    }).toPass({ timeout: 90_000 });
 
     // The active org's row is rendered disabled: we are already in it (e.g. the
     // screen is still closing after a Switch) — just wait for the screen to go.

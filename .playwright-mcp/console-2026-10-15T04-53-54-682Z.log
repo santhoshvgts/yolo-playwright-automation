@@ -1,0 +1,3 @@
+[  -13453ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[   -8918ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  212990ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://invoice.test.api.vgts.xyz/bills/scheme-applied/114/?quantity=&client=11&unit=1&item_unit=280&total_qty=0&warehouse=433:0

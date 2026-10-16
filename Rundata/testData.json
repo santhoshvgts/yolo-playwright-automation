@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "statua",
-    "productDescription": "Aureus tracto tergum.",
-    "salePricePerPcs": "041",
-    "updatedAt": "2026-10-14T12:00:17.233Z",
-    "productName2": "aut",
-    "productDescription2": "Arbitro approbo approbo tubineus.",
-    "salePricePerUnit": "057",
-    "quantity": "2"
+    "productName": "suffragium",
+    "productDescription": "Viduo depereo aiunt censura clementia aggredior velociter considero.",
+    "salePricePerPcs": "198",
+    "updatedAt": "2026-10-16T05:03:44.112Z",
+    "productName2": "crepusculum",
+    "productDescription2": "Caries necessitatibus stabilis amplexus carpo.",
+    "salePricePerUnit": "819",
+    "quantity": "7"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -312,5 +312,46 @@
     "cbUpdatedDue": 21586.43,
     "cbFinalAdvance": 130947.46,
     "cbFinalClosing": -114862.95
+  },
+  "siEditFlowItems": {
+    "items": [
+      {
+        "itemName": "TCE-A gf8vCo",
+        "baseUnit": "pcs",
+        "price": 100,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-B W59aop",
+        "baseUnit": "pcs",
+        "price": 250,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-C g42YIa",
+        "baseUnit": "pcs",
+        "price": 40,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-D 3F4Vhr",
+        "baseUnit": "pcs",
+        "price": 75,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      }
+    ],
+    "updatedAt": "2026-10-15T18:04:54.042Z"
   }
 }

@@ -607,6 +607,27 @@ class CustomerPaymentPage extends AppBasePage {
   }
 
   /**
+   * Receive the full due of the Sales Invoice whose preview is open now ("Pay full amount"),
+   * then close the preview. data: generateCustomerPaymentData() (paymentAccount, paymentMode).
+   */
+  async receiveFullPaymentOnOpenInvoice(data) {
+    await this.receivePaymentBtn.scrollIntoViewIfNeeded();
+    await this.receivePaymentBtn.click();
+    await this.settle(1000, 'receive payment form render');
+    await this.clickSelect(this.paymentAccount);
+    await this.paymentAccountOption(data.paymentAccount).click();
+    await this.payFullAmountCheckbox.check();
+    await this.settle(1000, 'full amount fills receive field');
+    await this._selectPaymentMode(data);
+    await this.settle(1000, 'payment mode applied');
+    await this.saveReceiptButton.click();
+    await this.settle(5000, 'receipt save + preview refresh');
+    await expect(this.previewStatus).toContainText('Paid');
+    await this.previewCloseBtn.click();
+    await this.settle(2000, 'preview drawer close');
+  }
+
+  /**
    * TC02: receive a partial payment against the latest Sales Invoice from its preview,
    * verify status + due, then unlink the payment(s) and verify the due is restored.
    * data: generateCustomerPaymentData()

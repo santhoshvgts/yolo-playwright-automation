@@ -1,0 +1,4 @@
+[  -17708ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  -16297ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  283848ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0
+[  284937ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ https://organization.test.api.vgts.xyz/core/erp-announcements/:0

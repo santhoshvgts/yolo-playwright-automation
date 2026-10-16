@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Excel test-case automation (skill excel-testcase-automation) — resume point:' && node \"$CLAUDE_PROJECT_DIR/.claude/skills/excel-testcase-automation/scripts/progress.js\" next 2>/dev/null || true",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

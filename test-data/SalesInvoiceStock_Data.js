@@ -180,4 +180,20 @@ const SalesInvoiceStockData = {
   },
 };
 
-module.exports = { SalesInvoiceStockData, itemName, pcsItem };
+/**
+ * Sales Invoice edit flow (TC-E01…TC-E74, Sales_Invoice_Edit_Flow_TestCases.xlsx).
+ * Four pcs items (GST18, big stock) shared by every edit-flow test — created once and
+ * remembered in Rundata (section siEditFlowItems), recreated if they are gone.
+ */
+const SalesInvoiceEditFlowData = {
+  items: () => [
+    { name: itemName('E-A'), baseUnit: 'pcs', price: '100', alternates: [], stock: 100000 },
+    { name: itemName('E-B'), baseUnit: 'pcs', price: '250', alternates: [], stock: 100000 },
+    { name: itemName('E-C'), baseUnit: 'pcs', price: '40', alternates: [], stock: 100000 },
+    { name: itemName('E-D'), baseUnit: 'pcs', price: '75', alternates: [], stock: 100000 },
+  ],
+  // TDS sections and the rates the app applies (TDS of n% is applied)
+  tds: { dividend: 'Dividend', dividendReduced: 'Dividend(Reduced)', commission: 'Commission or Bokerage' },
+};
+
+module.exports = { SalesInvoiceStockData, SalesInvoiceEditFlowData, itemName, pcsItem };

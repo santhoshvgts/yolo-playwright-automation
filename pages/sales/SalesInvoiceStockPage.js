@@ -76,7 +76,8 @@ class SalesInvoiceStockPage extends AppBasePage {
     this.saveDraftBtn = this.page.getByRole('button', { name: 'Save As Draft' });
     this.formCancelBtn = this.page.getByRole('button', { name: 'Cancel' }).first();
     // Validation shown when a save is refused, e.g. "Please check the <item>"
-    this.validationMessage = this.page.locator('.ant-message-notice, .ant-form-item-explain-error');
+    // (success toasts such as "… updated successfully" are not validation)
+    this.validationMessage = this.page.locator('.ant-message-notice, .ant-form-item-explain-error').filter({ hasNotText: /success/i });
 
     // Invoice preview
     this.editBtn = this.loc("//span[text()='Edit']");
@@ -163,8 +164,7 @@ class SalesInvoiceStockPage extends AppBasePage {
   async startInvoice({ customerName = masterData.customerName, billDate } = {}) {
     await this.salesTab.click();
     await this.newInvoiceBtn.click();
-    await this.clickSelect(this.customerDropdown);
-    await this.customerOption(customerName).click();
+    await this.pickCustomer(customerName);
     await this.customerProceedBtn.click();
     await expect(this.billNoInput).not.toHaveValue('');
     if (billDate) await this.setBillDate(billDate);
@@ -208,7 +208,11 @@ class SalesInvoiceStockPage extends AppBasePage {
   }
 
   async removeLine(index) {
+    const before = await this.lineRows.count();
     await this.lineRemoveBtn(this.lineRows.nth(index)).click();
+    // Rows re-render after a removal; a second click before that lands on a stale row.
+    await expect(this.lineRows).toHaveCount(before - 1);
+    await this.settle(500, 'line removed, totals recalculate');
   }
 
   async lineQtyValue(index) {
@@ -342,6 +346,33 @@ class SalesInvoiceStockPage extends AppBasePage {
     await expect(this.toast.filter({ hasText: 'Successfully deleted' })).toBeVisible();
     await this._searchList(billNo);
     await expect(this.invoiceRow(billNo)).toHaveCount(0);
+  }
+
+  /** Customer picker (customer step): type to search — the list only loads the first 10 customers. */
+  async pickCustomer(name) {
+    await this.clickSelect(this.customerDropdown);
+    await this.page.keyboard.type(name);
+    await this.settle(1500, 'customer search');
+    await this.customerOption(name).first().click();
+  }
+
+  /** Delete attempt that may be refused: returns { message, deleted }. */
+  async tryDeleteInvoice(billNo) {
+    await this.openInvoice(billNo);
+    if (await this.deleteBtn.count()) {
+      await this.deleteBtn.first().click();
+    } else {
+      await this.moreMenu.first().click();
+      await this.moreMenuDelete.click();
+    }
+    await this.settle(800, 'delete prompt');
+    if (await this.yesBtn.isVisible().catch(() => false)) await this.yesBtn.click();
+    await this.settle(2500, 'delete result');
+    const message = (await this.toast.allInnerTexts().catch(() => [])).join(' | ');
+    await this.page.keyboard.press('Escape');
+    if (await this.previewCloseBtn.first().isVisible().catch(() => false)) await this.closePreview();
+    await this._searchList(billNo);
+    return { message, deleted: (await this.invoiceRow(billNo).count()) === 0 };
   }
 
   // ── journal ────────────────────────────────────────────────────────────────
