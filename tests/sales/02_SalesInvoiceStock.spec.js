@@ -2073,7 +2073,7 @@ test.describe('Bulk Payment - New Receipt', () => {
       const receiptNo = await bp.openNewReceipt(TC);
       const date = addDays(new Date(), offset);
       await bp.receiptDate.click();
-      await bp.receiptDate.press('Control+A');
+      await bp.receiptDate.press('ControlOrMeta+A');
       await bp.page.keyboard.type(pickerDate(date));
       await bp.page.keyboard.press('Enter');
       await bp.setReceiptPaymentMode('Cash');
@@ -2539,7 +2539,7 @@ test.describe('Sales Order', () => {
     const [delivery, expected] = [pickerDate(addDays(new Date(), 5)), pickerDate(addDays(new Date(), 8))];
     await so.setDeliveryDate(delivery);
     await so.expectedDeliveryDate.click();
-    await so.expectedDeliveryDate.press('Control+A');
+    await so.expectedDeliveryDate.press('ControlOrMeta+A');
     await so.page.keyboard.type(expected);
     await so.page.keyboard.press('Enter');
     await so.addLine(C, 1);

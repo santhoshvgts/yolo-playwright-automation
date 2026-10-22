@@ -177,3 +177,8 @@ the evidence — keep it failing until the app is fixed. Append new rows at the 
 | MJ TC-WF-02 | An unbalanced journal cannot be saved as Draft (Save as Draft disabled) |
 | MJ TC-WF-12 | Print in the journal view does nothing |
 | MJ TC-INT-01 … 06 | No late fee is charged on a returned cheque, so no late-fee journal can be created |
+
+## Older flows (tests/payment, unit_flows)
+| Test | What the app does |
+|---|---|
+| 01_CustomerPayment TC01 | Customer header Closing Balance and Transaction Statement closing balance differ by ₹50 when a ₹50 partial cheque is pending (New customer 1) |

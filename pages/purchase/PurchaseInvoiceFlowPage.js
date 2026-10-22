@@ -113,7 +113,7 @@ class PurchaseInvoiceFlowPage extends SalesInvoiceEditPage {
     if (!(await this.dueDateInput.count()) || (await this.dueDateInput.inputValue())) return;
     const billDate = await this.billDateInput.inputValue();
     await this.dueDateInput.click();
-    await this.dueDateInput.press('Control+A');
+    await this.dueDateInput.press('ControlOrMeta+A');
     await this.page.keyboard.type(billDate);
     await this.page.keyboard.press('Enter');
     await this.settle(600, 'due date set');

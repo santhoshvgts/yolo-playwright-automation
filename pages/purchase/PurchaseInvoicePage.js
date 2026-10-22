@@ -60,7 +60,7 @@ class PurchaseInvoicePage extends AppBasePage {
     // type into the input (clickSelect) — never click/fill the placeholder <span>.
     this.vendorSelect      = this.page.locator('.ant-select').filter({ has: this.page.getByText('Search & Select Vendor', { exact: true }) });
     this.vendorSearchInput = this.vendorSelect.locator('input');
-    this.vendorOption      = (name) => this.openDropdown.locator(`xpath=.//div[text()='${name}']`);
+    this.vendorOption      = (name) => this.openDropdown.locator(`xpath=.//div[text()='${name}']`).first();
     this.vendorProceedBtn  = this.page.getByRole('button', { name: 'Next' });
     this.placeOfSupply       = this.page.locator('#place_of_supply');
     this.placeOfSupplyOption = this.openOption('Tamil Nadu');
@@ -256,11 +256,15 @@ class PurchaseInvoicePage extends AppBasePage {
   async _readVendorBalances(vendorName, settleMs, label) {
     await this._openVendorProfile(vendorName);
     await this.settle(settleMs, 'vendor profile balances load');
-    const due = await this._amountOf(this.vendorDue);
+    // Read by label: the position-based header locators broke when the header changed
+    await this.page.getByText('Closing Balance:', { exact: true }).first().waitFor();
+    const text = (await this.page.locator('body').innerText()).replace(/\s+/g, ' ');
+    const grab = (l) => { const m = text.match(new RegExp(`${l}:\\s*₹\\s*(-?[\\d,]+(?:\\.\\d+)?)`)); return m ? money(m[1]) : NaN; };
+    const due = grab('Due');
     console.log(`${label} Due captured: ${due}`);
-    const advance = await this._amountOf(this.vendorAdvance);
+    const advance = grab('Advance');
     console.log(`${label} Advance captured: ${advance}`);
-    const closing = await this._amountOf(this.vendorClosingBalance);
+    const closing = grab('Closing Balance');
     console.log(`${label} Closing Balance captured: ${closing}`);
     return { due, advance, closing };
   }

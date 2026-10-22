@@ -282,7 +282,7 @@ test.describe('Manual Journal', () => {
     const setRange = async (s, e) => {
       for (const [loc, d] of [[page.locator('#date_filter_sales_bill'), s], [page.getByPlaceholder('End date'), e]]) {
         await loc.click();
-        await loc.press('Control+A');
+        await loc.press('ControlOrMeta+A');
         await page.keyboard.type(mjDate(d));
         await page.keyboard.press('Enter');
       }

@@ -159,7 +159,7 @@ class ChequeTrackerPage extends SalesInvoicePaymentPage {
     if (chequeDate) {
       const d = this.paymentModal.locator('#cheque_date');
       await d.click();
-      await d.press('Control+A');
+      await d.press('ControlOrMeta+A');
       await this.page.keyboard.type(chequeDate);
       await this.page.keyboard.press('Enter');
     }

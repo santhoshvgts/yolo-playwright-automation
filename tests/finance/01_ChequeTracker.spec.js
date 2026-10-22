@@ -269,7 +269,7 @@ test.describe('Cheque Tracker', () => {
     const setRange = async (s, e) => {
       for (const [loc, d] of [[page.locator('#date_filter_cheque_tracker'), s], [page.getByPlaceholder('End date'), e]]) {
         await loc.click();
-        await loc.press('Control+A');
+        await loc.press('ControlOrMeta+A');
         await page.keyboard.type(filterDate(d));
         await page.keyboard.press('Enter');
       }

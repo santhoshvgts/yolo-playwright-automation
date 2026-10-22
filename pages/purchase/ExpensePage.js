@@ -127,7 +127,7 @@ class ExpensePage extends PurchaseInvoiceFlowPage {
 
   async setExpenseDate(date) {
     await this.expenseDate.click();
-    await this.expenseDate.press('Control+A');
+    await this.expenseDate.press('ControlOrMeta+A');
     await this.page.keyboard.type(date);
     await this.page.keyboard.press('Enter');
     await this.settle(500, 'expense date');
