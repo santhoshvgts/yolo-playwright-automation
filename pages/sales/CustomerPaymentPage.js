@@ -209,6 +209,12 @@ class CustomerPaymentPage extends AppBasePage {
       const paymentVal = await this.readValue(this.dueInvoiceInput(i));
       const payment = firstNumber(paymentVal);
       const expectedDue = beforeBalance - payment;
+      // Only invoices this payment pays are verified: the form balance excludes uncleared cheques, which the
+      // invoice list still counts as due, so an unpaid row's list due can differ from its form balance
+      if (payment === 0) {
+        console.log(`Row ${i} | ${invoiceNo} | Before: ${beforeBalance} | not paid by this receipt — not verified`);
+        continue;
+      }
 
       data.push({
         [keys[0]]: invoiceNo,
@@ -260,14 +266,15 @@ class CustomerPaymentPage extends AppBasePage {
     }
   }
 
+  /** { due, advance, closing } from the labelled customer header ("Due: ₹ x", "Advance: ₹ x", "Closing Balance: ₹ x"). */
   async _readCustomerBalances(visibleWait) {
-    const read = visibleWait
-      ? (loc) => this.readText(loc)
-      : (loc) => this._rawText(loc);
-    const due = toNumber(await read(this.cusDue));
-    const advance = toNumber(await read(this.cusAdvance));
-    const closing = toNumber(await read(this.cusClosingBalance));
-    return { due, advance, closing };
+    if (visibleWait) await this.page.getByText('Closing Balance:', { exact: true }).first().waitFor();
+    const text = (await this.page.locator('body').innerText()).replace(/\s+/g, ' ');
+    const grab = (label) => {
+      const m = text.match(new RegExp(`${label}:\\s*₹\\s*(-?[\\d,]+(?:\\.\\d+)?)`));
+      return m ? toNumber(m[1]) : NaN;
+    };
+    return { due: grab('Due'), advance: grab('Advance'), closing: grab('Closing Balance') };
   }
 
   async _readPaymentSummary() {
@@ -398,7 +405,10 @@ class CustomerPaymentPage extends AppBasePage {
     await this.settle(2000, 'payment list load');
     await this.newPaymentBtn.click();
     await this.clickSelect(this.customerSelect);
-    await this.customerOption(data.customerName).click();
+    // The list only loads the first customers — type the name to search for it
+    await this.page.keyboard.type(data.customerName);
+    await this.settle(1500, 'customer search');
+    await this.customerOption(data.customerName).first().click();
     await this.proceedBtn.click();
     await this.settle(4000, 'payment form + due invoices load');
 

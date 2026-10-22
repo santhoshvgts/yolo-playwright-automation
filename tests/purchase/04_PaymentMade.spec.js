@@ -437,7 +437,7 @@ test.describe('Payment Made', () => {
     await pm.receiptDate.hover();
     const clear = page.locator('.ant-picker-clear').filter({ visible: true }).first();
     if (await clear.count()) await clear.click();
-    else { await pm.receiptDate.click(); await pm.receiptDate.press('Control+A'); await page.keyboard.press('Backspace'); await page.keyboard.press('Escape'); }
+    else { await pm.receiptDate.click(); await pm.receiptDate.press('ControlOrMeta+A'); await page.keyboard.press('Backspace'); await page.keyboard.press('Escape'); }
     await pm.settle(500, 'date cleared');
     const left = await pm.receiptDate.inputValue();
     if (left) {

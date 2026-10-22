@@ -175,7 +175,7 @@ class SalesInvoiceStockPage extends AppBasePage {
 
   async setBillDate(billDate) {
     await this.billDateInput.click();
-    await this.billDateInput.press('Control+A');
+    await this.billDateInput.press('ControlOrMeta+A');
     await this.page.keyboard.type(billDate);
     await this.page.keyboard.press('Enter');
     await expect(this.billDateInput).toHaveValue(billDate);

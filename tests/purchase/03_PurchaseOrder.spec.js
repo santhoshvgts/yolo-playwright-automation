@@ -380,7 +380,7 @@ test.describe('Purchase Order', () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1)]));
     await po.billDateInput.click();
-    await po.billDateInput.press('Control+A');
+    await po.billDateInput.press('ControlOrMeta+A');
     await po.billDateInput.press('Backspace');
     await po.page.keyboard.press('Escape');
     if (await po.billDateInput.inputValue()) { console.log('PO date cannot be emptied'); await po.discardForm(); return; }

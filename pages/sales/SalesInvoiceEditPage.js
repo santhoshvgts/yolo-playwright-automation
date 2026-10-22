@@ -84,9 +84,12 @@ class SalesInvoiceEditPage extends SalesInvoiceStockPage {
 
   /** Pick `text` (exact, trimmed) in the antd select `root`. */
   async pickOption(root, text) {
+    // Centre the select first: near the page bottom its dropdown can open outside a small viewport
+    await root.evaluate((e) => e.scrollIntoView({ block: 'center' })).catch(() => {});
     await root.locator('.ant-select-selector').click();
-    await this.page.locator(`${OPEN_DROPDOWN} .ant-select-item-option`)
-      .filter({ hasText: new RegExp(`^\\s*${escapeRegex(text)}\\s*$`) }).first().click();
+    const opt = this.page.locator(`${OPEN_DROPDOWN} .ant-select-item-option`)
+      .filter({ hasText: new RegExp(`^\\s*${escapeRegex(text)}\\s*$`) }).first();
+    await opt.click({ timeout: 8000 }).catch(() => opt.dispatchEvent('click'));
     await this.settle(600, 'totals recalculate');
   }
 
@@ -98,7 +101,7 @@ class SalesInvoiceEditPage extends SalesInvoiceStockPage {
   /** Type like a user (select all, type, leave the field) — the app filters keystrokes (no "-", 2 decimals). */
   async typeValue(locator, value) {
     await locator.click();
-    await locator.press('Control+A');
+    await locator.press('ControlOrMeta+A');
     if (value === '' || value === null || value === undefined) {
       await locator.press('Backspace');
     } else {
@@ -249,7 +252,7 @@ class SalesInvoiceEditPage extends SalesInvoiceStockPage {
 
   async setDueDate(date) {
     await this.dueDateInput.click();
-    await this.dueDateInput.press('Control+A');
+    await this.dueDateInput.press('ControlOrMeta+A');
     await this.page.keyboard.type(date);
     await this.page.keyboard.press('Enter');
     await this.settle(600, 'due date applies');
@@ -529,11 +532,11 @@ class SalesInvoiceEditPage extends SalesInvoiceStockPage {
   async setListDateRange(startDate, endDate) {
     const [start, end] = [filterDate(startDate), filterDate(endDate)];
     await this.listDateStart.click();
-    await this.listDateStart.press('Control+A');
+    await this.listDateStart.press('ControlOrMeta+A');
     await this.page.keyboard.type(start);
     await this.page.keyboard.press('Enter');
     await this.listDateEnd.click();
-    await this.listDateEnd.press('Control+A');
+    await this.listDateEnd.press('ControlOrMeta+A');
     await this.page.keyboard.type(end);
     await this.page.keyboard.press('Enter');
     await this.settle(2500, 'filtered list loads');

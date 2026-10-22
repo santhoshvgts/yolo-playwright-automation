@@ -76,7 +76,9 @@ export default defineConfig({
       testIgnore: ['**/Mobile/**'],
       use: {
         browserName: 'chromium',
-        viewport: null,
+        // Fixed size: with viewport null the page shrinks to the window, and on smaller screens (e.g. a Mac)
+        // dropdowns near the bottom open outside the viewport and cannot be clicked
+        viewport: { width: 1920, height: 1080 },
         launchOptions: {
           slowMo: process.env.SLOWMO ? 500 : 0,
           args: [

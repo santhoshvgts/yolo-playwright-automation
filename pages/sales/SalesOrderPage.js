@@ -52,7 +52,7 @@ class SalesOrderPage extends CustomerTransactionPage {
 
   async setDeliveryDate(date) {
     await this.deliveryDate.click();
-    await this.deliveryDate.press('Control+A');
+    await this.deliveryDate.press('ControlOrMeta+A');
     await this.page.keyboard.type(date);
     await this.page.keyboard.press('Enter');
     await this.settle(500, 'delivery date applies');

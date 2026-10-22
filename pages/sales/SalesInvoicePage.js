@@ -155,7 +155,10 @@ class SalesInvoicePage extends AppBasePage {
     await this.salesTab.click();
     await this.newInvoiceBtn.click();
     await this.clickSelect(this.customerDropdown);
-    await this.customerOption(data.customerName).click();
+    // The list only loads the first customers — type the name to search for it
+    await this.page.keyboard.type(data.customerName);
+    await this.settle(1500, 'customer search');
+    await this.customerOption(data.customerName).first().click();
     await this.customerProceedBtn.click();
     await this.settle(4000, 'invoice form init');
   }
@@ -282,16 +285,24 @@ class SalesInvoicePage extends AppBasePage {
     await this.settle(2000, 'customer profile balances render');
   }
 
+  /** Amount after "<label>: ₹" in the customer header (position-based locators broke when the header changed). */
+  async _headerAmount(label) {
+    await this.page.getByText(`${label}:`, { exact: true }).first().waitFor();
+    const text = (await this.page.locator('body').innerText()).replace(/\s+/g, ' ');
+    const m = text.match(new RegExp(`${label}:\\s*₹\\s*(-?[\\d,]+(?:\\.\\d+)?)`));
+    return m ? money(m[1]) : NaN;
+  }
+
   async _readCustomerDue() {
-    return money(await this._readText(this.customerDue));
+    return this._headerAmount('Due');
   }
 
   async _readCustomerAdvance() {
-    return money(await this._readText(this.customerAdvance));
+    return this._headerAmount('Advance');
   }
 
   async _readCustomerClosingBalance() {
-    return money(await this._readText(this.customerClosingBalance));
+    return this._headerAmount('Closing Balance');
   }
 
   /** Transaction statement: jump to the last page (if paginated) and read the closing balance. */

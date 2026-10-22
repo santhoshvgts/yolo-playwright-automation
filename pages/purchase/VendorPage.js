@@ -143,11 +143,11 @@ class VendorPage extends CustomerPage {
     const s = this.page.getByPlaceholder('Start date').filter({ visible: true }).first();
     const e = this.page.getByPlaceholder('End date').filter({ visible: true }).first();
     await s.click();
-    await s.press('Control+A');
+    await s.press('ControlOrMeta+A');
     await this.page.keyboard.type(start);
     await this.page.keyboard.press('Enter');
     await e.click();
-    await e.press('Control+A');
+    await e.press('ControlOrMeta+A');
     await this.page.keyboard.type(end);
     await this.page.keyboard.press('Enter');
     await this.settle(2500, 'tab filtered');

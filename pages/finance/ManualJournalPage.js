@@ -93,7 +93,7 @@ class ManualJournalPage extends ChequeTrackerPage {
   async fillJournal(j) {
     if (j.date) {
       await this.mjDate.click();
-      await this.mjDate.press('Control+A');
+      await this.mjDate.press('ControlOrMeta+A');
       await this.page.keyboard.type(j.date);
       await this.page.keyboard.press('Enter');
     }

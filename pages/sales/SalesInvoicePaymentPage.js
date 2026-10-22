@@ -97,7 +97,7 @@ class SalesInvoicePaymentPage extends SalesInvoiceEditPage {
     const { account = 'Petty Cash', amount, full, mode, date, chequeNo, note } = p;
     if (date) {
       await this.payDate.click();
-      await this.payDate.press('Control+A');
+      await this.payDate.press('ControlOrMeta+A');
       await this.page.keyboard.type(date);
       await this.page.keyboard.press('Enter');
     }
@@ -358,7 +358,7 @@ class SalesInvoicePaymentPage extends SalesInvoiceEditPage {
   /** Type a date ('DD Mon YYYY') into the receipt form's date field; returns the value shown. */
   async setReceiptDate(date) {
     await this.receiptDate.click();
-    await this.receiptDate.press('Control+A');
+    await this.receiptDate.press('ControlOrMeta+A');
     await this.page.keyboard.type(date);
     await this.page.keyboard.press('Enter');
     await this.settle(600, 'receipt date applies');

@@ -414,7 +414,7 @@ test.describe('Purchase Invoice', () => {
   test('PI_NEG_015 / PI_VAL_002 / 008 - Empty or invalid Bill Date is refused', { tag: T }, async () => {
     await draftForm([L(A, 1)]);
     await pi.billDateInput.click();
-    await pi.billDateInput.press('Control+A');
+    await pi.billDateInput.press('ControlOrMeta+A');
     await pi.billDateInput.press('Backspace');
     await pi.page.keyboard.press('Escape');
     const shown = await pi.billDateInput.inputValue();
