@@ -32,8 +32,9 @@ class AppBasePage extends BasePage {
     await this.loginPage.openApp(app);
   }
 
+  /** true when the org was switched; false when the page was already inside it. */
   async selectOrg() {
-    await this.loginPage.selectOrg();
+    return this.loginPage.selectOrg();
   }
 
   /**

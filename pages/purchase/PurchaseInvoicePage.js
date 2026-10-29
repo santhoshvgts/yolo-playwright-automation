@@ -139,8 +139,8 @@ class PurchaseInvoicePage extends AppBasePage {
 
   async _openInvoiceApp(settleMs) {
     await this.openApp('invoice');
-    await this.selectOrg();
-    await this.settle(settleMs, 'org switch reloads data');
+    // Only a real org switch needs the reload wait (a saved session opens the org directly)
+    if (await this.selectOrg()) await this.settle(settleMs, 'org switch reloads data');
   }
 
   /** Force-click (antd inputs hidden under a selector overlay). */

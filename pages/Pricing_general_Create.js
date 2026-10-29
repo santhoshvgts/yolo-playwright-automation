@@ -70,10 +70,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async fillAndSubmitGeneralOverallMarkupPricing(data) {   
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.priceListName1);
     await this.addDescriptionButton.click();
@@ -97,10 +97,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async fillAndSubmitGeneralOverallMarkdownPricing(data) {   
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.markdownPriceListName1);
     await this.addDescriptionButton.click();
@@ -111,9 +111,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.assignPriceListOption.click();
     
     await this.markupDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.markdownDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.customRateField.fill(data.customRate);
 
     await this.savePriceListButton.click();  
@@ -151,10 +151,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async fillAndSubmitGeneralItemSpecificPricing(data) {
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.priceListName2);
     await this.addDescriptionButton.click();
@@ -166,9 +166,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
+   // Wait for item-specific section to appear
     const itemName = await this._pickItem(this.itemSelectionField, data);
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.primaryUOM1);
     await this.itemAmountField2.fill(data.primaryUOM2);
     await this.itemAmountField3.fill(data.primaryUOM3);
@@ -190,10 +190,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async fillAndSubmitGeneralItemSpecificPricingByAutoCalculating(data) {        
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.autoCalculatePriceListName1);
     await this.addDescriptionButton.click();
@@ -205,9 +205,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
+   // Wait for item-specific section to appear
     const itemName = await this._pickItem(this.itemSelectionField, data);
-    await this.page.waitForTimeout(2000);
+  
     await this.autoCalculateCheckbox.check();
     await this.itemAmountField1.fill(data.primaryUOM1);
 
@@ -228,10 +228,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async fillAndSubmitCategoryWiseOverallMarkupPricing(data) {      
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.priceListName3);
     await this.addDescriptionButton.click();
@@ -239,12 +239,12 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption1.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
     await this.businessCategoryDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.businessCategoryOption.click();
     await this.customRateField.fill(data.customRate);
     await this.savePriceListButton.click();  
@@ -260,10 +260,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async fillAndSubmitCategoryWiseOverallMarkdownPricing(data) {      
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.markdownPriceListName2);
     await this.addDescriptionButton.click();
@@ -271,18 +271,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption1.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
     await this.businessCategoryDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.businessCategoryOption.click();
 
     await this.markupDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.markdownDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.customRateField.fill(data.customRate);
     await this.savePriceListButton.click();  
@@ -299,10 +299,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async fillAndSubmitCategoryWiseItemSpecificPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.priceListName4);
     await this.addDescriptionButton.click();
@@ -310,19 +310,19 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption1.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
     await this.businessCategoryDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.businessCategoryOption.click();
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
+   // Wait for item-specific section to appear
     const itemName = await this._pickItem(this.itemSelectionField1, data);
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.primaryUOM1);
     await this.itemAmountField2.fill(data.primaryUOM2);
     await this.itemAmountField3.fill(data.primaryUOM3);
@@ -344,10 +344,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async fillAndSubmitCategoryWiseItemSpecificPricingByAutoCalculating(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.autoCalculatePriceListName2);
     await this.addDescriptionButton.click();
@@ -355,19 +355,19 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption1.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
     await this.businessCategoryDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.businessCategoryOption.click();
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
+   // Wait for item-specific section to appear
     const itemName = await this._pickItem(this.itemSelectionField1, data);
-    await this.page.waitForTimeout(2000);
+  
     await this.autoCalculateCheckbox.check();
     await this.itemAmountField1.fill(data.primaryUOM1);
 
@@ -387,10 +387,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async fillAndSubmitProfileWiseOverallMarkupPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.priceListName5);
     await this.addDescriptionButton.click();
@@ -398,7 +398,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption2.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
@@ -418,10 +418,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async fillAndSubmitProfileWiseOverallMarkdownPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.markdownPriceListName3);
     await this.addDescriptionButton.click();
@@ -429,7 +429,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption2.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
@@ -437,9 +437,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemSelectionField.fill(data.profileName);
 
     await this.markupDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.markdownDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.customRateField.fill(data.customRate);
     await this.savePriceListButton.click();  
@@ -457,10 +457,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async fillAndSubmitProfileWiseItemSpecificPricing(data) {       
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.priceListName6);
     await this.addDescriptionButton.click();
@@ -468,7 +468,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption2.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
@@ -476,9 +476,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
+   // Wait for item-specific section to appear
     const itemName = await this._pickItem(this.itemNameField, data);
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.primaryUOM1);
     await this.itemAmountField2.fill(data.primaryUOM2);
     await this.itemAmountField3.fill(data.primaryUOM3);
@@ -501,10 +501,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async fillAndSubmitProfileWiseItemSpecificPricingByAutoCalculating(data) {       
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     await this.addPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.autoCalculatePriceListName3);
     await this.addDescriptionButton.click();
@@ -512,7 +512,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.addDescriptionButton.click();
     await this.descriptionInput.fill(data.description);
     await this.priceListTypeDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.priceListTypeOption2.click();
     await this.assignPriceListToDropdown.click();
     await this.assignPriceListOption.click();
@@ -520,9 +520,9 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); // Wait for item-specific section to appear
+   // Wait for item-specific section to appear
     const itemName = await this._pickItem(this.itemNameField, data);
-    await this.page.waitForTimeout(2000);
+  
     await this.autoCalculateCheckbox.check();
     await this.itemAmountField1.fill(data.primaryUOM1);
 
@@ -545,18 +545,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async editGeneralOverallMarkupPricing(data) {                                        
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('GeneralOverallMarkupPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.editedPriceListName1);
     await this.descriptionInput.fill(data.editedDescription);
@@ -576,18 +576,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async editGeneralOverallMarkdownPricing(data) {   
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     
     const jsondata_editPricing= getSection('GeneralOverallMarkdownPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedMarkdownPriceListName1);
     await this.descriptionInput.fill(data.editedDescription);
@@ -610,18 +610,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async editGeneralItemSpecificPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     
     const jsondata_editPricing= getSection('GeneralItemSpecificPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedPriceListName2);
     await this.descriptionInput.fill(data.editedDescription);
@@ -630,14 +630,14 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000);
+  
     
     await this.removeProductCloseButton.click();
     await this.addNewItemButton.click();
     await this.itemSelectionField.fill(data.editedProductName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.itemSelectionOption.first().click();
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.editedPrimaryUOM1);
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
@@ -660,18 +660,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async editGeneralItemSpecificPricingByAutoCalculating(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
     
     const jsondata_editPricing= getSection('GeneralItemSpecificPricing_ByAutoCalculating');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedAutoCalculatePriceListName1);
     await this.descriptionInput.fill(data.editedDescription);
@@ -680,14 +680,14 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000);
+  
     
     await this.removeProductCloseButton.click();
     await this.addNewItemButton.click();
     await this.itemSelectionField.fill(data.editedProductName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.itemSelectionOption.first().click();
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.editedPrimaryUOM1);
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
@@ -710,24 +710,24 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async editCategoryWiseOverallMarkupPricing(data) {      
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('CategoryWiseOverallMarkupPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.editedPriceListName3);
     await this.descriptionInput.fill(data.editedDescription);
 
     await this.assignPriceListToDropdown.click();
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.editAssignPriceListOption.click();
 
     await this.customRateField.fill(data.editedCustomRate);
@@ -744,18 +744,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async editCategoryWiseOverallMarkdownPricing(data) {      
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('CategoryWiseOverallMarkdownPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedMarkdownPriceListName2);
     await this.descriptionInput.fill(data.editedDescription);
@@ -778,18 +778,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async editCategoryWiseItemSpecificPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('CategoryWiseItemSpecificPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedPriceListName4);
     await this.descriptionInput.fill(data.editedDescription);
@@ -798,14 +798,14 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.editAssignPriceListOption.click();
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); 
+   
 
     await this.removeProductCloseButton.click();
     await this.addNewItemButton.click();
     await this.itemSelectionField1.fill(data.editedProductName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.itemSelectionOption.first().click();
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.editedPrimaryUOM1);
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
@@ -826,18 +826,18 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async editCategoryWiseItemSpecificPricingByAutoCalculating(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('CategoryWiseItemSpecificPricing_ByAutoCalculating');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedAutoCalculatePriceListName2);
     await this.descriptionInput.fill(data.editedDescription);
@@ -846,14 +846,14 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.editAssignPriceListOption.click();
 
     await this.itemSpecificCard.click();
-    await this.page.waitForTimeout(2000); 
+   
 
     await this.removeProductCloseButton.click();
     await this.addNewItemButton.click();
     await this.itemSelectionField1.fill(data.editedProductName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.itemSelectionOption.first().click();
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.editedPrimaryUOM1);
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
@@ -872,24 +872,24 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async editProfileWiseOverallMarkupPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('ProfileWiseOverallMarkupPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.priceListNameField.fill(data.editedPriceListName5);
     await this.descriptionInput.fill(data.editedDescription);
 
     await this.assignPriceListToDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.assignPriceListOption.click();
 
     //await this.itemSelectionField.fill(data.editedProfileName);
@@ -907,24 +907,24 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async editProfileWiseOverallMarkdownPricing(data) {     
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('ProfileWiseOverallMarkdownPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedMarkdownPriceListName3);
     await this.descriptionInput.fill(data.editedDescription);
 
     await this.assignPriceListToDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.assignPriceListOption.click();
 
     //await this.itemSelectionField.fill(data.editedProfileName);
@@ -945,24 +945,24 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async editProfileWiseItemSpecificPricing(data) {        
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('ProfileWiseItemSpecificPricing');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedPriceListName6);
     await this.descriptionInput.fill(data.editedDescription);
 
     await this.assignPriceListToDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.assignPriceListOption.click();
 
     await this.itemSelectionField.fill(data.profileName1);
@@ -970,10 +970,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.removeProductCloseButton.click();
     await this.addNewItemButton.click();
     await this.itemNameField.fill(data.editedProductName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.itemSelectionOption.first().click();
 
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.editedPrimaryUOM1);
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
@@ -997,24 +997,24 @@ class Pricing_general_Create extends SelfHealingBasePage {
   async editProfileWiseItemSpecificPricingByAutoCalculating(data) {        
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('ProfileWiseItemSpecificPricing_ByAutoCalculating');
 
     await this.searchField.fill(jsondata_editPricing.priceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.editPricingButton.click();
-    await this.page.waitForTimeout(2000);
+  
 
     await this.priceListNameField.fill(data.editedAutoCalculatePriceListName3);
     await this.descriptionInput.fill(data.editedDescription);
 
     await this.assignPriceListToDropdown.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.assignPriceListOption.click();
 
     await this.itemSelectionField.fill(data.profileName1);
@@ -1022,10 +1022,10 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.removeProductCloseButton.click();
     await this.addNewItemButton.click();
     await this.itemNameField.fill(data.editedProductName);
-    await this.page.waitForTimeout(2000); // Wait for the dropdown to populate
+   // Wait for the dropdown to populate
     await this.itemSelectionOption.first().click();
 
-    await this.page.waitForTimeout(2000);
+  
     await this.itemAmountField1.fill(data.editedPrimaryUOM1);
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
@@ -1049,16 +1049,16 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async deleteGeneralOverallMarkupPricing(data) {                                        
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('GeneralOverallMarkupPricing');
 
     await this.searchField.fill(jsondata_editPricing.editedPriceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.kebabMenuButton.click();
     await this.deleteButton.click();
     await this.confirmDeleteButton.click();
@@ -1069,23 +1069,23 @@ class Pricing_general_Create extends SelfHealingBasePage {
     async inactiveanddeleteGeneralOverallMarkdownPricing(data) {                                           
     // Navigate to pricing creation
     await this.inventoryLink.click();
-    await this.page.waitForTimeout(2000);
+  
     await this.pricingLink.click();
 
     const jsondata_editPricing= getSection('GeneralOverallMarkdownPricing');
 
     await this.searchField.fill(jsondata_editPricing.editedPriceListName);
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); // Wait for modal to appear
+   // Wait for modal to appear
     await this.activeInactiveToggle.click();
     await expect(this.activeInactiveSuccessMsg).toBeVisible({ timeout: 5000 });
     await this.closeButton.click();
     await expect(this.page.locator('(//td[@class="ant-table-cell"])[4]')).toHaveText('Not Active');
 
     await this.searchedField.click();
-    await this.page.waitForTimeout(2000); 
+   
     await this.kebabMenuButton.click();
     await this.deleteButton.click();
     await this.confirmDeleteButton.click();

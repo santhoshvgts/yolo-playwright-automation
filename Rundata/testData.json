@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "deprecator",
-    "productDescription": "Cometes quae depono turpis.",
-    "salePricePerPcs": "342",
-    "updatedAt": "2026-10-28T11:12:48.722Z",
-    "productName2": "amissio",
-    "productDescription2": "Blandior quidem spes odio concido coniuratio vix magnam.",
-    "salePricePerUnit": "389",
-    "quantity": "5"
+    "productName": "amissio",
+    "productDescription": "Contego decerno appello suffoco cado argumentum complectus aqua dedico.",
+    "salePricePerPcs": "763",
+    "updatedAt": "2026-10-29T13:32:06.397Z",
+    "productName2": "temeritas",
+    "productDescription2": "Nulla impedit coniecto.",
+    "salePricePerUnit": "129",
+    "quantity": "9"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {

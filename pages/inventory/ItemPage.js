@@ -80,8 +80,8 @@ class ItemPage extends AppBasePage {
 
   async _openInvoiceApp() {
     await this.openApp('invoice');
-    await this.selectOrg();
-    await this.settle(2000, 'org switch reloads data');
+    // Only a real org switch needs the reload wait (a saved session opens the org directly)
+    if (await this.selectOrg()) await this.settle(2000, 'org switch reloads data');
   }
 
   /**

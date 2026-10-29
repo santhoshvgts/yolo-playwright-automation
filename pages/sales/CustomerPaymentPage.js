@@ -139,8 +139,8 @@ class CustomerPaymentPage extends AppBasePage {
 
   async _openInvoiceApp() {
     await this.openApp('invoice');
-    await this.selectOrg();
-    await this.settle(5000, 'org switch reloads data');
+    // Only a real org switch needs the reload wait (a saved session opens the org directly)
+    if (await this.selectOrg()) await this.settle(5000, 'org switch reloads data');
   }
 
   /** Open the invoice app on the Sales tab and read back the numbers an earlier step saved. */
@@ -644,8 +644,8 @@ class CustomerPaymentPage extends AppBasePage {
    */
   async receivePaymentAgainstSalesInvoiceAndVerify(data) {
     await this.openApp('invoice');
-    await this.selectOrg();
-    await this.settle(5000, 'org switch reloads data');
+    // Only a real org switch needs the reload wait (a saved session opens the org directly)
+    if (await this.selectOrg()) await this.settle(5000, 'org switch reloads data');
 
     console.log('Reading latest Sales Invoice with a payment status...');
     await this.salesTab.click();

@@ -102,8 +102,8 @@ class SalesInvoiceStockPage extends AppBasePage {
   /** Open the invoice app inside the test org. */
   async open() {
     await this.openApp('invoice');
-    await this.selectOrg();
-    await this.settle(2000, 'org switch reloads data');
+    // Only a real org switch needs the reload wait (a saved session opens the org directly)
+    if (await this.selectOrg()) await this.settle(2000, 'org switch reloads data');
   }
 
   /** Create one item (see ItemPage.createItemWithUoms) and give it `stock` base units. */

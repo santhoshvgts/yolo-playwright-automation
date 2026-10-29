@@ -30,8 +30,8 @@ class SalesStockAlertPage extends AppBasePage {
   /** Returns the "pcs left" number shown for the item. */
   async readPcsLeft(itemName, customerName = masterData.customerName) {
     await this.openApp('invoice');
-    await this.selectOrg();
-    await this.settle(6000, 'org switch reloads data');
+    // Only a real org switch needs the reload wait (a saved session opens the org directly)
+    if (await this.selectOrg()) await this.settle(6000, 'org switch reloads data');
     console.log('Opening new Sales Invoice...');
     await this.salesTab.click();
     await this.newSalesInvoiceBtn.click();

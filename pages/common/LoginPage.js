@@ -12,8 +12,15 @@ const WAIT = {
   navigation: TIMEOUTS.navigation ?? 60_000,
 };
 const { adminData, appUrls, masterData } = require('../../test-data/UserData');
+const fs = require('fs');
+const { ORG_FILE } = require('../../config/auth');
 
 const DEFAULT_BASE_URL = appUrls.invoice;
+
+/** Test org id saved by config/global-setup.js next to the session ('' when there is none). */
+const savedOrgId = () => {
+  try { return JSON.parse(fs.readFileSync(ORG_FILE, 'utf8')).orgId || ''; } catch { return ''; }
+};
 
 /** Default login data: credentials from .env, org from masterData. */
 const defaultLoginData = () => {
@@ -58,6 +65,9 @@ class LoginPage extends BasePage {
     // Landing page shows this instead of "Log In" once a session is present.
     this.goToDashboardButton = this.page.getByRole('button', { name: /Go to Dashboard/i });
 
+    // Invoice app top menu — shown once the app has opened inside an org
+    this.invoiceNav = this.page.locator('//a[text()="Sales"]');
+
     // Logout locators
     this.profileImage = this.page.getByRole('img', { name: 'profile' });
     this.logoutLink   = this.page.getByText('Log out');
@@ -87,13 +97,19 @@ class LoginPage extends BasePage {
    * fieldforce / inventory can open straight into some other org with no org
    * screen at all. Order: org screen showing → pick there; header already shows
    * the org → done; otherwise open <app>/org-select and switch.
+   * Returns true when it switched org (callers then wait for the data to reload).
    */
   async selectOrg(data = defaultLoginData()) {
+    const orgId = savedOrgId();
+    if (orgId && this.page.url().includes(orgId) && !(await this.orgHeading.isVisible().catch(() => false))) {
+      // Already inside the saved test org (the header check below cannot read the invoice app's header)
+      return false;
+    }
     if (!(await this.orgHeading.isVisible().catch(() => false))) {
       const current = await this.currentOrgName();
       if (current.toLowerCase().includes(data.organization.toLowerCase())) {
         console.log(`Organisation already "${data.organization}" — no switch needed`);
-        return;
+        return false;
       }
       console.log(`App is in "${current.split('\n')[0] || 'unknown org'}" — opening org-select`);
       await this.page.goto(new URL('/org-select', this.page.url()).href);
@@ -118,6 +134,7 @@ class LoginPage extends BasePage {
     }
     // Switch navigates away from /org-select; don't continue until it has.
     await expect(this.orgHeading).toBeHidden({ timeout: WAIT.org });
+    return true;
   }
 
   /** Full flow: log in, verify the org screen, then switch into the test org. */
@@ -163,9 +180,33 @@ class LoginPage extends BasePage {
     if (!url) throw new Error(`Unknown app "${app}" (expected invoice | fieldforce | inventory)`);
     console.log(`Opening ${app} app...`);
     this.baseUrl = url;
+    if (app === 'invoice' && await this.openSavedOrg()) return;
     await this.ensureLoggedIn(data);
     const host = new URL(url).host.replace(/\./g, '\\.');
     await expect(this.page).toHaveURL(new RegExp(host), { timeout: WAIT.navigation });
+  }
+
+  /**
+   * Saved session (config/global-setup.js): open <app>/<orgId> straight away —
+   * ~2 s instead of ~14 s for landing → login → org switch. Returns false when
+   * there is no saved org or the session is no longer valid (caller logs in).
+   */
+  async openSavedOrg() {
+    const orgId = savedOrgId();
+    if (!orgId) return false;
+    await this.page.goto(`${this.baseUrl}/${orgId}`);
+    const state = await Promise.race([
+      this.invoiceNav.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'app'),
+      this.loginButton.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'login'),
+      this.goToDashboardButton.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'dashboard'),
+      this.orgHeading.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'org screen'),
+    ]).catch(() => 'nothing shown');
+    if (state === 'app' && this.page.url().includes(orgId)) {
+      console.log('Saved session — opened the test org directly');
+      return true;
+    }
+    console.log(`Saved session not usable (${state}) — logging in`);
+    return false;
   }
 
   async logout() {
