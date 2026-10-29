@@ -120,6 +120,8 @@ class ExpensePage extends PurchaseInvoiceFlowPage {
     if (source) await this.choose(this.hdr('source'), source, { type: true });
     if (h.destination) await this.choose(this.hdr('destination'), h.destination, { type: true });
     if (h.customer) await this.choose(this.hdr('client'), h.customer, { type: true });
+    // "This Expense is Billable" shows once a customer is picked; it is not ticked by default
+    if (h.billable) await this.page.locator('#is_billable').check();
     if (h.ref !== undefined) await this.fillInto(this.expRef, h.ref);
     if (h.date) await this.setExpenseDate(h.date);
     if (h.taxMode) await this.choose(this.taxModeSel, h.taxMode);
@@ -148,9 +150,10 @@ class ExpensePage extends PurchaseInvoiceFlowPage {
     }
   }
 
+  /** Remove a row through its ⋮ menu (Duplicate / Delete). */
   async removeRow(i) {
-    const btn = this.rows.nth(i).locator('td').last().locator('button').first();
-    await btn.locator('span[role="img"], svg, img').first().click().catch(() => btn.click());
+    await this.rows.nth(i).locator('td').last().locator('button').first().click();
+    await this.page.locator('.ant-dropdown:not(.ant-dropdown-hidden)').getByText('Delete', { exact: true }).click({ timeout: 5000 });
     const yes = this.page.locator('.ant-popover, .ant-popconfirm, .ant-modal-content').filter({ visible: true }).getByRole('button', { name: /^(Yes|OK|Delete)$/ }).last();
     if (await yes.isVisible().catch(() => false)) await yes.click();
     await this.settle(600, 'row removed');

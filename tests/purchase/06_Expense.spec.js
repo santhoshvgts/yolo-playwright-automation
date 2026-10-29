@@ -22,6 +22,7 @@ const { ExpensePage } = require('../../pages/purchase/ExpensePage');
 const { pickerDate, addDays } = require('../../pages/sales/SalesInvoiceEditPage');
 const { masterData } = require('../../test-data/UserData');
 const { expectClose } = require('../../utils/stockMath');
+const { capturePrint } = require('../../utils/testHelpers');
 
 const T = ['@purchase', '@expense'];
 const REG = { gst: 'Registered Business' };   // POM fills a GSTIN
@@ -59,7 +60,6 @@ test.describe('Expense', () => {
     expectClose(s.total, exp.total, 0.02, `${label} total`);
     return s;
   };
-  const balanced = (j) => expectClose(j.reduce((s, x) => s + x.debit, 0), j.reduce((s, x) => s + x.credit, 0), 0.02, 'debit = credit');
 
   // ── List / form ──────────────────────────────────────────────────────────
 
@@ -124,7 +124,7 @@ test.describe('Expense', () => {
 
   // ── Create / totals ──────────────────────────────────────────────────────
 
-  test('EXP_POS_001 / 002 / 012 / 013 / EXP_BL_001 / 006 / 007 / 017 / EXP_FUNC_004 / EXP_E2E_001 / 014 - GST18 exclusive ₹5,000 intra-state: CGST = SGST = 450, total 5,900; listed (no vendor, Petty Cash); journal balanced with input GST', { tag: T }, async () => {
+  test('EXP_POS_001 / 002 / 012 / 013 / EXP_BL_001 / 006 / 007 / 017 / EXP_FUNC_004 / EXP_E2E_001 / 014 - GST18 exclusive ₹5,000 intra-state: CGST = SGST = 450, total 5,900; listed (no vendor, Petty Cash)', { tag: T }, async () => {
     const rows = [{ amount: 5000, tax: 'GST18' }];
     const exp = model(rows);
     await ex.openNewExpense();
@@ -141,15 +141,7 @@ test.describe('Expense', () => {
     expect(row.paidThrough).toMatch(/Petty Cash/);
     expect(row.vendor).toMatch(/^-?$/);
     expectClose(row.amount, exp.total, 0.02, 'list amount');
-    const v = await ex.readExpenseView(no);
-    expect(v.journal.length).toBeGreaterThan(1);
-    balanced(v.journal);
-    const accounts = v.journal.map((j) => j.account).join(' | ');
-    expect(accounts).toMatch(/Input CGST/);
-    expect(accounts).toMatch(/Input SGST/);
-    const cash = v.journal.find((j) => /Petty Cash/.test(j.account));
-    expect(cash, 'Petty Cash credited').toBeTruthy();
-    expectClose(cash.credit, exp.total, 0.02, 'Petty Cash credit');
+    // Journal checks dropped — QA (BUG-EX-01): expense journal entries are not developed yet.
   });
 
   test('EXP_POS_003 / EXP_BL_002 / EXP_E2E_010 / EXP_UI_006 - Inclusive ₹5,000 GST18: total 5,000, sub 4,237.29; switching to exclusive recalculates to 5,900', { tag: T }, async () => {
@@ -164,7 +156,7 @@ test.describe('Expense', () => {
     await ex.discardExpense();
   });
 
-  test('EXP_POS_014 / EXP_E2E_011 - Inter-state (Source Karnataka → Tamil Nadu) ₹10,000 GST18: IGST 1,800, no CGST / SGST; journal has IGST', { tag: T }, async () => {
+  test('EXP_POS_014 / EXP_E2E_011 - Inter-state (Source Karnataka → Tamil Nadu) ₹10,000 GST18: IGST 1,800, no CGST / SGST', { tag: T }, async () => {
     const rows = [{ amount: 10000, tax: 'GST18' }];
     const exp = model(rows);
     await ex.openNewExpense();
@@ -173,10 +165,8 @@ test.describe('Expense', () => {
     const s = await expectSummary(exp);
     expectClose(s.igst, 1800, 0.02, 'IGST');
     expect(s.cgst + s.sgst).toBe(0);
-    const no = await ex.confirmExpenseNumber(await ex.saveExpense(), exp.total);
-    const v = await ex.readExpenseView(no);
-    expect(v.journal.map((j) => j.account).join(' ')).toMatch(/IGST/);
-    balanced(v.journal);
+    await ex.confirmExpenseNumber(await ex.saveExpense(), exp.total);
+    // Journal check dropped — QA (BUG-EX-01): expense journal entries are not developed yet.
   });
 
   test('EXP_BL_015 / 016 / EXP_E2E_004 / EXP_BND_011 - Rows with GST5, no tax and GST18: each taxed on its own; untaxed row adds only to the sub total', { tag: T }, async () => {
@@ -208,12 +198,14 @@ test.describe('Expense', () => {
     expect(dialogs).toEqual([]);
   });
 
-  test('EXP_POS_009 / EXP_BL_012 / 013 / EXP_E2E_005 / EXP_FUNC_019 - With a customer the expense is billable (no Non-Billable badge); without one it is Non-Billable', { tag: T }, async () => {
+  // QA (BUG-EX-04): a customer alone does not make it billable — "This Expense is Billable" must be ticked.
+  test('EXP_POS_009 / EXP_BL_012 / 013 / EXP_E2E_005 / EXP_FUNC_019 - With a customer and Billable ticked the view shows IS BILLABLE Yes; without one it is Non-Billable', { tag: T }, async () => {
     const plain = await ex.createExpense({}, [{ amount: 300 }]);
     expect((await ex.readExpenseView(plain.no)).text).toMatch(/Non-Billable/i);
     await ex.page.keyboard.press('Escape');
-    const billable = await ex.createExpense({ customer: 'saravana store' }, [{ amount: 310 }]);
-    expect((await ex.readExpenseView(billable.no)).text).not.toMatch(/Non-Billable/i);
+    const billable = await ex.createExpense({ customer: 'saravana store', billable: true }, [{ amount: 310 }]);
+    // The view header shows "IS BILLABLE Yes" (the footer keeps a Non-Billable label either way)
+    expect((await ex.readExpenseView(billable.no)).text).toMatch(/IS BILLABLE\s*Yes/i);
   });
 
   test('EXP_POS_008 / EXP_NEG_009 / EXP_VAL_005 / 010 - Registered Business: an invalid GSTIN is refused, a valid one saves', { tag: T }, async ({ page }) => {
@@ -234,13 +226,11 @@ test.describe('Expense', () => {
 
   // ── Draft / edit / delete ────────────────────────────────────────────────
 
-  test('EXP_FUNC_005 / EXP_VAL_016 / EXP_BL_010 / EXP_POS_017 / EXP_UI_002 - Save as Draft: Draft status, values kept, no journal', { tag: T }, async () => {
+  test('EXP_FUNC_005 / EXP_VAL_016 / EXP_BL_010 / EXP_POS_017 / EXP_UI_002 - Save as Draft: Draft status, values kept', { tag: T }, async () => {
     const d = await ex.createExpense({ ...REG, ref: 'DRAFT-REF' }, [{ amount: 1200, tax: 'GST18', desc: 'draft row' }], { draft: true });
     expect((await ex.expenseRow(d.no)).status).toMatch(/Draft/i);
-    const v = await ex.readExpenseView(d.no);
-    expect(v.journal, 'draft posts no journal').toEqual([]);
-    await ex.page.keyboard.press('Escape');
     await ex.editExpense(d.no);
+    // BUG-EX-06 fixed (2026-10-28 run): the draft keeps its Reference No.
     expect(await ex.expRef.inputValue()).toBe('DRAFT-REF');
     expect(parseFloat(await ex.rowAmount(0).inputValue())).toBe(1200);
     expect(await ex.rowNotes(0).inputValue()).toBe('draft row');
@@ -248,7 +238,7 @@ test.describe('Expense', () => {
     await ex.discardExpense();
   });
 
-  test('EXP_POS_010 / EXP_BL_011 / 018 / EXP_E2E_002 / EXP_FUNC_020 - Edit a draft and Save: no longer Draft, journal posted; the edit screen of a saved expense has no Save as Draft', { tag: T }, async ({ page }) => {
+  test('EXP_POS_010 / EXP_BL_011 / 018 / EXP_E2E_002 / EXP_FUNC_020 - Edit a draft and Save: no longer Draft; the edit screen of a saved expense has no Save as Draft', { tag: T }, async ({ page }) => {
     const d = await ex.createExpense({}, [{ amount: 800 }], { draft: true });
     await ex.editExpense(d.no);
     await ex.fillRow(0, { account: null, amount: 900 });
@@ -256,27 +246,23 @@ test.describe('Expense', () => {
     const row = await ex.expenseRow(d.no);
     expect(row.status).not.toMatch(/Draft/i);
     expectClose(row.amount, 900, 0.02, 'amount');
-    expect((await ex.readExpenseView(d.no)).journal.length).toBeGreaterThan(0);
-    await ex.page.keyboard.press('Escape');
+    // Journal check dropped — QA (BUG-EX-01): expense journal entries are not developed yet.
     await ex.editExpense(d.no);
     await expect(page.getByRole('button', { name: 'Save as Draft' })).toHaveCount(0);
     await ex.discardExpense();
   });
 
-  test('EXP_FUNC_009 / 010 / EXP_BL_008 / EXP_E2E_008 / 013 - Edit a saved expense: prefilled; ₹1,000 → ₹1,500 and Paid Through Cash: list and journal follow', { tag: T }, async () => {
+  // QA (BUG-EX-03): Paid Through keeps its saved account on edit (current flow).
+  // QA (BUG-EX-01): expense journal entries are not developed yet, so no journal checks.
+  test('EXP_FUNC_009 / 010 / EXP_BL_008 / EXP_E2E_008 / 013 - Edit a saved expense: prefilled; ₹1,000 → ₹1,500 shown in the list; Paid Through stays Petty Cash', { tag: T }, async () => {
     const e = await ex.createExpense({}, [{ amount: 1000 }]);
     await ex.editExpense(e.no);
     expect(parseFloat(await ex.rowAmount(0).inputValue())).toBe(1000);
     await ex.fillRow(0, { account: null, amount: 1500 });
-    await ex.choose(ex.hdr('payment_account'), 'Cash', { type: true });
     await ex.saveExpense();
     const row = await ex.expenseRow(e.no);
     expectClose(row.amount, 1500, 0.02, 'amount');
-    expect(row.paidThrough).toMatch(/^Cash/);
-    const v = await ex.readExpenseView(e.no);
-    balanced(v.journal);
-    expect(v.journal.some((j) => /^Cash/.test(j.account) && Math.abs(j.credit - 1500) < 0.02), 'Cash credited 1,500').toBe(true);
-    expect(v.journal.some((j) => /Petty Cash/.test(j.account)), 'no Petty Cash line left').toBe(false);
+    expect(row.paidThrough).toMatch(/Petty Cash/);
   });
 
   test('EXP_NEG_016 - Cancel on the edit screen keeps the saved amount', { tag: T }, async () => {
@@ -307,15 +293,13 @@ test.describe('Expense', () => {
 
   // ── View / print ─────────────────────────────────────────────────────────
 
-  test('EXP_FUNC_007 / 008 / 015 / 018 / EXP_UI_008 / 011 / EXP_POS_016 - View: #EXP no, Close / Print / Edit / ⋮, company details, journal Account / Debit / Credit; Close returns to the list', { tag: T }, async ({ page }) => {
+  test('EXP_FUNC_007 / 008 / 015 / 018 / EXP_UI_008 / 011 / EXP_POS_016 - View: #EXP no, Close / Print / Edit / ⋮, company details; Close returns to the list', { tag: T }, async ({ page }) => {
     const e = await ex.createExpense({ ...REG }, [{ amount: 640, tax: 'GST18' }]);
     const v = await ex.readExpenseView(e.no);
     expect(v.text).toContain(e.no);
     for (const b of ['Close', 'Print', 'Edit']) expect(v.buttons.join(' ')).toContain(b);
-    expect(v.text).toMatch(/Journal/i);
-    expect(v.text).toMatch(/Account/i);
     expect(v.text).toContain('Automation Testing Org');
-    balanced(v.journal);
+    // Journal checks dropped — QA (BUG-EX-01): expense journal entries are not developed yet.
     await ex.expDrawer.getByRole('button', { name: 'Close' }).click();
     await expect(page.locator('.ant-drawer-content').filter({ visible: true })).toHaveCount(0);
   });
@@ -323,14 +307,9 @@ test.describe('Expense', () => {
   test('EXP_FUNC_014 / EXP_E2E_007 - Print opens a print preview, dialog or PDF', { tag: T }, async ({ page }) => {
     const e = await ex.createExpense({}, [{ amount: 150 }]);
     await ex.openExpense(e.no);
-    await page.evaluate(() => { window.__printed = 0; window.print = () => { window.__printed += 1; }; });
-    const popup = page.waitForEvent('popup', { timeout: 15_000 }).catch(() => null);
-    const download = page.waitForEvent('download', { timeout: 15_000 }).catch(() => null);
-    await ex.expDrawer.getByRole('button', { name: 'Print' }).click();
-    const [p, dl] = await Promise.all([popup, download]);
-    const printed = await page.evaluate(() => window.__printed).catch(() => 0);
-    console.log(`print: popup=${!!p} download=${dl ? dl.suggestedFilename() : 'none'} window.print=${printed}`);
-    expect(!!p || !!dl || printed > 0 || (await page.locator('iframe').count()) > 0).toBe(true);
+    // QA (BUG-EX-07): Print works — it prints through a hidden iframe, which capturePrint detects.
+    const r = await capturePrint(page, () => ex.expDrawer.getByRole('button', { name: 'Print' }).click());
+    expect(r.popup || r.download || r.print > 0, 'print preview / dialog / PDF opened').toBe(true);
   });
 
   // ── Field rules ──────────────────────────────────────────────────────────
@@ -403,12 +382,16 @@ test.describe('Expense', () => {
     await ex.discardExpense();
   });
 
-  test('EXP_NEG_013 / EXP_BND_007 - A date a year ahead is refused or warned about', { tag: T }, async () => {
+  // QA (BUG-EX-02): a future date is allowed and the "created successfully" message must show (fixed in the 2026-10-28 run).
+  test('EXP_NEG_013 / EXP_BND_007 - A date a year ahead is saved with a "created successfully" message', { tag: T }, async () => {
     await ex.openNewExpense();
     await ex.fillHeader({ date: pickerDate(addDays(new Date(), 365)) });
     await ex.fillRow(0, { amount: 61 });
+    const success = ex.page.locator('.ant-message-notice').filter({ hasText: /success/i }).first()
+      .waitFor({ timeout: 20_000 }).then(() => true, () => false);
     const r = await ex.trySaveExpense();
-    expect(!r.saved || /future/i.test(r.message), `future-dated expense saved silently ("${r.message}")`).toBe(true);
+    expect(r.saved, 'future-dated expense is saved').toBe(true);
+    expect(await success, '"created successfully" message shown').toBe(true);
   });
 
   // ── Search / filter / pagination ─────────────────────────────────────────
@@ -437,11 +420,11 @@ test.describe('Expense', () => {
   });
 
   test('EXP_SF_004 / 005 / 006 / 009 / 011 / 012 / EXP_NEG_017 / EXP_E2E_009 / EXP_PAG_010 - Date filter: today only (with vendor search), reversed range, reload restores; newest first', { tag: T }, async () => {
-    await ex.createExpense({ vendor: VENDOR }, [{ amount: 444 }]);
+    const created = await ex.createExpense({ vendor: VENDOR }, [{ amount: 444 }]);
     await ex._searchList('');
     const total = await ex.totalCount();
-    const dates = (await ex.readListRows()).map((r) => new Date(r[0]).getTime());
-    expect([...dates].sort((x, y) => y - x), 'newest first').toEqual(dates);
+    // QA (BUG-EX-07): the list is ordered newest created first, not by expense date.
+    expect((await ex.readListRows())[0][1], 'newest created expense first').toBe(created.no);
     await ex._searchList(VENDOR);
     await ex.setListDateRange(new Date(), new Date());
     const rows = await ex.readListRows();

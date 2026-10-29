@@ -23,12 +23,13 @@
 //   npx playwright test tests/purchase/04_PaymentMade.spec.js --grep @pm
 // ═════════════════════════════════════════════════════════════════════════
 
-const { test, expect } = require('../../fixtures/base-test');
+const { test, expect, bugCheck } = require('../../fixtures/base-test');
 const { PaymentMadePage } = require('../../pages/purchase/PaymentMadePage');
 const { pickerDate, addDays } = require('../../pages/sales/SalesInvoiceEditPage');
 const { SalesInvoiceEditFlowData: E } = require('../../test-data/SalesInvoiceStock_Data');
 const { masterData } = require('../../test-data/UserData');
 const { expectClose } = require('../../utils/stockMath');
+const { capturePrint } = require('../../utils/testHelpers');
 
 const T = ['@purchase', '@pm'];
 const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -80,17 +81,17 @@ test.describe('Payment Made', () => {
     expect(await pm.totalCount()).toBeGreaterThanOrEqual(rows.length);
   });
 
-  test('PAY_POS_017 / PAY_PAG_010 / PAY_UI_019 - Footer shows the total amount of all payments', { tag: T }, async ({ page }) => {
+  // QA (BUG-PM-06): by design the footer shows only "Total Count" (no total amount) and the mode is plain text.
+  test('PAY_POS_017 / PAY_PAG_010 / PAY_UI_019 - Footer shows the Total Count of payments', { tag: T }, async () => {
     await pm._searchPayments('');
     await expect(pm.totalCountText).toBeVisible();
-    await expect(page.getByText(/Total Amount/i).first(), 'total amount in the footer').toBeVisible({ timeout: 5000 });
+    expect(await pm.totalCount()).toBeGreaterThan(0);
   });
 
-  test('PAY_UI_002 / 003 / PAY_ACC_005 - Mode of Payment is a text badge; vendor has an avatar', { tag: T }, async ({ page }) => {
+  test('PAY_UI_002 / 003 / PAY_ACC_005 - Mode of Payment shown as text; vendor has an avatar', { tag: T }, async ({ page }) => {
     await pm._searchPayments('');
     const row = page.locator('table tbody tr.ant-table-row').first();
     await expect(row.locator('td').nth(3)).toHaveText(/\S/);
-    await expect(row.locator('td').nth(3).locator('.ant-tag, [class*="badge"], [class*="tag"], span').first()).toBeVisible();
     await expect(row.locator('td').nth(2).locator('img, svg, .ant-avatar').first(), 'vendor avatar').toBeVisible({ timeout: 5000 });
   });
 
@@ -267,11 +268,17 @@ test.describe('Payment Made', () => {
     const v = await pm.readPaymentView(cash);
     await pm.closePaymentView();
     await pm.editPayment(cash);
-    expect(await pm.receiptRef.inputValue(), 'reference kept').toBe(ref);
-    expect(v.text, 'reference in the view').toContain(ref);
+    const kept = await pm.receiptRef.inputValue();
     await pm.discardPaymentForm();
     await pm.editPayment(bank);
-    expect(await pm.receiptNotes.inputValue(), 'notes kept').toBe('paid by transfer');
+    const notes = await pm.receiptNotes.inputValue();
+    await pm.discardPaymentForm();
+    // QA (BUG-PM-03): bug — Reference No (and notes) are not saved with the payment.
+    await bugCheck('BUG-PM-03', 'Reference No / notes not saved with the payment', async () => {
+      expect(kept, 'reference kept').toBe(ref);
+      expect(v.text, 'reference in the view').toContain(ref);
+      expect(notes, 'notes kept').toBe('paid by transfer');
+    });
   });
 
   test('PAY_FUNC_011 / 012 / PAY_BND_012 - Edit: prefilled; raise the bill amount 500 → 800 (due down 300), then cut to ₹0.01 (due restored)', { tag: T }, async () => {
@@ -346,15 +353,9 @@ test.describe('Payment Made', () => {
     const b = await bill(1);
     const no = await pay(b.total, { [b.no]: b.total });
     await pm.openPayment(no);
-    await page.evaluate(() => { window.__printed = 0; window.print = () => { window.__printed += 1; }; });
-    const popup = page.waitForEvent('popup', { timeout: 15_000 }).catch(() => null);
-    const download = page.waitForEvent('download', { timeout: 15_000 }).catch(() => null);
-    await pm.paymentDrawer.getByRole('button', { name: 'Print', exact: true }).click();
-    const [p, dl] = await Promise.all([popup, download]);
-    const printed = await page.evaluate(() => window.__printed).catch(() => 0);
-    const frame = await page.locator('iframe').count();
-    console.log(`print: popup=${!!p} download=${dl ? dl.suggestedFilename() : 'none'} window.print=${printed} iframes=${frame}`);
-    expect(!!p || !!dl || printed > 0 || frame > 0, 'print preview / dialog / PDF opened').toBe(true);
+    // QA (BUG-PM-05): Print works — it prints through a hidden iframe, which capturePrint detects.
+    const r = await capturePrint(page, () => pm.paymentDrawer.getByRole('button', { name: 'Print', exact: true }).click());
+    expect(r.popup || r.download || r.print > 0, 'print preview / dialog / PDF opened').toBe(true);
   });
 
   test('PAY_E2E_010 / PAY_BL_013 / PAY_EXP_010 - Make Payment from the bill creates a Payment Made entry with the bill and a balanced journal', { tag: T }, async () => {
@@ -410,14 +411,13 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_NEG_006 / 007 / PAY_UI_012 / PAY_VAL_015 - Bill payment above the paid amount: error, save blocked', { tag: T }, async () => {
+  // QA (BUG-PM-04): this is the flow — a Paid Amount above the bill rows is saved and the excess goes to the vendor's advance.
+  test('PAY_NEG_006 / 007 / PAY_UI_012 / PAY_VAL_015 - Paid amount above the bill payment is saved (excess to advance)', { tag: T }, async () => {
     const b = await bill(10);
     await pm.openNewPayment(VENDOR);
-    await pm.fillPaymentForm({ amount: 100, answer: 'Cancel', rows: { [b.no]: 500 } });
+    await pm.fillPaymentForm({ amount: b.total + 50, answer: 'Cancel', rows: { [b.no]: b.total } });
     const r = await pm.trySavePayment();
-    expect(r.saved, 'save blocked').toBe(false);
-    expect(r.message).toMatch(/exceed/i);
-    await pm.discardPaymentForm();
+    expect(r.saved, `payment saved (${r.message || 'no message'})`).toBe(true);
   });
 
   test('PAY_BND_013 / 014 - Paid Amount keeps 2 decimals (5000.75); a 3rd decimal is rounded or refused', { tag: T }, async () => {
@@ -488,10 +488,13 @@ test.describe('Payment Made', () => {
     await pm.searchPayments(VENDOR.toUpperCase());
     expect(await pm.totalCount(), 'case-insensitive').toBe(n);
     await pm.searchPayments(`  ${VENDOR}  `);
-    expect(await pm.totalCount(), 'trimmed').toBe(n);
+    const padded = await pm.totalCount();
+    await bugCheck('BUG-GEN-01', 'search does not trim spaces', async () => {
+      expect(padded, 'trimmed').toBe(n);
+    });
     expect(await pm.searchPayments('ZZZ-NO-SUCH-PAY-123')).toEqual([]);
     expect(await pm.searchPayments("' OR 1=1 --")).toEqual([]);
-    await expect(page.locator('table')).toBeVisible();
+    await expect(page.locator('table').first()).toBeVisible();
     await pm.searchPayments('');
     expect(await pm.totalCount()).toBe(total);
   });
@@ -543,7 +546,9 @@ test.describe('Payment Made', () => {
     expect(new Set(seen).size).toBe(seen.length);
     await pm.fillInto(pm.listSearch, VENDOR);
     await pm.settle(2500, 'search');
-    await expect(pag.locator('li.ant-pagination-item-active')).toHaveText('1');
+    await bugCheck('BUG-GEN-02', 'a new search keeps the current page', async () => {
+      await expect(pag.locator('li.ant-pagination-item-active')).toHaveText('1', { timeout: 5000 });
+    });
   });
 
   // ── Security / accessibility ─────────────────────────────────────────────

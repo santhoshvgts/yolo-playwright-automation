@@ -37,4 +37,32 @@ async function step(title, fn) {
   return test.step(title, fn);
 }
 
-module.exports = { runSafely, step, isStrict };
+/**
+ * Click Print and report how the app printed: { popup, download, print }. The app prints through
+ * a hidden off-screen iframe — it calls iframe.contentWindow.print() and then removes the iframe —
+ * so every iframe added after the click gets its print() stubbed and counted. Any of the three
+ * being truthy means a print was triggered; no real print dialog opens.
+ */
+async function capturePrint(page, click) {
+  await page.evaluate(() => {
+    window.__printed = 0;
+    window.print = () => { window.__printed += 1; };
+    const stub = (f) => { try { f.contentWindow.print = () => { window.__printed += 1; }; } catch { /* cross-origin */ } };
+    window.__printObserver?.disconnect();
+    window.__printObserver = new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => {
+      if (n.tagName !== 'IFRAME') return;
+      stub(n);
+      n.addEventListener('load', () => stub(n));
+    })));
+    window.__printObserver.observe(document.body, { childList: true, subtree: true });
+  });
+  const popup = page.waitForEvent('popup', { timeout: 15_000 }).catch(() => null);
+  const download = page.waitForEvent('download', { timeout: 15_000 }).catch(() => null);
+  await click();
+  const [p, dl] = await Promise.all([popup, download]);
+  const print = await page.evaluate(() => window.__printed).catch(() => 0);
+  console.log(`print: popup=${!!p} download=${dl ? dl.suggestedFilename() : 'none'} print()=${print}`);
+  return { popup: !!p, download: !!dl, print };
+}
+
+module.exports = { runSafely, step, isStrict, capturePrint };

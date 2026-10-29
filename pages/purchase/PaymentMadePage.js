@@ -81,6 +81,9 @@ class PaymentMadePage extends PurchaseInvoiceFlowPage {
 
   /** Rows of every page of the Payment Made list for `text`. */
   async allPayments(text) {
+    // The list can be stale right after a payment is made elsewhere (e.g. from a bill) — reload first
+    await this.page.reload();
+    await this.settle(3000, 'list reload');
     await this._searchPayments(text);
     const rows = [];
     for (let i = 0; i < 100; i++) {
@@ -241,6 +244,9 @@ class PaymentMadePage extends PurchaseInvoiceFlowPage {
 
   /** Purchase invoice list row { status, due } for a bill. */
   async billRow(billNo) {
+    // The list keeps the old due after a payment is deleted until the page reloads
+    await this.page.reload();
+    await this.settle(3000, 'list reload');
     return this.listRow(billNo);
   }
 }

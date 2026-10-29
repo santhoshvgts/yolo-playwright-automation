@@ -16,7 +16,7 @@
 //   npx playwright test tests/purchase/02_PurchaseInvoice.spec.js --grep @pi
 // ════════════════════════════════════════════════════════════════════════════
 
-const { test, expect } = require('../../fixtures/base-test');
+const { test, expect, bugCheck } = require('../../fixtures/base-test');
 const { PurchaseInvoiceFlowPage } = require('../../pages/purchase/PurchaseInvoiceFlowPage');
 const { badgeFamily, pickerDate, listDate, addDays } = require('../../pages/sales/SalesInvoiceEditPage');
 const { SalesInvoiceEditFlowData: E } = require('../../test-data/SalesInvoiceStock_Data');
@@ -72,7 +72,9 @@ test.describe('Purchase Invoice', () => {
     expect(th).toEqual(expect.arrayContaining(['Date', 'Bill No', 'Vendor Name', 'Status', 'Bill Amount', 'Due Amount']));
     await expect(pi.newInvoiceBtn).toHaveClass(/ant-btn-primary/);
     await expect(page.locator('table tbody tr.ant-table-row').first().locator('input[type=checkbox]')).toBeVisible();
-    await expect(page.locator('table thead input[type=checkbox]').first()).toBeVisible();
+    await bugCheck('BUG-PI-01', 'no select-all checkbox in the list header', async () => {
+      await expect(page.locator('table thead input[type=checkbox]').first()).toBeVisible({ timeout: 5000 });
+    });
   });
 
   test('PI_FUNC_002 / PI_UI_008 / PI_NEG_001 / PI_VAL_001 - Vendor step: searchable vendor select with Next; Next without a vendor does not open the form', { tag: T }, async ({ page }) => {
@@ -134,15 +136,18 @@ test.describe('Purchase Invoice', () => {
     expect(await pi.readStock(A), 'stock up by 1').toBe(s0 + 1);
   });
 
-  test('PI_FUNC_005 / PI_E2E_004 - Draft: listed Draft, stock unchanged; Save and Send from edit: due status and stock up', { tag: T }, async () => {
+  test('PI_FUNC_005 / PI_E2E_004 - Draft: listed Draft, stock unchanged; Convert To Invoice: due status and stock up', { tag: T }, async () => {
     const s0 = await pi.readStock(C);
     const b = await bill([L(C, 4)], { draft: true });
     expect((await pi.listRow(b.no)).status).toMatch(/draft/i);
     expect(await pi.readStock(C), 'draft does not move stock').toBe(s0);
-    await pi.editInvoice(b.no);
-    await pi.save();
+    // QA (BUG-PI-04): working fine — a draft is published with "Convert To Invoice" in its view (Save from edit keeps it Draft).
+    await pi.openInvoice(b.no);
+    await pi.page.getByRole('button', { name: 'Convert To Invoice' }).click();
+    await expect(pi.page.getByRole('button', { name: 'Make Payment' }), 'converted bill can be paid').toBeVisible({ timeout: 20_000 });
+    await pi.open();
     expect((await pi.listRow(b.no)).status).toMatch(/days? due/i);
-    expect(await pi.readStock(C), 'stock up after Save and Send').toBe(s0 + 4);
+    expect(await pi.readStock(C), 'stock up after Convert To Invoice').toBe(s0 + 4);
   });
 
   test('PI_FUNC_007 / 008 / 009 / PI_BL_016 / PI_E2E_002 - View panel opens; Edit pre-fills; qty 10 → 20 updates amount and stock', { tag: T }, async () => {
@@ -283,10 +288,13 @@ test.describe('Purchase Invoice', () => {
     await pi.payInvoice(paid.no, paid.total);
     const o = await pi.listRow(old.no);
     expect(o.status).toMatch(/overdue/i);
-    expect(badgeFamily(o.badgeColor)).toBe('red');
     const d = await pi.listRow(due.no);
     expect(d.status).toMatch(/days? due/i);
-    expect(badgeFamily(d.badgeColor)).toBe('orange');
+    // QA (BUG-PI-05): due bills need their own colour — overdue and days-due badges are green like Paid.
+    await bugCheck('BUG-PI-05', 'overdue / days-due badges are green, same as Paid', async () => {
+      expect(badgeFamily(o.badgeColor), 'overdue badge').toBe('red');
+      expect(badgeFamily(d.badgeColor), 'days-due badge').toBe('orange');
+    });
     const p = await pi.listRow(paid.no);
     expect(p.status).toBe('Paid');
     expect(badgeFamily(p.badgeColor)).toBe('green');
@@ -413,11 +421,7 @@ test.describe('Purchase Invoice', () => {
 
   test('PI_NEG_015 / PI_VAL_002 / 008 - Empty or invalid Bill Date is refused', { tag: T }, async () => {
     await draftForm([L(A, 1)]);
-    await pi.billDateInput.click();
-    await pi.billDateInput.press('ControlOrMeta+A');
-    await pi.billDateInput.press('Backspace');
-    await pi.page.keyboard.press('Escape');
-    const shown = await pi.billDateInput.inputValue();
+    const shown = await pi.clearBillDate();
     if (shown) { console.log(`Bill date cannot be emptied (shows "${shown}")`); await pi.discardForm(); return; }
     const r = await pi.trySave();
     expect(r.saved, 'empty bill date must be refused').toBe(false);
@@ -499,7 +503,10 @@ test.describe('Purchase Invoice', () => {
     const upper = await pi.searchList(VENDOR.toUpperCase());
     expect(lower.length).toBeGreaterThan(0);
     expect.soft(upper.map((r) => r[2]), 'case-insensitive search').toEqual(lower.map((r) => r[2]));
-    expect.soft((await pi.searchList(`  ${VENDOR}  `)).map((r) => r[2]), 'search trims spaces').toEqual(lower.map((r) => r[2]));
+    const padded = (await pi.searchList(`  ${VENDOR}  `)).map((r) => r[2]);
+    await bugCheck('BUG-GEN-01', 'search does not trim spaces', async () => {
+      expect(padded, 'search trims spaces').toEqual(lower.map((r) => r[2]));
+    });
     expect((await pi.searchList(VENDOR.split(' ')[1] || VENDOR.slice(1))).length).toBeGreaterThan(0);
     expect((await pi.searchList('')).length).toBeGreaterThan(1);
   });
@@ -544,7 +551,11 @@ test.describe('Purchase Invoice', () => {
     const rows = await pi.searchList(VENDOR);
     expect(rows.every((r) => r.includes(VENDOR))).toBe(true);
     const active = pag.locator('li.ant-pagination-item-active');
-    if (await active.count()) await expect(active).toHaveText('1');
+    if (await active.count()) {
+      await bugCheck('BUG-GEN-02', 'a new search keeps the current page', async () => {
+        await expect(active).toHaveText('1', { timeout: 5000 });
+      });
+    }
     const count = (await page.locator('body').innerText()).match(/Total(?: Count)?\s*:?\s*(\d+)/i);
     if (count && rows.length < 20) expect(Number(count[1])).toBe(rows.length);
   });

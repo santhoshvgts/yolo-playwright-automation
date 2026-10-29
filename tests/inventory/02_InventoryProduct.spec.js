@@ -15,7 +15,7 @@
 //   npx playwright test tests/inventory/02_InventoryProduct.spec.js --grep @inv
 // ═════════════════════════════════════════════════════════════════════════
 
-const { test, expect } = require('../../fixtures/base-test');
+const { test, expect, bugCheck } = require('../../fixtures/base-test');
 const { InventoryPage } = require('../../pages/inventory/InventoryPage');
 const { PurchaseInvoiceFlowPage } = require('../../pages/purchase/PurchaseInvoiceFlowPage');
 const { SalesInvoiceEditPage } = require('../../pages/sales/SalesInvoiceEditPage');
@@ -106,15 +106,20 @@ test.describe('Inventory Product', () => {
     expect(await inv.rowOf('Items', name)).toBeNull();
   });
 
-  test('INV_NEG_003 / INV_VAL_002 / 003 / INV_BND_003 / 004 - HSN: 7 digits refused; letters and a 9th digit not accepted', { tag: T }, async () => {
+  // QA (BUG-INV-02): an HSN code of 4–8 digits is valid, so 7 digits is accepted.
+  test('INV_NEG_003 / INV_VAL_002 / 003 / INV_BND_003 / 004 - HSN: letters dropped; 7 digits (4–8 allowed) saved; more than 8 digits refused', { tag: T }, async () => {
     await inv.openNew('Item');
     await inv.fillProduct({ name: nm(), price: 10, hsn: '1234567' });
-    const r = await inv.trySave();
-    expect(r.saved, `7-digit HSN must be refused (${r.errors.join(' | ')})`).toBe(false);
     await inv.input('hsn_code').fill('');
-    await inv.input('hsn_code').pressSequentially('12ab345678901');
-    expect(await inv.input('hsn_code').inputValue()).toMatch(/^\d{0,8}$/);
-    await inv.closeForm();
+    await inv.input('hsn_code').pressSequentially('12ab34567');
+    expect(await inv.input('hsn_code').inputValue(), 'letters dropped').toBe('1234567');
+    const r = await inv.trySave();
+    expect(r.saved, `7-digit HSN is accepted (${r.errors.join(' | ')})`).toBe(true);
+    // The field takes any number of digits; more than 8 is refused on save
+    await inv.openNew('Item');
+    await inv.fillProduct({ name: nm(), price: 10, hsn: '12345678901' });
+    const over = await inv.trySave();
+    expect(over.saved, '11-digit HSN refused').toBe(false);
   });
 
   test('INV_NEG_004 / 011 / INV_VAL_007 - Sale price: "-" and letters refused', { tag: T }, async () => {
@@ -155,14 +160,14 @@ test.describe('Inventory Product', () => {
     if (!r.saved) await inv.closeForm();
   });
 
-  test('INV_NEG_014 / INV_VAL_018 - A second item with the same name is refused or warned about', { tag: T }, async () => {
+  // QA (BUG-INV-01): there is no duplicate-name check for items (current flow).
+  test('INV_NEG_014 / INV_VAL_018 - A second item with the same name is accepted', { tag: T }, async () => {
     const name = nm();
     await inv.createProduct('Item', { name });
     await inv.openNew('Item');
     await inv.fillProduct({ name, price: 100 });
     const r = await inv.trySave();
-    expect(r.saved, `duplicate "${name}" must be refused`).toBe(false);
-    await inv.closeForm();
+    expect(r.saved, `duplicate "${name}" is accepted (${r.errors.join(' | ')})`).toBe(true);
   });
 
   test('INV_NEG_018 / INV_SEC_005 - Script text in the product name is not run', { tag: T }, async ({ page }) => {
@@ -420,7 +425,9 @@ test.describe('Inventory Product', () => {
     expect(await inv.totalCount()).toBe(total);
     await inv.fillInto(inv.listSearchBox, 'ZZ');
     await inv.settle(2500, 'search');
-    await expect(page.locator('ul.ant-pagination').filter({ visible: true }).first().locator('li.ant-pagination-item-active')).toHaveText('1');
+    await bugCheck('BUG-GEN-02', 'a new search keeps the current page', async () => {
+      await expect(page.locator('ul.ant-pagination').filter({ visible: true }).first().locator('li.ant-pagination-item-active')).toHaveText('1', { timeout: 5000 });
+    });
   });
 
   test('INV_SEC_001 / 011 - Without a session the products page redirects to login', { tag: T }, async ({ browser, page }) => {

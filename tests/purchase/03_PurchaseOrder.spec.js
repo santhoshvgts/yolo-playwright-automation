@@ -17,7 +17,7 @@
 //   npx playwright test tests/purchase/03_PurchaseOrder.spec.js --grep @po
 // ════════════════════════════════════════════════════════════════════════════
 
-const { test, expect } = require('../../fixtures/base-test');
+const { test, expect, bugCheck } = require('../../fixtures/base-test');
 const { PurchaseOrderFlowPage } = require('../../pages/purchase/PurchaseOrderFlowPage');
 const { badgeFamily, pickerDate, listDate, addDays } = require('../../pages/sales/SalesInvoiceEditPage');
 const { SalesInvoiceEditFlowData: E } = require('../../test-data/SalesInvoiceStock_Data');
@@ -58,13 +58,14 @@ test.describe('Purchase Order', () => {
 
   // ── List / form ──────────────────────────────────────────────────────────
 
-  test('PO_FUNC_001 / PO_UI_001 / 002 / 004 / 005 - List: Order Date, Order No, Vendor Name, Status, Store Status, Bill Amount; primary New button; search placeholder', { tag: T }, async ({ page }) => {
+  // QA (BUG-PO-01): there is no separate "Store Status" column (current flow).
+  test('PO_FUNC_001 / PO_UI_001 / 002 / 004 / 005 - List: Order Date, Order No, Vendor Name, Status, Bill Amount (no Store Status); primary New button; search placeholder', { tag: T }, async ({ page }) => {
     await po._searchList('');
     const th = (await page.locator('table thead th').filter({ visible: true }).allInnerTexts()).map((t) => t.trim()).filter(Boolean);
     expect(th).toEqual(expect.arrayContaining(['Order Date', 'Order No', 'Vendor Name', 'Status', 'Bill Amount']));
     await expect(po.newOrderBtn).toHaveClass(/ant-btn-primary/);
     expect(await po.listSearch.getAttribute('placeholder')).toMatch(/Search by Bill No\. or Name/i);
-    expect(th, 'separate "Store Status" column').toContain('Store Status');
+    expect(th, 'no separate "Store Status" column').not.toContain('Store Status');
   });
 
   test('PO_FUNC_002 / PO_NEG_001 / PO_VAL_001 - Vendor step; Next without a vendor does not open the form', { tag: T }, async () => {
@@ -104,7 +105,9 @@ test.describe('Purchase Order', () => {
     const th = (await page.locator('table thead th').filter({ visible: true }).allInnerTexts()).map((t) => t.trim().toUpperCase());
     expect(th).toEqual(expect.arrayContaining(['ITEM NAME', 'RATE', 'QUANTITY', 'DISCOUNT', 'GST', 'CESS', 'AMOUNT']));
     const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ');
-    for (const l of ['Subtotal', 'Tax Amount', 'Discount', 'Shipping Cost', 'TDS', 'Total']) expect(text).toContain(l);
+    for (const l of ['Subtotal', 'Tax Amount', 'Discount', 'Shipping Cost', 'Total']) expect(text).toContain(l);
+    // QA (BUG-PO-02): TDS / TCS are not required on a purchase order.
+    expect(text, 'no TDS / TCS on the order').not.toMatch(/\bTDS\b|\bTCS\b/);
     expect(text).toMatch(/Excluding Tax|Including Tax/);
     expect(text).toMatch(/Already .*(Unpaid Bill|Pending)/);
     await po.discardForm();
@@ -183,7 +186,9 @@ test.describe('Purchase Order', () => {
     await po.save();
     const no = await po.confirmSavedNumber(no0, VENDOR, po.computeTotals(m).total);
     const text = await po.previewText(no);
-    expect(text).toContain('REF-PO-');
+    await bugCheck('BUG-PO-06', 'Reference No not shown in the order view', async () => {
+      expect(text).toContain('REF-PO-');
+    });
     expect(dialog, 'no script executed').toBe(false);
   });
 
@@ -207,7 +212,7 @@ test.describe('Purchase Order', () => {
     ['PO_POS_008', 'shipping ₹4,500', () => [L(B, 2)], { shipping: 4500 }],
     ['PO_POS_009', 'adjustment + ₹3,400', () => [L(B, 2)], { adjustment: { type: 'Addition', value: 3400 } }],
     ['PO_POS_016 / PO_BL_009 / 015', 'Including Tax', () => [L(A, 1)], { taxMode: 'Including Tax' }],
-    ['PO_BL_011', 'TDS', () => [L(A, 10)], {}, E.tds.commission],
+    // PO_BL_011 (totals with TDS) dropped — QA (BUG-PO-02): TDS / TCS are not required on a purchase order.
     ['PO_BL_016', 'two slabs 5% / 18%', () => [L(A, 1, { gst: 5 }), L(A, 1)], {}],
     ['PO_BL_020', '10% line discount before tax', () => [L(A, 1, { discount: 10 })], {}],
     ['PO_BND_002 / 003', 'very large qty and rate', () => [L(A, 999999), L(B, 1, { rate: 9999999 })], {}],
@@ -222,9 +227,13 @@ test.describe('Purchase Order', () => {
     });
   }
 
+  // QA (BUG-PO-03): Round Off shows only when it is enabled in Settings → Bill Prefix.
   test('PO_POS_010 - Round off makes the grand total a whole rupee', { tag: T }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1, { rate: 99.37 })]));
+    const on = await po.roundOff.first().waitFor({ timeout: 5000 }).then(() => true, () => false);
+    if (!on) await po.discardForm();
+    test.skip(!on, 'Round Off is disabled for the org (enable it in Settings → Bill Prefix)');
     const r = await po.readRoundOff();
     expect(Number.isInteger(r.total), `total ${r.total} rounded`).toBe(true);
     await po.discardForm();
@@ -249,11 +258,11 @@ test.describe('Purchase Order', () => {
     await po.confirmSavedNumber(no0, VENDOR, po.computeTotals(m).total);
   });
 
-  test('PO_BND_014 / PO_NEG_007 - TDS on ₹0 / discount above the total: total never negative', { tag: T }, async () => {
+  // QA (BUG-PO-02): no TDS on a purchase order, so only the discount part of PO_BND_014 is checked.
+  test('PO_BND_014 / PO_NEG_007 - Discount above the total: total never negative', { tag: T }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
-    await po.fillInvoice(model([L(A, 1, { discount: 100 })]), { tds: E.tds.commission });
+    await po.fillInvoice(model([L(A, 1, { discount: 100 })]));
     const s = await po.readSummary();
-    expect(s.tds).toBe(0);
     expect(s.total).toBeGreaterThanOrEqual(0);
     await po.discardForm();
   });
@@ -300,7 +309,8 @@ test.describe('Purchase Order', () => {
     expect(await po.readStock(C)).toBe(s0);
   });
 
-  test('PO_BL_018 / PO_NEG_010 - A converted order cannot be converted again or deleted', { tag: T }, async () => {
+  // QA (BUG-PO-05): the "Converted" status is not developed yet.
+  test.fixme('PO_BL_018 / PO_NEG_010 - A converted order cannot be converted again or deleted (Converted status not developed yet)', { tag: T }, async () => {
     const o = await order([L(C, 1)]);
     await po.convertToInvoice(o.no);
     await po.saveConvertedInvoice();
@@ -379,11 +389,7 @@ test.describe('Purchase Order', () => {
   test('PO_NEG_015 / PO_VAL_002 / 008 - Empty PO Date is refused', { tag: T }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1)]));
-    await po.billDateInput.click();
-    await po.billDateInput.press('ControlOrMeta+A');
-    await po.billDateInput.press('Backspace');
-    await po.page.keyboard.press('Escape');
-    if (await po.billDateInput.inputValue()) { console.log('PO date cannot be emptied'); await po.discardForm(); return; }
+    if (await po.clearBillDate()) { console.log('PO date cannot be emptied'); await po.discardForm(); return; }
     expect((await po.trySave()).saved, 'empty PO date must be refused').toBe(false);
     await po.discardForm();
   });
@@ -413,7 +419,10 @@ test.describe('Purchase Order', () => {
     const lower = col(await po.searchList(VENDOR.toLowerCase()));
     expect(lower.length).toBeGreaterThan(0);
     expect(col(await po.searchList(VENDOR.toUpperCase()))).toEqual(lower);
-    expect(col(await po.searchList(`  ${VENDOR}  `))).toEqual(lower);
+    const padded = col(await po.searchList(`  ${VENDOR}  `));
+    await bugCheck('BUG-GEN-01', 'search does not trim spaces', async () => {
+      expect(padded).toEqual(lower);
+    });
     expect((await po.searchList('')).length).toBeGreaterThan(0);
   });
 

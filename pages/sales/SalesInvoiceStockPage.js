@@ -278,6 +278,19 @@ class SalesInvoiceStockPage extends AppBasePage {
     await expect(this.page).not.toHaveURL(/\/sales-bill\/add/);
   }
 
+  /**
+   * Empty the bill / order date with the picker's clear (×) icon. Deleting the text and pressing
+   * Escape only empties the input — the picker keeps its old date and the form saves with it.
+   * Returns the value left in the input ('' when cleared).
+   */
+  async clearBillDate() {
+    const picker = this.page.locator('.ant-picker').filter({ has: this.billDateInput }).first();
+    await picker.hover();
+    await picker.locator('.ant-picker-clear').click({ timeout: 5000 }).catch(() => {});
+    await this.settle(500, 'bill date cleared');
+    return this.billDateInput.inputValue();
+  }
+
   /** Create + save one invoice with `lines`; returns { billNo, total }. */
   async createInvoice(lines, opts = {}) {
     const billNo = await this.startInvoice(opts);

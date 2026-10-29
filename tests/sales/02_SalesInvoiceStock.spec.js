@@ -1,4 +1,4 @@
-const { test, expect } = require('../../fixtures/base-test');
+const { test, expect, knownBug, bugCheck } = require('../../fixtures/base-test');
 const { SalesInvoiceStockPage } = require('../../pages/sales/SalesInvoiceStockPage');
 const { StockAdjustmentPage } = require('../../pages/inventory/StockAdjustmentPage');
 const { SalesStockAlertPage } = require('../../pages/sales/SalesStockAlertPage');
@@ -636,18 +636,19 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E14 - A line discount with more than 2 decimals (12.557) is rounded to 12.56 or refused', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  // QA (BUG-SI-01): the input allows only 2 decimals, so the 3rd digit is dropped.
+  test('TC-E14 - A line discount with more than 2 decimals (12.557) keeps only 2 decimals (12.55)', { tag: ['@sales', '@si-edit-flow'] }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 3)]));
     await ef.editInvoice(billNo);
     const shown = await ef.setLineDiscount(0, '12.557', '%');
-    if ((shown.split('.')[1] || '').length > 2) await ef.saveExpectRefused();
-    else expect(shown, '12.557 rounded to 2 decimals').toBe('12.56');
+    expect(shown, '12.557 cut to 2 decimals').toBe('12.55');
     await ef.discardForm();
   });
 
   // ── Zero Rate ───────────────────────────────────────────────────────────
 
-  test('TC-E15 - Rate 0 on one item shows a "rate cannot be zero" warning', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  // QA (BUG-SI-03): zero-value lines / invoices are a supported flow — no warning, the invoice saves.
+  test('TC-E15 - Rate 0 on one item is accepted and saved', { tag: ['@sales', '@si-edit-flow'] }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -656,19 +657,21 @@ test.describe('Sales Invoice - Edit Flow', () => {
     m.lines[0].rate = 0;
     expect((await ef.readLine(0)).amount).toBe(0);
     await ef.expectTotals(m, 'rate 0');
-    await ef.saveExpectWarning(/rate|zero/i);
+    await ef.save();
+    await ef.expectListAmount(billNo, m, 'rate 0 saved');
   });
 
-  test('TC-E16 - Rate 0 on every item shows a warning for the zero-rate items', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC-E16 - Rate 0 on every item: a zero-value invoice is saved', { tag: ['@sales', '@si-edit-flow'] }, async () => {
     const m = model([L(A, 1), L(B, 1), L(C, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
     for (let i = 0; i < 3; i++) { await ef.setLineRate(i, 0); m.lines[i].rate = 0; }
     await ef.expectTotals(m, 'all rates 0');
-    await ef.saveExpectWarning(/rate|zero/i);
+    await ef.save();
+    await ef.expectListAmount(billNo, m, 'zero-value invoice saved');
   });
 
-  test('TC-E17 - Zero rate on items 1 and 3: grand total = item 2 only, and the zero-rate items are flagged', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC-E17 - Zero rate on items 1 and 3: grand total = item 2 only, and the invoice saves', { tag: ['@sales', '@si-edit-flow'] }, async () => {
     const m = model([L(A, 1), L(B, 2), L(C, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -678,7 +681,8 @@ test.describe('Sales Invoice - Edit Flow', () => {
     expect((await ef.readLine(1)).amount, 'item 2 unchanged').toBe(kept.rate * kept.qty);
     const expected = await ef.expectTotals(m, 'zero rate on 1 and 3');
     expectClose(expected.total, kept.rate * kept.qty * 1.18, 0.02, 'grand total = item 2 only');
-    await ef.saveExpectWarning(/rate|zero/i);
+    await ef.save();
+    await ef.expectListAmount(billNo, m, 'zero rate on 1 and 3 saved');
   });
 
   // ── GST & CESS ──────────────────────────────────────────────────────────
@@ -864,12 +868,14 @@ test.describe('Sales Invoice - Edit Flow', () => {
     m.adjustment = { type, value: Number(value || 0) };
   };
 
-  test('TC-E40 - Adjustment Add → Subtract (same amount): amount is now subtracted', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  // QA (BUG-SI-04): switching the type resets the amount to 0 (current flow), so it is re-entered.
+  test('TC-E40 - Adjustment Add → Subtract: amount resets to 0, the re-entered amount is subtracted', { tag: ['@sales', '@si-edit-flow'] }, async () => {
     const m = model([L(A, 2)], { adjustment: { type: 'Addition', value: 20 } });
     await editAndVerify(m, async () => {
       expect(parseFloat(await ef.adjustmentAmount.inputValue()), 'saved adjustment loaded in edit').toBe(20);
       await ef.setAdjustment('Subtract');
-      expect(parseFloat(await ef.adjustmentAmount.inputValue() || '0'), 'amount kept after switching type').toBe(20);
+      expect(parseFloat(await ef.adjustmentAmount.inputValue() || '0'), 'amount reset to 0 after switching type').toBe(0);
+      await ef.setAdjustment('Subtract', '20');
       m.adjustment = { type: 'Subtract', value: 20 };
     });
   });
@@ -923,12 +929,12 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E50 - Shipping cost with more than 2 decimals (150.999) is rounded to 151.00 or refused', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  // QA (BUG-SI-02): the input allows only 2 decimals, so the 3rd digit is dropped.
+  test('TC-E50 - Shipping cost with more than 2 decimals (150.999) keeps only 2 decimals (150.99)', { tag: ['@sales', '@si-edit-flow'] }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 2)]));
     await ef.editInvoice(billNo);
     const shown = await ef.setShipping('150.999');
-    if ((shown.split('.')[1] || '').length > 2) await ef.saveExpectRefused();
-    else expect(parseFloat(shown), '150.999 rounded to 2 decimals').toBe(151);
+    expect(parseFloat(shown), '150.999 cut to 2 decimals').toBe(150.99);
     await ef.discardForm();
   });
 
@@ -982,10 +988,15 @@ test.describe('Sales Invoice - Edit Flow', () => {
   // ── Round Off ───────────────────────────────────────────────────────────
 
   /** Open a new form whose total is not a round figure (₹12.19). */
+  // QA (BUG-SI-05): Round Off shows only when it is enabled in Settings → Bill Prefix.
+  // Turning it on changes every total in the shared org, so these tests skip while it is off.
   const nonRoundForm = async () => {
     const m = model([L(A, 1, { rate: 10.33 })]);
     await ef.startInvoice();
     await ef.fillInvoice(m);
+    const on = await ef.roundOff.first().waitFor({ timeout: 5000 }).then(() => true, () => false);
+    if (!on) await ef.discardForm();
+    test.skip(!on, 'Round Off is disabled for the org (enable it in Settings → Bill Prefix)');
     return m;
   };
 
@@ -1063,14 +1074,12 @@ test.describe('Sales Invoice - Edit Flow', () => {
     expect(row.due).toBe(0);
   });
 
-  test('TC-E70 - Footer totals = sum of the Bill Amount and Due Amount of the listed invoices', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  // QA (BUG-SI-06): by design the list footer shows only "Total Count", no Bill / Due totals.
+  test('TC-E70 - List footer shows the Total Count of invoices', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
     await ef.openSalesList();
-    await expect(ef.listFooter.first(), 'Bill / Due Amount footer totals').toBeVisible({ timeout: 5000 });
-    const rows = await ef.readListPage();
-    const footer = (await ef.listFooter.first().innerText()).match(/-?[\d,]+(?:\.\d+)?/g).map((n) => parseFloat(n.replace(/,/g, '')));
-    const [bill, due] = footer.slice(-2);
-    expectClose(bill, rows.reduce((s, r) => s + r.bill, 0), 0.05, 'footer Bill Amount');
-    expectClose(due, rows.reduce((s, r) => s + r.due, 0), 0.05, 'footer Due Amount');
+    const count = ef.page.getByText(/Total Count/i).first();
+    await expect(count, 'Total Count in the list footer').toBeVisible({ timeout: 10_000 });
+    expect(await count.innerText()).toMatch(/\d/);
   });
 
   test('TC-E71 - Searching a bill number lists only that invoice', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
@@ -1163,6 +1172,7 @@ test.describe('Sales Invoice - Create', () => {
   });
 
   test('TC-02 - Change the customer on the invoice page: the new customer\'s details load', { tag: ['@sales', '@si-create'] }, async () => {
+    knownBug('BUG-SI-07', '"Change" clears the customer but opens no picker');
     await sc.startInvoice();
     await sc.changeCustomerBtn.click();
     await expect(sc.customerDropdown, 'customer picker after "Change"').toBeVisible({ timeout: 10_000 });
@@ -1253,14 +1263,13 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-23 - Special characters in the reference number are rejected', { tag: ['@sales', '@si-create'] }, async () => {
+  // QA (BUG-SI-08): special characters in the reference number are allowed (current flow).
+  test('TC-23 - Special characters in the reference number are accepted and saved', { tag: ['@sales', '@si-create'] }, async () => {
     await sc.startInvoice();
     await sc.fillInvoice(model([L(A, 1)]));
     const typed = 'REF#@!$%';
-    const shown = await sc.typeValue(sc.refNoInput, typed);
-    if (shown === typed) await sc.saveExpectRefused();
-    else expect(shown, 'special characters stripped').not.toMatch(/[#@!$%]/);
-    await sc.discardForm();
+    expect(await sc.typeValue(sc.refNoInput, typed), 'reference kept as typed').toBe(typed);
+    await sc.save();
   });
 
   // ── Item entry / quantity / discount ─────────────────────────────────────
@@ -1281,6 +1290,7 @@ test.describe('Sales Invoice - Create', () => {
   });
 
   test('TC-46 - Saving with a blank quantity is refused with "Quantity is required"', { tag: ['@sales', '@si-create'] }, async () => {
+    knownBug('BUG-SI-09', 'blank quantity: save does nothing and shows no message');
     await sc.startInvoice();
     await sc.addLine(A, 1);
     await sc.typeValue(sc.lineQty(sc.lineRows.nth(0)), '');
@@ -1344,11 +1354,12 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-66 - An overall discount with 3 decimals (5.555%) is rounded to 2 decimals (5.56)', { tag: ['@sales', '@si-create'] }, async () => {
+  // QA (BUG-SI-02): the input allows only 2 decimals, so the 3rd digit is dropped.
+  test('TC-66 - An overall discount with 3 decimals (5.555%) keeps only 2 decimals (5.55)', { tag: ['@sales', '@si-create'] }, async () => {
     await sc.startInvoice();
     await sc.fillInvoice(model([L(A, 2)]));
     const shown = await sc.setSummaryDiscount('Percentage', '5.555');
-    expect(shown, '5.555 rounded to 2 decimals').toBe('5.56');
+    expect(shown, '5.555 cut to 2 decimals').toBe('5.55');
     await sc.discardForm();
   });
 
@@ -1448,6 +1459,7 @@ test.describe('Sales Invoice - Payment', () => {
   });
 
   test('TC-RP-04 - Receipt number (RCPT) is shown in the popup before saving', { tag: ['@sales', '@si-payment'] }, async () => {
+    knownBug('BUG-SI-10', 'Record Payment popup shows no receipt number before saving');
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
     expect((await sp.readPaymentModal()).billNo, 'popup "Bill No:" value').toMatch(/RCPT/i);
@@ -1877,6 +1889,7 @@ test.describe('Bulk Payment - New Receipt', () => {
   });
 
   test('TC-UI-08 - "Change" on the receipt page opens the customer picker', { tag: ['@sales', '@si-bulk'] }, async () => {
+    knownBug('BUG-BR-01', '"Change" on a new receipt opens no customer picker');
     await bp.openNewReceipt(TC);
     await bp.changeCustomerBtn.click();
     await expect(bp.customerDropdown, 'customer picker after "Change"').toBeVisible({ timeout: 10_000 });
@@ -1970,7 +1983,9 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.saveNewReceipt();
     await bp.editReceipt(receiptNo);
     await expect(bp.receiptRef).toHaveValue(ref);
-    await expect(bp.receiptNotes).toHaveValue(note);
+    await bugCheck('BUG-BR-02', 'Additional Notes not saved with the bulk receipt', async () => {
+      await expect(bp.receiptNotes).toHaveValue(note, { timeout: 5000 });
+    });
     await bp.discardForm();
   });
 
@@ -2054,14 +2069,14 @@ test.describe('Bulk Payment - New Receipt', () => {
 
   // ── Bulk payment ─────────────────────────────────────────────────────────
 
-  test('TC-BP-04 - A receipt above the total of all due invoices is refused', { tag: ['@sales', '@si-bulk'] }, async () => {
+  // QA (BUG-BR-04): paying more than the total due is correct — the excess goes to the customer's advance.
+  test('TC-BP-04 - A receipt above the total of all due invoices is saved (excess goes to advance)', { tag: ['@sales', '@si-bulk'] }, async () => {
     await invoice(C, 1);
     await bp.openNewReceipt(TC);
     const due = (await bp.readReceiptForm()).due;
     await bp.setReceiptPaymentMode('Cash');
     await bp.setReceivedAmount(Math.ceil(due) + 500, 'OK');
-    expect(await bp.saveReceiptExpectRefused()).toMatch(/exceed|total/i);
-    await bp.discardForm();
+    await bp.saveNewReceipt();
   });
 
   test.fixme('TC-BP-11 - Print a bulk receipt', async () => {
@@ -2550,6 +2565,7 @@ test.describe('Sales Order', () => {
   });
 
   test('TC-SO-19 - A delivery date before the order date is refused', { tag: ['@sales', '@so'] }, async () => {
+    knownBug('BUG-SO-01', 'delivery date before the order date accepted');
     await so.startInvoice({ customerName: CUST });
     const typed = pickerDate(addDays(new Date(), -3));
     await so.setDeliveryDate(typed);
@@ -2608,6 +2624,7 @@ test.describe('Sales Order', () => {
   });
 
   test('TC-SO-39 - Rate 0 on an order shows a "rate cannot be zero" warning', { tag: ['@sales', '@so'] }, async () => {
+    knownBug('BUG-SO-02', 'rate 0 saved on a sales order without a message');
     await so.startInvoice({ customerName: CUST });
     await so.addLine(A, 1);
     await so.setLineRate(0, 0);
@@ -2615,6 +2632,7 @@ test.describe('Sales Order', () => {
   });
 
   test('TC-SO-40 - An empty rate is refused ("Rate is required")', { tag: ['@sales', '@so'] }, async () => {
+    knownBug('BUG-SO-02', 'empty rate saved on a sales order without a message');
     await so.startInvoice({ customerName: CUST });
     await so.addLine(A, 1);
     await so.setLineRate(0, '');
@@ -2650,12 +2668,13 @@ test.describe('Sales Order', () => {
 
   // ── Stock / convert ──────────────────────────────────────────────────────
 
-  test('TC-SO-56 - Saving a sales order reserves / reduces the item stock', { tag: ['@sales', '@so'] }, async () => {
+  // QA (BUG-SO-03): a sales order does not touch inventory; stock moves only when it is invoiced.
+  test('TC-SO-56 - Saving a sales order leaves the item stock unchanged', { tag: ['@sales', '@so'] }, async () => {
     const before = await so.readStock(C);
     await order([L(C, 4)]);
     await so.open();
     const after = await so.readStock(C);
-    expect(before - after, 'stock reduced by the order qty').toBe(4);
+    expect(after, 'stock unchanged by the order').toBe(before);
   });
 
   test('TC-SO-57 / Sales_Invoice TC-80 - Convert an order to an invoice: lines and reference carried over, order Converted, stock down by the qty', { tag: ['@sales', '@so'] }, async () => {
@@ -2719,6 +2738,7 @@ test.describe('Sales Order', () => {
   }
 
   test('TC-OE-22 - On edit, a delivery date before the SO date is refused', { tag: ['@sales', '@so'] }, async () => {
+    knownBug('BUG-SO-01', 'delivery date before the order date accepted on edit');
     const o = await order([L(C, 1)]);
     await so.editInvoice(o.no);
     const typed = pickerDate(addDays(new Date(), -4));
@@ -2796,7 +2816,8 @@ test.describe('Sales Order', () => {
     expect(rows.some((r) => r.text.includes(o3.no)), 'deleted order gone').toBe(false);
   });
 
-  test('CT TC-SO-08 - A converted sales order cannot be deleted', { tag: ['@sales', '@so'] }, async () => {
+  // QA (BUG-SO-05): the "Converted" status is not developed yet.
+  test.fixme('CT TC-SO-08 - A converted sales order cannot be deleted (Converted status not developed yet)', { tag: ['@sales', '@so'] }, async () => {
     const o = await order([L(C, 1)]);
     await so.convertToInvoice(o.no);
     await so.saveConvertedInvoice();
@@ -3055,6 +3076,7 @@ test.describe('Credit Note', () => {
   });
 
   test('TC-CN-35 - A zero rate gets a warning', { tag: ['@sales', '@cn'] }, async () => {
+    knownBug('BUG-CN-01', 'rate 0 on a credit note saved without a message');
     await cn.startInvoice({ customerName: CUST });
     await cn.addLine(C, 1);
     await cn.setLineRate(0, 0);
@@ -3166,28 +3188,27 @@ test.describe('Credit Note', () => {
     expectClose((await cn.listRow(c.no)).remaining, 0, 0.05, 'CN remaining');
   });
 
-  test('TC-LCN-06 - CN quantity above the linked invoice quantity is refused', { tag: ['@sales', '@cn'] }, async () => {
+  // QA (BUG-CN-02): a linked credit note above the invoice quantity / total is the current flow.
+  test('TC-LCN-06 - CN quantity above the linked invoice quantity is saved', { tag: ['@sales', '@cn'] }, async () => {
     const inv = await invoice([L(A, 1)]);
     await cn.startInvoice({ customerName: CUST, invoiceNo: inv.no });
     await cn.addLine(A, 3);
     const r = await cn.trySave();
-    expect(r.saved, `qty 3 vs invoiced 1 must be refused (${r.message || 'no message'})`).toBe(false);
-    await cn.discardForm();
+    expect(r.saved, `qty 3 vs invoiced 1 is accepted (${r.message || 'no message'})`).toBe(true);
   });
 
-  test('TC-LCN-08 / CT TC-CN-06 - CN total above the linked invoice total is refused (on create and on edit)', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC-LCN-08 / CT TC-CN-06 - CN total above the linked invoice total is saved (on create and on edit)', { tag: ['@sales', '@cn'] }, async () => {
     const inv = await invoice([L(A, 1)]);
     await cn.startInvoice({ customerName: CUST, invoiceNo: inv.no });
     await cn.fillInvoice(model([L(A, 1, { rate: 500 })]));
     const created = await cn.trySave();
-    expect.soft(created.saved, `create: CN ₹590 vs invoice ₹${inv.total} must be refused`).toBe(false);
+    expect.soft(created.saved, `create: CN ₹590 vs invoice ₹${inv.total} is accepted`).toBe(true);
     if (!created.saved) await cn.discardForm();
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await cn.editInvoice(c.no);
     await cn.setLine(0, 3);
     const edited = await cn.trySave();
-    expect(edited.saved, 'edit: CN raised above the invoice amount must be refused').toBe(false);
-    await cn.discardForm();
+    expect(edited.saved, 'edit: CN raised above the invoice amount is accepted').toBe(true);
   });
 
   test('TC-LCN-10 / 11 / CT TC-CN-07 - Deleting a linked CN asks for confirmation, restores the invoice due and takes the stock back out', { tag: ['@sales', '@cn'] }, async () => {
@@ -3219,14 +3240,15 @@ test.describe('Credit Note', () => {
     expect((await cn.listRow(c.no)).invoice).toBe(inv.no);
   });
 
-  test('TC-LCN-16 - Replacing the item on a linked CN with one not on the invoice gets a warning', { tag: ['@sales', '@cn'] }, async () => {
+  // QA (BUG-CN-03): line items can be added to a credit note directly, even when it is linked to an invoice.
+  test('TC-LCN-16 - Replacing the item on a linked CN with one not on the invoice is saved', { tag: ['@sales', '@cn'] }, async () => {
     const inv = await invoice([L(A, 2)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await cn.editInvoice(c.no);
     await cn.addLine(B, 1);
     await cn.tryRemoveLine(await lineOf(cn, A));
-    expect(await cn.saveExpectWarning(/item|invoice/i)).toBeTruthy();
-    if (/credit-notes-bill\//.test(cn.page.url())) await cn.discardForm();
+    const r = await cn.trySave();
+    expect(r.saved, `item not on the invoice is accepted (${r.message || 'no message'})`).toBe(true);
   });
 
   test('TC-LCN-17 / 18 - Extra item not on the invoice: saved, total includes it, still linked, stock up for the extra item', { tag: ['@sales', '@cn'] }, async () => {
@@ -3562,14 +3584,15 @@ test.describe('Payment & Credit Note', () => {
 
   // ── Payment edit / dates / amounts ───────────────────────────────────────
 
-  test('PCF TC-PE-16 - Editing the payment of a fully settled invoice is blocked', { tag: ['@sales', '@pcf'] }, async () => {
+  // QA (BUG-PCN-01): editing the payment of a settled invoice is the current flow.
+  test('PCF TC-PE-16 - Editing the payment of a fully settled invoice is saved', { tag: ['@sales', '@pcf'] }, async () => {
     const inv = await invoice([L(A, 2)]);
     await pay.recordPayment(inv.no, { amount: inv.total });
     const p = await firstPayment(inv.no);
     await pay.editReceipt(p.number);
     await pay.typeValue(pay.receiveAmtField(), String(inv.total - 50));
     const r = await pay.trySaveReceiptEdit();
-    expect(r.saved, 'payment edit after full settlement must be blocked').toBe(false);
+    expect(r.saved, 'payment edit after full settlement is accepted').toBe(true);
   });
 
   for (const [id, title, days] of [['PCF TC-DE-02', 'an earlier date', 2], ['PCF TC-DE-03', 'the invoice date', 0]]) {
@@ -3587,8 +3610,9 @@ test.describe('Payment & Credit Note', () => {
     });
   }
 
+  // QA (BUG-PCN-02): any receipt date can be set on edit (current flow).
   for (const [id, label, offset] of [['PCF TC-DE-04', 'a future date', 15], ['PCF TC-DE-05', 'a date before the invoice', -5]]) {
-    test(`${id} - Editing the payment date to ${label} is refused`, { tag: ['@sales', '@pcf'] }, async () => {
+    test(`${id} - Editing the payment date to ${label} is saved`, { tag: ['@sales', '@pcf'] }, async () => {
       const d0 = addDays(new Date(), -3);
       const inv = await invoice([L(A, 1)], { billDate: pickerDate(d0) });
       await pay.recordPayment(inv.no, { amount: 50, date: paymentDate(d0) });
@@ -3598,17 +3622,17 @@ test.describe('Payment & Credit Note', () => {
       const shown = await pay.setReceiptDate(typed);
       if (shown !== typed) { console.log(`Date picker refused ${typed} (shows ${shown})`); return; }
       const r = await pay.trySaveReceiptEdit();
-      expect(r.saved, `payment date ${typed} must be refused`).toBe(false);
+      expect(r.saved, `payment date ${typed} is accepted`).toBe(true);
     });
   }
 
-  test('PCF TC-DE-06 - Editing the invoice date after a partial payment is refused', { tag: ['@sales', '@pcf'] }, async () => {
+  // QA (BUG-PCN-03): the invoice date stays editable after a partial payment (current flow).
+  test('PCF TC-DE-06 - Editing the invoice date after a partial payment is saved', { tag: ['@sales', '@pcf'] }, async () => {
     const inv = await invoice([L(A, 4)], { billDate: pickerDate(addDays(new Date(), -2)) });
     await pay.recordPayment(inv.no, { amount: 100 });
     await si.editInvoice(inv.no);
     await si.setBillDate(pickerDate(addDays(new Date(), -9)));
-    expect(await invoiceSaved(), 'invoice date change after payment must be refused').toBe(false);
-    await si.discardForm();
+    expect(await invoiceSaved(), 'invoice date change after payment is accepted').toBe(true);
   });
 
   test('PCF TC-DA-02 - Invoice amount raised after a partial payment: due = new total − paid', { tag: ['@sales', '@pcf'] }, async () => {
@@ -3646,7 +3670,8 @@ test.describe('Payment & Credit Note', () => {
     await cn.cancelApply();
   });
 
-  test('PCF TC-CC-11 / 17 - A credit note cannot be raised against a fully paid invoice', { tag: ['@sales', '@pcf'] }, async () => {
+  // QA (BUG-CN-06): a credit note against a fully paid invoice is accepted; its amount goes to the advance.
+  test('PCF TC-CC-11 / 17 - A credit note against a fully paid invoice is saved (amount goes to advance)', { tag: ['@sales', '@pcf'] }, async () => {
     const inv = await invoice([L(A, 2)]);
     await pay.recordPayment(inv.no, { amount: inv.total });
     await cn.startInvoice({ customerName: CUST });
@@ -3654,18 +3679,17 @@ test.describe('Payment & Credit Note', () => {
     await cn.linkInvoice(inv.no);
     await cn.addLine(A, 1);
     const r = await cn.trySave();
-    expect(r.saved, 'CN against a fully paid invoice must be refused').toBe(false);
-    await cn.discardForm();
+    expect(r.saved, 'CN against a fully paid invoice is accepted').toBe(true);
   });
 
-  test('PCF TC-CP-10 - A future-dated credit note cannot be applied to an earlier invoice', { tag: ['@sales', '@pcf'] }, async () => {
+  // QA (BUG-CN-08): a future-dated credit note can be applied to an earlier invoice (current flow).
+  test('PCF TC-CP-10 - A future-dated credit note can be applied to an earlier invoice', { tag: ['@sales', '@pcf'] }, async () => {
     const inv = await invoice([L(A, 2)], { billDate: pickerDate(addDays(new Date(), -5)) });
     const c = await credit([L(A, 1)], { billDate: pickerDate(addDays(new Date(), 5)) });
     await cn.openApply(c.no);
-    if (!(await cn.applyInvoiceNumbers()).includes(inv.no)) { console.log(`${inv.no} not offered to a future CN`); await cn.cancelApply(); return; }
+    expect(await cn.applyInvoiceNumbers(), `${inv.no} offered to a future CN`).toContain(inv.no);
     await cn.setApplyAmount(inv.no, 50);
-    await cn.saveApplyExpectRefused();
-    await cn.cancelApply();
+    await cn.saveApply();
   });
 
   test('PCF TC-CC-19 - Paid invoice, then a credit note raised and increased: saved with the new amount', { tag: ['@sales', '@pcf'] }, async () => {
@@ -3678,15 +3702,15 @@ test.describe('Payment & Credit Note', () => {
     expectClose((await cn.listRow(c.no)).amount, cn.computeTotals(model([L(A, 3)])).total, 0.05, 'Credit Amount after increase');
   });
 
-  test('PCF TC-CC-22 - A linked credit note dated after the invoice\'s payment date is refused', { tag: ['@sales', '@pcf'] }, async () => {
+  // QA (BUG-CN-09): a linked credit note dated after the payment is the current flow.
+  test('PCF TC-CC-22 - A linked credit note dated after the invoice\'s payment date is saved', { tag: ['@sales', '@pcf'] }, async () => {
     const d0 = addDays(new Date(), -10);
     const inv = await invoice([L(A, 4)], { billDate: pickerDate(d0) });
     await pay.recordPayment(inv.no, { amount: 100, date: paymentDate(addDays(d0, 2)) });
     await cn.startInvoice({ customerName: CUST, billDate: pickerDate(addDays(d0, 5)), invoiceNo: inv.no });
     await cn.addLine(A, 1);
     const r = await cn.trySave();
-    expect(r.saved, 'CN dated after the payment date must be refused').toBe(false);
-    await cn.discardForm();
+    expect(r.saved, 'CN dated after the payment date is accepted').toBe(true);
   });
 
   // ── Credit note inventory ────────────────────────────────────────────────
@@ -3820,12 +3844,12 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  test('TC-S1-09 / TC-S3-13 - A duplicate customer name is refused', { tag: ['@sales', '@customer'] }, async () => {
+  // QA (BUG-CU-01): there is no duplicate-name check, customers with the same name can be created.
+  test('TC-S1-09 / TC-S3-13 - A duplicate customer name is accepted', { tag: ['@sales', '@customer'] }, async () => {
     const name = await create();
     await fillNew({ name });
     const r = await cu.trySaveCustomer();
-    expect(r.saved, `second "${name}" must be refused`).toBe(false);
-    await cu.closeForm();
+    expect(r.saved, `second "${name}" is accepted (${r.errors.join(' | ')})`).toBe(true);
   });
 
   // ── Business type / category / tag ───────────────────────────────────────
@@ -3855,10 +3879,13 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  test('TC-S1-17 - Business Category is optional: customer saved without one', { tag: ['@sales', '@customer'] }, async () => {
+  // QA (BUG-CU-02): Business Category is mandatory by design.
+  test('TC-S1-17 - Business Category is mandatory: saving without one is refused', { tag: ['@sales', '@customer'] }, async () => {
     await fillNew({ category: undefined });
     const r = await cu.trySaveCustomer();
-    expect(r.saved, `saved without a category (${r.errors.join(' | ')})`).toBe(true);
+    expect(r.saved, 'saved without a category').toBe(false);
+    expect(r.errors.join(' | ')).toMatch(/Business Category/i);
+    await cu.closeForm();
   });
 
   test('TC-S1-16 / 19 / 21 / TC-S2-02 / 09 / 14 / 17 / 18 / 20 / 22 / TC-S3-10 / 12 - Customer with every field: all details saved (type, category, two tags, phone, sub-domain email, billing without line 2, shipping = billing)', { tag: ['@sales', '@customer'] }, async () => {
@@ -3884,11 +3911,12 @@ test.describe('Customer Create / Edit', () => {
     expect((await cu.readStatement()).some((r) => /Opening Balance/i.test(`${r.no} ${r.detail}`)), 'opening balance row').toBe(true);
   });
 
-  test('TC-S1-23 / 28 / TC-OB-02 / 14 - Opening balance type can be Credit (and switched Debit ↔ Credit)', { tag: ['@sales', '@customer'] }, async () => {
+  // QA (BUG-CU-03): Credit was removed; a customer's opening balance is Debit only.
+  test('TC-S1-23 / 28 / TC-OB-02 / 14 - Opening balance type offers Debit only', { tag: ['@sales', '@customer'] }, async () => {
     await cu.openNewCustomer();
     const types = await cu.selectOptions('opening_balance_type');
     await cu.closeForm();
-    expect(types, 'opening balance types').toEqual(expect.arrayContaining(['Debit', 'Credit']));
+    expect(types, 'opening balance types').toEqual(['Debit']);
   });
 
   test('TC-S1-24 / TC-OB-03 / CT TC-TD-10 - No opening balance: Due and Closing ₹0, statement empty', { tag: ['@sales', '@customer'] }, async () => {
@@ -3943,8 +3971,9 @@ test.describe('Customer Create / Edit', () => {
     expect((await header(name)).due).toBe(0);
   });
 
+  // QA (BUG-CU-04): the opening balance stays editable after a payment (current flow).
   for (const [id, title, paid] of [['TC-OB-11', 'a partial', 4000], ['TC-OB-12', 'a full', 10000]]) {
-    test(`${id} - Opening balance cannot be edited after ${title} payment`, { tag: ['@sales', '@customer'] }, async () => {
+    test(`${id} - Opening balance can be edited after ${title} payment`, { tag: ['@sales', '@customer'] }, async () => {
       const name = await create({ opening: '10000' });
       await pay.openNewReceipt(name);
       await pay.setReceiptPaymentMode('Cash');
@@ -3953,7 +3982,7 @@ test.describe('Customer Create / Edit', () => {
       await pay.saveNewReceipt();
       await cu.openDetails(name);
       const r = await cu.editTextField('OPENING BALANCE', 15000);
-      expect(r.saved, 'opening balance edit after a payment must be blocked').toBe(false);
+      expect(r.saved, 'opening balance edit after a payment is accepted').toBe(true);
     });
   }
 
@@ -3981,6 +4010,7 @@ test.describe('Customer Create / Edit', () => {
 
   for (const [id, phone] of [['TC-S2-04', 'abc1234567'], ['TC-S2-05', '98765'], ['TC-S2-06', '987654321099'], ['TC-S2-07', '+91-9876543210']]) {
     test(`${id} - Phone "${phone}" is refused or reduced to 10 digits`, { tag: ['@sales', '@customer'] }, async () => {
+      if (id !== 'TC-S2-04') knownBug('BUG-CU-05', `phone "${phone}" not validated`);
       await fillNew({ phone });
       const shown = await cu.phoneInput.inputValue();
       if (shown !== phone) { expect(shown, 'phone input keeps digits only').toMatch(/^\d{0,10}$/); await cu.closeForm(); return; }
@@ -4046,19 +4076,15 @@ test.describe('Customer Create / Edit', () => {
     expect(d.shipping).toMatch(/7 Port Road.*Kochi.*Kerala.*682001/);
   });
 
-  test('TC-S2-24 - Shipping address left blank: only the billing address is saved', { tag: ['@sales', '@customer'] }, async () => {
+  // QA (BUG-CU-08): working as designed — with "Use Billing address as your Shipping Address" unticked,
+  // the shipping fields are required; a billing-only address is saved by keeping that box ticked.
+  test('TC-S2-24 - Shipping address left blank with "Use Billing address" unticked: shipping fields are required', { tag: ['@sales', '@customer'] }, async () => {
     const s = spec({ address: { ...ADDR, sameShipping: false } });
     await cu.openNewCustomer();
     await cu.fillCustomer(s);
-    if (await cu.saveAddressBtn.isVisible()) {
-      const errors = await cu.formErrors();
-      await cu.closeForm();
-      expect(errors, 'address saved without a shipping address').toEqual([]);
-    }
-    const r = await cu.trySaveCustomer();
-    expect(r.saved, `saved with billing only (${r.errors.join(' | ')})`).toBe(true);
-    await cu.openDetails(s.name);
-    expect((await cu.readDetails()).billing).toMatch(/Chennai/);
+    const errors = await cu.formErrors();
+    await cu.closeForm();
+    for (const f of ['Address1', 'City', 'State', 'Pincode']) expect(errors.join(' | ')).toContain(`Shipping ${f} is Required`);
   });
 
   // ── GST ──────────────────────────────────────────────────────────────────
@@ -4137,6 +4163,7 @@ test.describe('Customer Create / Edit', () => {
   });
 
   test('TC-CE-12 - Phone edited to 5 digits is refused', { tag: ['@sales', '@customer'] }, async () => {
+    knownBug('BUG-CU-05', 'phone edited to 5 digits not validated');
     const name = await create({ phone: '9876543210' });
     await cu.openDetails(name);
     const r = await cu.editTextField('PHONE NUMBER', '12345');
@@ -4187,10 +4214,12 @@ test.describe('Customer Create / Edit', () => {
     expect((await cu.formErrors()).join(' ')).toMatch(/pincode/i);
   });
 
-  test('TC-CE-21 / 22 / 23 / CT TC-VD-05 - GST status can be edited on the customer details', { tag: ['@sales', '@customer'] }, async () => {
+  // QA (BUG-CU-06): GST details cannot be edited on the customer details screen.
+  test('TC-CE-21 / 22 / 23 / CT TC-VD-05 - GST status has no Edit on the customer details', { tag: ['@sales', '@customer'] }, async () => {
     const name = await create();
     await cu.openDetails(name);
-    await expect(cu.editButtonOf('GST STATUS'), 'Edit button for GST STATUS').toBeVisible({ timeout: 5000 });
+    await expect(cu.page.getByText('GST STATUS').first(), 'GST STATUS shown').toBeVisible({ timeout: 10_000 });
+    await expect(cu.editButtonOf('GST STATUS'), 'no Edit button for GST STATUS').toHaveCount(0);
   });
 
   test('TC-CE-25 - Cancelling a field edit keeps the original value', { tag: ['@sales', '@customer'] }, async () => {
@@ -4202,10 +4231,12 @@ test.describe('Customer Create / Edit', () => {
     expect((await cu.readDetails()).phone).toBe('9876543210');
   });
 
-  test('TC-CE-26 / 27 - A customer can be deleted (no transactions) and is blocked with transactions', { tag: ['@sales', '@customer'] }, async () => {
+  // QA (BUG-CU-07): customers cannot be deleted, only marked Inactive.
+  test('TC-CE-26 / 27 - A customer has no Delete, only Inactive', { tag: ['@sales', '@customer'] }, async () => {
     const name = await create();
     await cu.openDetails(name);
-    await expect(cu.page.getByRole('button', { name: /^Delete$/ }), 'Delete on the customer details').toBeVisible({ timeout: 5000 });
+    await expect(cu.page.getByText(/Inactive/i).first(), 'Inactive on the customer details').toBeVisible({ timeout: 10_000 });
+    await expect(cu.page.getByRole('button', { name: /^Delete$/ }), 'no Delete on the customer details').toHaveCount(0);
   });
 
   test('TC-CE-26 (adapted) - "Inactive" removes the customer from the customer list', { tag: ['@sales', '@customer'] }, async () => {

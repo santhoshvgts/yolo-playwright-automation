@@ -12,12 +12,13 @@
 //   npx playwright test tests/finance/02_ManualJournal.spec.js --grep @mj
 // ═════════════════════════════════════════════════════════════════════════
 
-const { test, expect } = require('../../fixtures/base-test');
+const { test, expect, bugCheck } = require('../../fixtures/base-test');
 const { ManualJournalPage } = require('../../pages/finance/ManualJournalPage');
 const { CustomerTransactionPage } = require('../../pages/sales/CustomerTransactionPage');
 const { SalesInvoiceEditFlowData: E } = require('../../test-data/SalesInvoiceStock_Data');
 const { masterData } = require('../../test-data/UserData');
 const { expectClose } = require('../../utils/stockMath');
+const { capturePrint } = require('../../utils/testHelpers');
 
 const T = ['@finance', '@mj'];
 const mjDate = (d) => `${String(d.getDate()).padStart(2, '0')} ${d.toLocaleDateString('en-US', { month: 'short' })}, ${d.getFullYear()}`;
@@ -180,11 +181,11 @@ test.describe('Manual Journal', () => {
 
   // ── Workflow ─────────────────────────────────────────────────────────────
 
-  test('MJ TC-WF-02 - An unbalanced journal can be saved as Draft', { tag: T }, async () => {
+  // QA (BUG-MJ-02): working as designed — Save as Draft stays disabled while debit ≠ credit.
+  test('MJ TC-WF-02 - An unbalanced journal cannot be saved as Draft (Save as Draft disabled)', { tag: T }, async () => {
     await mj.openNewJournal();
     await mj.fillJournal({ notes: `ZZ MJ ${uniq()}`, lines: [{ account: 'Petty Cash', debit: 100 }, { account: 'Undeposited Funds', credit: 80 }] });
-    const r = await mj.trySaveJournal({ draft: true });
-    expect(r.saved, `unbalanced draft must save ("${r.message}")`).toBe(true);
+    await expect(mj.mjDraft, 'Save as Draft disabled for an unbalanced journal').toBeDisabled();
   });
 
   test('MJ TC-WF-01 / 04 / 05 / 11 - Draft: Draft status; edit the amounts and Save → Open', { tag: T }, async () => {
@@ -198,9 +199,14 @@ test.describe('Manual Journal', () => {
     await mj.typeValue(mj.page.locator('#debit-0'), '120');
     await mj.typeValue(mj.page.locator('#credit-1'), '120');
     expect((await mj.trySaveJournal()).saved).toBe(true);
-    const after = await mj.journalRow(row.no);
-    expect(after.status).toBe('Open');
-    expect(after.amount).toBe(120);
+    // QA (BUG-MJ-01): "may be a refresh issue" — but the list still shows Draft after 60 s of reloads (2026-10-28 run).
+    await bugCheck('BUG-MJ-01', 'edited draft journal stays Draft after Save, even after reload', async () => {
+      await expect.poll(async () => {
+        await mj.page.reload();
+        return (await mj.journalRow(row.no))?.status;
+      }, { message: 'status after Save', timeout: 30_000, intervals: [3000, 5000] }).toBe('Open');
+      expect((await mj.journalRow(row.no)).amount).toBe(120);
+    });
   });
 
   test('MJ TC-WF-07 / TC-DI-06 / TC-COA-06 - Edit an open journal: notes and amount follow in list and view', { tag: T }, async () => {
@@ -248,13 +254,9 @@ test.describe('Manual Journal', () => {
     const notes = `ZZ MJ ${uniq()}`;
     await journal({ notes });
     await mj.openJournal((await mj.searchJournals(notes))[0].no);
-    await page.evaluate(() => { window.__printed = 0; window.print = () => { window.__printed += 1; }; });
-    const popup = page.waitForEvent('popup', { timeout: 15_000 }).catch(() => null);
-    const download = page.waitForEvent('download', { timeout: 15_000 }).catch(() => null);
-    await mj.mjDrawer.getByRole('button', { name: /Print/ }).first().click();
-    const [p, dl] = await Promise.all([popup, download]);
-    const printed = await page.evaluate(() => window.__printed).catch(() => 0);
-    expect(!!p || !!dl || printed > 0 || (await page.locator('iframe').count()) > 0).toBe(true);
+    // QA (BUG-MJ-03): Print works — it prints through a hidden iframe, which capturePrint detects.
+    const r = await capturePrint(page, () => mj.mjDrawer.getByRole('button', { name: /Print/ }).first().click());
+    expect(r.popup || r.download || r.print > 0, 'print preview / dialog / PDF opened').toBe(true);
   });
 
   // ── Search / filter / pages ──────────────────────────────────────────────

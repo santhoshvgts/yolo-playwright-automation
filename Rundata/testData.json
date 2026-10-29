@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "caecus",
-    "productDescription": "Aestus spes bos clam apud admoneo.",
-    "salePricePerPcs": "028",
-    "updatedAt": "2026-10-21T04:44:14.450Z",
-    "productName2": "consectetur",
-    "productDescription2": "Consuasor perspiciatis coruscus universe pecus.",
-    "salePricePerUnit": "700",
-    "quantity": "7"
+    "productName": "deprecator",
+    "productDescription": "Cometes quae depono turpis.",
+    "salePricePerPcs": "342",
+    "updatedAt": "2026-10-28T11:12:48.722Z",
+    "productName2": "amissio",
+    "productDescription2": "Blandior quidem spes odio concido coniuratio vix magnam.",
+    "salePricePerUnit": "389",
+    "quantity": "5"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -316,7 +316,7 @@
   "siEditFlowItems": {
     "items": [
       {
-        "itemName": "TCE-A gf8vCo",
+        "itemName": "TCE-A sgxmcX",
         "baseUnit": "pcs",
         "price": 100,
         "conversions": {
@@ -325,7 +325,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-B W59aop",
+        "itemName": "TCE-B Fkty9q",
         "baseUnit": "pcs",
         "price": 250,
         "conversions": {
@@ -334,7 +334,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-C g42YIa",
+        "itemName": "TCE-C AseyQE",
         "baseUnit": "pcs",
         "price": 40,
         "conversions": {
@@ -343,7 +343,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-D 3F4Vhr",
+        "itemName": "TCE-D wcqwbN",
         "baseUnit": "pcs",
         "price": 75,
         "conversions": {
@@ -352,6 +352,6 @@
         "openingStock": 100000
       }
     ],
-    "updatedAt": "2026-10-15T18:04:54.042Z"
+    "updatedAt": "2026-10-29T04:51:04.420Z"
   }
 }
