@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Compact index of what is already automated: every test title per spec (from source, no
- * Playwright run) and the public methods of each page object.
+ * Compact index of what is already automated: every test title per spec with its sheet case IDs
+ * (from source, no Playwright run) and the public methods of each page object.
  *
  * Usage (repo root): node .claude/skills/excel-testcase-automation/scripts/coverage_index.js [filter]
  *   filter — optional case-insensitive text; only specs / POMs whose path contains it.
@@ -34,8 +34,11 @@ for (const file of walk(path.join(root, 'tests')).filter((f) => /\.spec\.(js|ts)
   let m;
   while ((m = re.exec(src))) {
     const [, kind, , title] = m;
-    if (kind.startsWith('test.describe')) console.log(`[${title}]`);
-    else console.log(`${kind === 'test.fixme' ? '  (fixme) ' : '  '}${title.replace(/\s+/g, ' ')}`);
+    if (kind.startsWith('test.describe')) { console.log(`[${title}]`); continue; }
+    // Sheet case IDs live in the test's annotation: { type: 'cases', description: '<IDs>' }
+    const head = src.slice(re.lastIndex, src.indexOf('=>', re.lastIndex));
+    const cases = (head.match(/type: 'cases', description: (?:'((?:\.|[^'])*)'|(\w+))/) || []).slice(1).find(Boolean);
+    console.log(`${kind === 'test.fixme' ? '  (fixme) ' : '  '}${title.replace(/\s+/g, ' ')}${cases ? `  [${cases}]` : ''}`);
   }
 }
 

@@ -36,71 +36,71 @@ test.describe(moduleName, () => {
   test.describe.configure({ retries: 0, timeout: 600_000 });
 
   // ── Item ──
-  test('TC01 - Create an Item with Opening Stock in the Invoice module', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC01 - Create an item with Opening Stock in the Invoice module', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {
     await new ItemPage(page).createItemWithOpeningStock(itemData);
   });
 
   // ── PI create ──
-  test('TC02 - Create a Purchase Invoice for the item and verify the Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC02 - Create a purchase invoice for the item and verify the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC02' } }, async ({ page }) => {
     await new PurchaseInvoicePage(page).createPurchaseInvoiceAndVerifyStock(purchaseData);
   });
 
-  test('TC03 - After PI create: Stock Statement (Fieldforce) matches Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC03 - After the purchase invoice is created, the Stock Statement (Fieldforce) matches the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC03' } }, async ({ page }) => {
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'newtotalqty' });
   });
 
-  test('TC04 - After PI create: Sales Invoice quantity alert matches Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC04 - After the purchase invoice is created, the sales invoice quantity alert matches the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC04' } }, async ({ page }) => {
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'newtotalqty' });
   });
 
-  test('TC05 - After PI create: Stock Adjustment quantities per UOM match Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC05 - After the purchase invoice is created, the Stock Adjustment quantities per UOM match the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC05' } }, async ({ page }) => {
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'newtotalqty' });
   });
 
   // ── PI edit ──
-  test('TC06 - Edit the Purchase Invoice and verify the Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC06 - Edit the purchase invoice and verify the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC06' } }, async ({ page }) => {
     await new PurchaseInvoicePage(page).editPurchaseInvoiceAndVerifyStock(purchaseData);
   });
 
-  test('TC07 - After PI edit: Stock Statement (Fieldforce) matches Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC07 - After the purchase invoice is edited, the Stock Statement (Fieldforce) matches the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC07' } }, async ({ page }) => {
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'updatedTotalqty' });
   });
 
-  test('TC08 - After PI edit: Sales Invoice quantity alert matches Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC08 - After the purchase invoice is edited, the sales invoice quantity alert matches the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC08' } }, async ({ page }) => {
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'updatedTotalqty' });
   });
 
-  test('TC09 - After PI edit: Stock Adjustment quantities per UOM match Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC09 - After the purchase invoice is edited, the Stock Adjustment quantities per UOM match the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC09' } }, async ({ page }) => {
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'updatedTotalqty' });
   });
 
   // ── PI delete ──
-  test('TC10 - Delete the Purchase Invoice and verify the Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC10 - Delete the purchase invoice and verify the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC10' } }, async ({ page }) => {
     await new PurchaseInvoicePage(page).deletePurchaseInvoiceAndVerifyStock(purchaseData);
   });
 
-  test('TC11 - After PI delete: Stock Statement (Fieldforce) matches Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC11 - After the purchase invoice is deleted, the Stock Statement (Fieldforce) matches the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC11' } }, async ({ page }) => {
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'finalTotalqty', allowZero: true });
   });
 
-  test('TC12 - After PI delete: Sales Invoice quantity alert matches Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC12 - After the purchase invoice is deleted, the sales invoice quantity alert matches the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC12' } }, async ({ page }) => {
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'finalTotalqty' });
   });
 
-  test('TC13 - After PI delete: Stock Adjustment quantities per UOM match Inventory stock', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC13 - After the purchase invoice is deleted, the Stock Adjustment quantities per UOM match the Inventory stock', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC13' } }, async ({ page }) => {
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'finalTotalqty' });
   });
 
   // ── PI amount → vendor balances ──
-  test('TC14 - Create a Purchase Invoice with discounts / shipping / TDS / adjustment and verify vendor Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC14 - Create a purchase invoice with discounts, shipping, TDS and adjustment and verify vendor Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC14' } }, async ({ page }) => {
     await new PurchaseInvoicePage(page).createPurchaseInvoiceWithChargesAndVerifyVendorBalances(purchaseData);
   });
 
-  test('TC15 - Edit that Purchase Invoice and verify vendor Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC15 - Edit that purchase invoice and verify vendor Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC15' } }, async ({ page }) => {
     await new PurchaseInvoicePage(page).editPurchaseInvoiceWithChargesAndVerifyVendorBalances(purchaseData);
   });
 
-  test('TC16 - Delete that Purchase Invoice and verify vendor balances return to their original values', { tag: ['@unit', '@purchase'] }, async ({ page }) => {
+  test('TC16 - Delete that purchase invoice and verify vendor balances return to their original values', { tag: ['@unit', '@purchase'], annotation: { type: 'cases', description: 'TC16' } }, async ({ page }) => {
     await new PurchaseInvoicePage(page).deletePurchaseInvoiceAndVerifyVendorBalances(purchaseData);
   });
 });

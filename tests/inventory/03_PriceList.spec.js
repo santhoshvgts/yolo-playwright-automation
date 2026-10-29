@@ -48,7 +48,7 @@ test.describe('Price List', () => {
 
   // ── List / form ──────────────────────────────────────────────────────────
 
-  test('PL_FUNC_001 / PL_UI_001 / PL_UI_002 / PL_POS_015 - List: Price List Name, List Type, Pricing, Status, No Of Items; Active badge text; Total Count', { tag: T }, async ({ page }) => {
+  test('TC01 - Price list screen shows Price List Name, List Type, Pricing, Status and No Of Items columns, Active badge text and Total Count', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_001, PL_UI_001, PL_UI_002, PL_POS_015' } }, async ({ page }) => {
     await pl.openPricingList();
     await expect(page.locator('table thead th').filter({ visible: true })).toHaveText(['Price List Name', 'List Type', 'Pricing', 'Status', 'No Of Items']);
     expect(await pl.totalCount()).toBeGreaterThan(0);
@@ -56,7 +56,7 @@ test.describe('Price List', () => {
     for (const r of rows) expect(r[3]).toMatch(/^(Active|Not Active)$/);
   });
 
-  test('PL_FUNC_002 / 003 / 004 / 005 / 006 / 007 / PL_UI_003 / 004 / 005 / 013 - Form: name, description, type General / Profile wise / Category wise (profiles; business type & category), Overall Markup (Markup|Markdown + rate) / Item Specific (item list)', { tag: T }, async ({ page }) => {
+  test('TC02 - Price list form has name, description, type General, Profile wise or Category wise (profiles; business type and category), and Overall Markup (Markup or Markdown plus rate) or Item Specific (item list)', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_002, PL_FUNC_003, PL_FUNC_004, PL_FUNC_005, PL_FUNC_006, PL_FUNC_007, PL_UI_003, PL_UI_004, PL_UI_005, PL_UI_013' } }, async ({ page }) => {
     await pl.openNewList();
     expect(await pl.optionsOf('pricelist_type')).toEqual(['General', 'Profile wise', 'Category wise']);
     await page.getByText('Overall Markup', { exact: true }).first().click();
@@ -74,7 +74,7 @@ test.describe('Price List', () => {
     await pl.discardList();
   });
 
-  test('PL_NEG_001 / 006 / 003 - Empty save: Name and Custom Rate required; the rate refuses letters and "-"', { tag: T }, async () => {
+  test('TC03 - Saving an empty price list requires Name and Custom Rate, and the rate refuses letters and "-"', { tag: T, annotation: { type: 'cases', description: 'PL_NEG_001, PL_NEG_006, PL_NEG_003' } }, async () => {
     await pl.openNewList();
     const r = await pl.trySaveList();
     expect(r.saved).toBe(false);
@@ -88,7 +88,7 @@ test.describe('Price List', () => {
     await pl.discardList();
   });
 
-  test('PL_NEG_002 - Custom rate 0 % is refused', { tag: T }, async () => {
+  test('TC04 - A custom rate of 0 % is refused', { tag: T, annotation: { type: 'cases', description: 'PL_NEG_002' } }, async () => {
     knownBug('BUG-PL-01', 'custom rate 0 % accepted');
     const name = nm();
     created.push(name);
@@ -99,7 +99,7 @@ test.describe('Price List', () => {
     if (!r.saved) await pl.discardList();
   });
 
-  test('PL_NEG_016 - Custom rate above 1000 % is refused or warned about', { tag: T }, async () => {
+  test('TC05 - A custom rate above 1000 % is refused or warned about', { tag: T, annotation: { type: 'cases', description: 'PL_NEG_016' } }, async () => {
     knownBug('BUG-PL-01', 'custom rate 1500 % accepted');
     const name = nm();
     created.push(name);
@@ -110,7 +110,7 @@ test.describe('Price List', () => {
     if (!r.saved) await pl.discardList();
   });
 
-  test('PL_POS_006 / 007 / PL_UI_009 / PL_NEG_010 - Description: counter "N / 300", limited to 300; Remove collapses it', { tag: T }, async ({ page }) => {
+  test('TC06 - Price list description shows a counter "N / 300" and is limited to 300 characters, and Remove collapses it', { tag: T, annotation: { type: 'cases', description: 'PL_POS_006, PL_POS_007, PL_UI_009, PL_NEG_010' } }, async ({ page }) => {
     await pl.openNewList();
     await page.getByRole('button', { name: 'Add Description' }).click();
     const ta = page.locator('textarea').filter({ visible: true }).first();
@@ -126,7 +126,7 @@ test.describe('Price List', () => {
     await pl.discardList();
   });
 
-  test('PL_VAL_012 / PL_BND_011 - Whitespace-only name refused; a 1-character name saves', { tag: T }, async () => {
+  test('TC07 - A whitespace-only price list name is refused, and a 1-character name saves', { tag: T, annotation: { type: 'cases', description: 'PL_VAL_012, PL_BND_011' } }, async () => {
     await pl.openNewList();
     await pl.fillList({ name: '   ', rate: 1 });
     expect((await pl.trySaveList()).saved, 'whitespace name refused').toBe(false);
@@ -141,7 +141,7 @@ test.describe('Price List', () => {
   });
 
   // QA (BUG-PLO-01): there is no duplicate-name check for price lists (current flow).
-  test('PL_VAL_015 - A second list with the same name is accepted', { tag: T }, async () => {
+  test('TC08 - A second price list with the same name is accepted', { tag: T, annotation: { type: 'cases', description: 'PL_VAL_015' } }, async () => {
     const name = await make({ rate: 1 });
     await pl.openNewList();
     await pl.fillList({ name, rate: 2 });
@@ -149,7 +149,7 @@ test.describe('Price List', () => {
     expect(r.saved, `duplicate "${name}" is accepted ("${r.message}")`).toBe(true);
   });
 
-  test('PL_NEG_013 / PL_SEC_005 / 006 - Script text in name / description is not run', { tag: T }, async ({ page }) => {
+  test('TC09 - Script text in the price list name or description is not run', { tag: T, annotation: { type: 'cases', description: 'PL_NEG_013, PL_SEC_005, PL_SEC_006' } }, async ({ page }) => {
     const dialogs = [];
     page.on('dialog', (d) => { dialogs.push(d.message()); d.dismiss().catch(() => {}); });
     const name = `ZZ PL <img src=x onerror=window.__xss=1> ${uniq()}`;
@@ -161,7 +161,7 @@ test.describe('Price List', () => {
 
   // ── General markup / markdown on the invoice ─────────────────────────────
 
-  test('PL_FUNC_008 / 012 / PL_POS_001 / 009 / 014 / 018 / PL_UI_007 / PL_BL_001 / 002 / 014 / PL_E2E_001 / 010 / TC-27 - General Markup 10 %: list (General, Markup 10 %, Active, All Items), view, ₹100 item → ₹110 on the invoice', { tag: T }, async () => {
+  test('TC10 - General price list with Markup 10 % is listed (General, Markup 10 %, Active, All Items), shown in the view, and a ₹100 item becomes ₹110 on the invoice', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_008, PL_FUNC_012, PL_POS_001, PL_POS_009, PL_POS_014, PL_POS_018, PL_UI_007, PL_BL_001, PL_BL_002, PL_BL_014, PL_E2E_001, PL_E2E_010, TC-27' } }, async () => {
     const name = await make({ rate: 10 });
     const row = await pl.listRowOf(name);
     expect(row).toEqual({ name, type: 'General', pricing: 'Markup 10%', status: 'Active', items: 'All Items' });
@@ -173,7 +173,7 @@ test.describe('Price List', () => {
     expect(await pl.invoiceRate(A)).toBe(r2(A.price * 1.1));
   });
 
-  test('PL_POS_002 / PL_BL_003 / 015 / PL_E2E_002 / PL_BND_012 / TC-28 - Markdown 10 % → ₹90; Markdown 34 % → ₹66; Markup 10.5 % → ₹110.5', { tag: T }, async () => {
+  test('TC11 - Price list rates on an invoice: Markdown 10 % gives ₹90, Markdown 34 % gives ₹66 and Markup 10.5 % gives ₹110.5', { tag: T, annotation: { type: 'cases', description: 'PL_POS_002, PL_BL_003, PL_BL_015, PL_E2E_002, PL_BND_012, TC-28' } }, async () => {
     for (const [prefix, rate, factor] of [['Markdown', 10, 0.9], ['Markdown', 34, 0.66], ['Markup', 10.5, 1.105]]) {
       const name = await make({ prefix, rate });
       expect((await pl.listRowOf(name)).pricing).toBe(`${prefix} ${rate}%`);
@@ -182,7 +182,7 @@ test.describe('Price List', () => {
     }
   });
 
-  test('PL_BND_002 / 003 / 001 / PL_POS_016 / PL_BL_017 - Markup 100 % doubles; Markdown 100 % → ₹0 (or refused); 0.01 % saves', { tag: T }, async () => {
+  test('TC12 - Markup 100 % doubles the price, Markdown 100 % gives ₹0 (or is refused), and 0.01 % saves', { tag: T, annotation: { type: 'cases', description: 'PL_BND_002, PL_BND_003, PL_BND_001, PL_POS_016, PL_BL_017' } }, async () => {
     const dbl = await make({ rate: 100 });
     expect(await pl.invoiceRate(A)).toBe(r2(A.price * 2));
     expect(await pl.invoiceRate(B)).toBe(r2(B.price * 2));
@@ -197,7 +197,7 @@ test.describe('Price List', () => {
     expect((await pl.listRowOf(tiny)).pricing).toBe('Markup 0.01%');
   });
 
-  test('PL_FUNC_016 / 017 / PL_NEG_017 / PL_E2E_007 / TC-29 - Inactive: base price on the invoice; active again: marked-up price', { tag: T }, async () => {
+  test('TC13 - With the price list inactive the invoice uses the base price, and when active again it uses the marked-up price', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_016, PL_FUNC_017, PL_NEG_017, PL_E2E_007, TC-29' } }, async () => {
     const name = await make({ rate: 10 });
     await pl.setActive(name, false);
     expect((await pl.listRowOf(name)).status).toBe('Not Active');
@@ -207,7 +207,7 @@ test.describe('Price List', () => {
     expect(await pl.invoiceRate(A)).toBe(r2(A.price * 1.1));
   });
 
-  test('PL_FUNC_013 / 014 / PL_UI_012 / PL_BL_016 / PL_E2E_008 / 012 - Edit: "Edit Price List" prefilled; 10 % → 20 %: list and new invoices follow', { tag: T }, async ({ page }) => {
+  test('TC14 - Edit a price list: "Edit Price List" is pre-filled, and changing 10 % to 20 % updates the list and new invoices', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_013, PL_FUNC_014, PL_UI_012, PL_BL_016, PL_E2E_008, PL_E2E_012' } }, async ({ page }) => {
     const name = await make({ rate: 10, desc: 'first' });
     await pl.editList(name);
     await expect(page.getByText('Edit Price List').first()).toBeVisible();
@@ -221,7 +221,7 @@ test.describe('Price List', () => {
 
   // ── Profile / category / item specific ───────────────────────────────────
 
-  test('PL_FUNC_004 / 009 / PL_POS_004 / PL_NEG_004 / PL_BND_008 / PL_UI_008 / PL_BL_004 / PL_E2E_003 / TC-30 - Profile wise: refused without a profile; with one, only that customer gets the markup', { tag: T }, async () => {
+  test('TC15 - Profile wise price list is refused without a profile, and with a profile only that customer gets the markup', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_004, PL_FUNC_009, PL_POS_004, PL_NEG_004, PL_BND_008, PL_UI_008, PL_BL_004, PL_E2E_003, TC-30' } }, async () => {
     const name = nm();
     created.push(name);
     await pl.openNewList();
@@ -240,13 +240,13 @@ test.describe('Price List', () => {
     expect(await pl.invoiceRate(A)).toBe(A.price);
   });
 
-  test('PL_FUNC_010 / PL_POS_003 / PL_E2E_013 / PL_VAL_014 - Category wise Retailer (category All / empty): saved; view shows the business type', { tag: T }, async () => {
+  test('TC16 - Category wise price list for Retailer (category All or empty) is saved, and the view shows the business type', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_010, PL_POS_003, PL_E2E_013, PL_VAL_014' } }, async () => {
     const name = await make({ type: 'Category wise', businessType: 'Retailer', businessCategory: true, rate: 25 });
     expect((await pl.listRowOf(name)).type).toBe('Category wise');
     expect(await pl.openList(name)).toMatch(/Retailer/);
   });
 
-  test('PL_FUNC_011 / PL_POS_005 / PL_NEG_005 / PL_BND_006 / PL_BL_007 / 019 / PL_E2E_005 / TC-39 - Item Specific: refused without items; A at ₹90 → "1 Items"; invoice A ₹90, B base price', { tag: T }, async () => {
+  test('TC17 - Item Specific price list is refused without items; with item A at ₹90 it shows "1 Items", and on an invoice A is ₹90 and B stays at the base price', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_011, PL_POS_005, PL_NEG_005, PL_BND_006, PL_BL_007, PL_BL_019, PL_E2E_005, TC-39' } }, async () => {
     const name = nm();
     created.push(name);
     await pl.openNewList();
@@ -261,7 +261,7 @@ test.describe('Price List', () => {
     expect(await pl.invoiceRate(B)).toBe(B.price);
   });
 
-  test('PL_NEG_015 - The same item twice in an Item Specific list is prevented', { tag: T }, async ({ page }) => {
+  test('TC18 - Adding the same item twice to an Item Specific price list is prevented', { tag: T, annotation: { type: 'cases', description: 'PL_NEG_015' } }, async ({ page }) => {
     const name = nm();
     created.push(name);
     await pl.openNewList();
@@ -274,7 +274,7 @@ test.describe('Price List', () => {
 
   // ── Delete / distributors ────────────────────────────────────────────────
 
-  test('PL_FUNC_015 / PL_NEG_009 / PL_E2E_009 / PL_BL_010 - The view offers Delete (⋮ menu)', { tag: T }, async () => {
+  test('TC19 - The price list view offers Delete in its ⋮ menu', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_015, PL_NEG_009, PL_E2E_009, PL_BL_010' } }, async () => {
     const name = await make({ rate: 1 });
     await pl.openList(name);
     const menu = pl.plDrawer.locator('.ant-dropdown-trigger, [aria-label*="more" i]').first();
@@ -282,7 +282,7 @@ test.describe('Price List', () => {
     await expect(pl.page.getByRole('button', { name: /Delete/ }).or(pl.page.getByRole('menuitem', { name: /Delete/ })).first(), 'Delete option').toBeVisible({ timeout: 5000 });
   });
 
-  test('PL_FUNC_018 / PL_UI_014 / PL_POS_011 - Distributors: "+ Assign" in the view, distributor options on the form', { tag: T }, async () => {
+  test('TC20 - Price list distributors: the view has "+ Assign" and the form shows distributor options', { tag: T, annotation: { type: 'cases', description: 'PL_FUNC_018, PL_UI_014, PL_POS_011' } }, async () => {
     await pl.openNewList();
     const opts = await pl.optionsOf('distributor_ids');
     console.log(`distributors: ${opts.join(', ') || 'none'}`);
@@ -295,7 +295,7 @@ test.describe('Price List', () => {
 
   // ── Search / pagination ──────────────────────────────────────────────────
 
-  test('PL_SF_001 / 002 / 003 / 004 / 005 / PL_SEC_004 - Search: exact, partial, case, no match, SQL text; clearing restores', { tag: T }, async () => {
+  test('TC21 - Price list search works for exact, partial, case variations, no match and SQL text, and clearing restores the list', { tag: T, annotation: { type: 'cases', description: 'PL_SF_001, PL_SF_002, PL_SF_003, PL_SF_004, PL_SF_005, PL_SEC_004' } }, async () => {
     const name = await make({ rate: 1 });
     const total = (await pl.searchLists(''), await pl.totalCount());
     expect((await pl.searchLists(name)).map((r) => r[0])).toEqual([name]);
@@ -307,7 +307,7 @@ test.describe('Price List', () => {
     expect(await pl.totalCount()).toBe(total);
   });
 
-  test('PL_PAG_002 / 003 / 004 / 005 / 006 / 010 - 20 per page, next / previous, count constant; search back to page 1; newest list first', { tag: T }, async ({ page }) => {
+  test('TC22 - Price list shows 20 per page with next and previous and a constant count, a search goes back to page 1, and the newest list is first', { tag: T, annotation: { type: 'cases', description: 'PL_PAG_002, PL_PAG_003, PL_PAG_004, PL_PAG_005, PL_PAG_006, PL_PAG_010' } }, async ({ page }) => {
     const name = await make({ rate: 1 });
     await pl.searchLists('');
     const total = await pl.totalCount();
@@ -332,7 +332,7 @@ test.describe('Price List', () => {
     });
   });
 
-  test('PL_SEC_001 / 010 - Without a session the pricing page redirects to login; URLs hold no rates', { tag: T }, async ({ browser, page }) => {
+  test('TC23 - Without a session the pricing page redirects to the login page, and the URLs hold no rates', { tag: T, annotation: { type: 'cases', description: 'PL_SEC_001, PL_SEC_010' } }, async ({ browser, page }) => {
     await pl.openPricingList();
     expect(page.url()).not.toMatch(/rate|markup|%/i);
     const ctx = await browser.newContext();
@@ -345,25 +345,25 @@ test.describe('Price List', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['PL_FUNC_019 / 020', 'Several profile tags / remove a tag', 'Covered by one profile (PL_FUNC_009); tag removal needs a second spare customer.'],
-    ['PL_FUNC_021 / 022 / PL_UI_006 / PL_VAL_010 / 013 / 016 / PL_BL_008 / 012 / 020 / PL_POS_012 / PL_E2E_006 / 014', 'Auto Calculate / additional UOM prices', 'Needs an item with alternate UOMs in an Item Specific list — UOM pricing is covered by the Sales Invoice stock sheet.'],
-    ['PL_POS_008 / 013 / PL_BL_018', 'Beat Routes', 'No Beat Routes field in this build.'],
-    ['PL_POS_010', 'Switch Overall Markup → Item Specific on edit', 'Same form as create (both modes checked).'],
-    ['PL_POS_017 / PL_UI_010 / PL_SF_007…010', 'Item search inside the view', 'Needs an Item Specific list with many items.'],
-    ['PL_NEG_007 / 008 / PL_BND_009 / 010', 'Item Specific price 0 / negative / 0.01 / 99.99', 'Item price field rules follow the custom rate field (PL_NEG_006).'],
-    ['PL_NEG_012 / PL_VAL_005 / PL_VAL_019 / PL_BL_005 / 006 / PL_E2E_004', 'Category wise without business type / per-category pricing on invoices', 'Business Type defaults to Retailer; customers with controlled business type / category are needed.'],
-    ['PL_BL_011', 'Priority between several active lists', 'The org has 380 lists from other runs; priority needs a clean org.'],
-    ['PL_BL_013 / PL_E2E_011 / PL_UI_011', 'Distributor-restricted pricing', 'No distributor customers in this org.'],
-    ['PL_BND_007 / PL_PERF_004 / 008', '50-item list', 'Needs 50 items set up for one list.'],
-    ['PL_SF_006 / 011 / 012', 'Search by type / pricing keyword; search kept across views', 'Search is by name only.'],
-    ['PL_PAG_001 / 007 / 008 / 009 / PL_E2E_015', 'Exact counts (19 / 21) / popup pagination', 'The org has 380+ lists.'],
-    ['PL_VAL_009 / 011 / 018', 'Name length / Markup required / scope', 'Markup is the default prefix; scope covered by PL_FUNC_009.'],
-    ['PL_NEG_011 / 014 / PL_SEC_002 / 003 / 009 / 013 / 015', 'Role / cross-org restrictions', 'No such users or second org.'],
-    ['PL_NEG_018 / PL_SEC_007 / 008 / 011 / 012 / 014', 'Deleted-list URL / CSRF / session / rate limit / API', 'Lists cannot be deleted; API-level checks.'],
-    ['PL_PERF_001…010', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
-    ['PL_ACC_001…010', 'Keyboard / screen reader / contrast', 'Needs an accessibility audit tool (axe) / screen reader.'],
+  for (const [tc, id, title, why] of [
+    ['TC24', 'PL_FUNC_019 / 020', 'Several profile tags / remove a tag', 'Covered by one profile (PL_FUNC_009); tag removal needs a second spare customer.'],
+    ['TC25', 'PL_FUNC_021 / 022 / PL_UI_006 / PL_VAL_010 / 013 / 016 / PL_BL_008 / 012 / 020 / PL_POS_012 / PL_E2E_006 / 014', 'Auto Calculate / additional UOM prices', 'Needs an item with alternate UOMs in an Item Specific list — UOM pricing is covered by the Sales Invoice stock sheet.'],
+    ['TC26', 'PL_POS_008 / 013 / PL_BL_018', 'Beat Routes', 'No Beat Routes field in this build.'],
+    ['TC27', 'PL_POS_010', 'Switch Overall Markup → Item Specific on edit', 'Same form as create (both modes checked).'],
+    ['TC28', 'PL_POS_017 / PL_UI_010 / PL_SF_007…010', 'Item search inside the view', 'Needs an Item Specific list with many items.'],
+    ['TC29', 'PL_NEG_007 / 008 / PL_BND_009 / 010', 'Item Specific price 0 / negative / 0.01 / 99.99', 'Item price field rules follow the custom rate field (PL_NEG_006).'],
+    ['TC30', 'PL_NEG_012 / PL_VAL_005 / PL_VAL_019 / PL_BL_005 / 006 / PL_E2E_004', 'Category wise without business type / per-category pricing on invoices', 'Business Type defaults to Retailer; customers with controlled business type / category are needed.'],
+    ['TC31', 'PL_BL_011', 'Priority between several active lists', 'The org has 380 lists from other runs; priority needs a clean org.'],
+    ['TC32', 'PL_BL_013 / PL_E2E_011 / PL_UI_011', 'Distributor-restricted pricing', 'No distributor customers in this org.'],
+    ['TC33', 'PL_BND_007 / PL_PERF_004 / 008', '50-item list', 'Needs 50 items set up for one list.'],
+    ['TC34', 'PL_SF_006 / 011 / 012', 'Search by type / pricing keyword; search kept across views', 'Search is by name only.'],
+    ['TC35', 'PL_PAG_001 / 007 / 008 / 009 / PL_E2E_015', 'Exact counts (19 / 21) / popup pagination', 'The org has 380+ lists.'],
+    ['TC36', 'PL_VAL_009 / 011 / 018', 'Name length / Markup required / scope', 'Markup is the default prefix; scope covered by PL_FUNC_009.'],
+    ['TC37', 'PL_NEG_011 / 014 / PL_SEC_002 / 003 / 009 / 013 / 015', 'Role / cross-org restrictions', 'No such users or second org.'],
+    ['TC38', 'PL_NEG_018 / PL_SEC_007 / 008 / 011 / 012 / 014', 'Deleted-list URL / CSRF / session / rate limit / API', 'Lists cannot be deleted; API-level checks.'],
+    ['TC39', 'PL_PERF_001…010', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
+    ['TC40', 'PL_ACC_001…010', 'Keyboard / screen reader / contrast', 'Needs an accessibility audit tool (axe) / screen reader.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

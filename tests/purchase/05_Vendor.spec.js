@@ -55,7 +55,7 @@ test.describe('Vendor', () => {
 
   // ── List / search ────────────────────────────────────────────────────────
 
-  test('VND_FUNC_001 / VND_UI_001 / 013 / VND_SF_001 / 002 / 003 / 004 / 005 / VND_SEC_004 - Vendor list with search: exact, partial, case-insensitive, no match, SQL text, clear', { tag: T }, async ({ page }) => {
+  test('TC01 - Vendor list search works for exact, partial, case-insensitive, no match and SQL text, and clearing restores the list', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_001, VND_UI_001, VND_UI_013, VND_SF_001, VND_SF_002, VND_SF_003, VND_SF_004, VND_SF_005, VND_SEC_004' } }, async ({ page }) => {
     await vp._vendorList();
     await expect(vp.customerSearch).toBeVisible();
     await expect(vp.newVendorBtn).toBeVisible();
@@ -75,7 +75,7 @@ test.describe('Vendor', () => {
 
   // ── Create ───────────────────────────────────────────────────────────────
 
-  test('VND_NEG_001 / VND_VAL_001 - Save with nothing filled: Name, Business Type, Category and GST Status required', { tag: T }, async () => {
+  test('TC02 - Saving a vendor with nothing filled requires Name, Business Type, Category and GST Status', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_001, VND_VAL_001' } }, async () => {
     await vp.openNewVendor();
     const r = await vp.trySaveCustomer();
     expect(r.saved).toBe(false);
@@ -83,7 +83,7 @@ test.describe('Vendor', () => {
     await vp.closeForm();
   });
 
-  test('VND_FUNC_002 / VND_POS_001 / VND_BND_002 / 008 / VND_VAL_016 / VND_E2E_001 / 012 - New vendor (opening ₹0) is listed; Due / Advance / Closing ₹0; statement empty; advance has no flow', { tag: T }, async () => {
+  test('TC03 - A new vendor with opening balance ₹0 is listed, Due, Advance and Closing show ₹0, the statement is empty and the advance has no flow', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_002, VND_POS_001, VND_BND_002, VND_BND_008, VND_VAL_016, VND_E2E_001, VND_E2E_012' } }, async () => {
     await vp.openNewVendor();
     await expect(vp.nameInput).toHaveValue('');
     const s = spec({ opening: 0 });
@@ -98,7 +98,7 @@ test.describe('Vendor', () => {
     // QA (BUG-VN-03): vendors have no advance flow, so the ₹0 advance link is not checked.
   });
 
-  test('VND_E2E_001 / VND_BL_002 / 013 / VND_FUNC_014 / PAY_POS_018 / PAY_BL_006 - New vendor with opening balance: first statement row; a bill adds to the due; Payment Made lists the opening balance', { tag: T }, async () => {
+  test('TC04 - A new vendor with an opening balance shows it as the first statement row, a bill adds to the due, and Payment Made lists the opening balance', { tag: T, annotation: { type: 'cases', description: 'VND_E2E_001, VND_BL_002, VND_BL_013, VND_FUNC_014, PAY_POS_018, PAY_BL_006' } }, async () => {
     const s = spec({ opening: 2000 });
     await vp.openNewVendor();
     await vp.fillCustomer(s);
@@ -122,7 +122,7 @@ test.describe('Vendor', () => {
     await vp.bills.discardPaymentForm();
   });
 
-  test('VND_NEG_004 / VND_VAL_002 / VND_SEC_006 - Invalid email (incl. script text) is refused', { tag: T }, async () => {
+  test('TC05 - A vendor with an invalid email (including script text) is refused', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_004, VND_VAL_002, VND_SEC_006' } }, async () => {
     await fillNew({ email: '<script>x</script>@bad' });
     const r = await vp.trySaveCustomer();
     expect(r.saved).toBe(false);
@@ -130,7 +130,7 @@ test.describe('Vendor', () => {
     await vp.closeForm();
   });
 
-  test('VND_NEG_005 / VND_VAL_003 - Registered with an invalid GSTIN is refused', { tag: T }, async () => {
+  test('TC06 - A registered vendor with an invalid GSTIN is refused', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_005, VND_VAL_003' } }, async () => {
     await fillNew({ gst: 'Registered', gstin: 'INVALID123' });
     const r = await vp.trySaveCustomer();
     expect(r.saved).toBe(false);
@@ -138,7 +138,7 @@ test.describe('Vendor', () => {
     await vp.closeForm();
   });
 
-  test('VND_NEG_010 / 011 / VND_VAL_008 / VND_BND_009 - Opening balance: "-" and letters refused; ₹99,99,99,999 saved and shown', { tag: T }, async () => {
+  test('TC07 - Vendor opening balance refuses "-" and letters, and ₹99,99,99,999 is saved and shown', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_010, VND_NEG_011, VND_VAL_008, VND_BND_009' } }, async () => {
     await vp.openNewVendor();
     for (const bad of ['-500', 'abc']) {
       await vp.openingBalance.fill('');
@@ -155,7 +155,7 @@ test.describe('Vendor', () => {
     expect((await vp.readDetails()).opening.replace(/[^\d.]/g, '')).toMatch(/^99999999/);
   });
 
-  test('VND_NEG_014 / VND_SEC_005 / VND_BND_001 - Script text / 150-character name: nothing runs; saved as text or limited', { tag: T }, async ({ page }) => {
+  test('TC08 - Script text and a 150-character vendor name: nothing runs, and the value is saved as text or limited', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_014, VND_SEC_005, VND_BND_001' } }, async ({ page }) => {
     const dialogs = [];
     page.on('dialog', (d) => { dialogs.push(d.message()); d.dismiss().catch(() => {}); });
     const name = `ZZ <img src=x onerror=window.__xss=1> ${uniq()}`;
@@ -174,7 +174,7 @@ test.describe('Vendor', () => {
   });
 
   // QA (BUG-VN-02): there is no duplicate-name check for vendors (current flow).
-  test('VND_NEG_018 - A second vendor with the same name is accepted', { tag: T }, async () => {
+  test('TC09 - A second vendor with the same name is accepted', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_018' } }, async () => {
     await fillNew({ name: VENDOR });
     await vp.fillAddress(ADDR);
     const r = await vp.trySaveCustomer();
@@ -183,7 +183,7 @@ test.describe('Vendor', () => {
 
   // ── Vendor page ──────────────────────────────────────────────────────────
 
-  test('VND_FUNC_003 / 004 / VND_UI_003 / 004 / 005 / VND_ACC_002 - Vendor page: Due / Advance / Closing, three tabs (keyboard), statement columns', { tag: T }, async ({ page }) => {
+  test('TC10 - Vendor page shows Due, Advance and Closing, three tabs (keyboard accessible) and the statement columns', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_003, VND_FUNC_004, VND_UI_003, VND_UI_004, VND_UI_005, VND_ACC_002' } }, async ({ page }) => {
     await vp.openVendor(VENDOR);
     const h = await vp.readHeader();
     for (const v of [h.due, h.advance, h.closing]) expect(Number.isNaN(v)).toBe(false);
@@ -197,12 +197,12 @@ test.describe('Vendor', () => {
     await expect(page.getByRole('tab', { name: 'Purchase Invoice' })).toHaveAttribute('aria-selected', 'true');
   });
 
-  test('VND_POS_002 / VND_VAL_007 / VND_BL_001 - Closing Balance = Due − Advance', { tag: T }, async () => {
+  test('TC11 - Vendor Closing Balance equals Due minus Advance', { tag: T, annotation: { type: 'cases', description: 'VND_POS_002, VND_VAL_007, VND_BL_001' } }, async () => {
     const h = await vp.vendorState(VENDOR);
     expectClose(h.closing, h.due - h.advance, 0.02, 'closing');
   });
 
-  test('VND_POS_003 / 011 / VND_VAL_010 / VND_BL_008 / 017 / 018 / VND_E2E_009 - Statement: running balance = previous + amount − payment; last row = Closing Balance', { tag: T }, async () => {
+  test('TC12 - Vendor statement running balance equals the previous balance plus amount minus payment, and the last row equals the Closing Balance', { tag: T, annotation: { type: 'cases', description: 'VND_POS_003, VND_POS_011, VND_VAL_010, VND_BL_008, VND_BL_017, VND_BL_018, VND_E2E_009' } }, async () => {
     await vp.openVendor(VENDOR);
     const h = await vp.readHeader();
     const st = await vp.readVendorStatement();
@@ -214,7 +214,7 @@ test.describe('Vendor', () => {
     expect(st.some((r) => r.amount > 0) && st.some((r) => r.payment > 0), 'bills and payments both listed').toBe(true);
   });
 
-  test('VND_FUNC_005 / VND_VAL_013 / 014 / VND_UI_014 / VND_POS_006 - Purchase Invoice tab: columns, due ≤ bill, Paid → ₹0; footer count and totals match the rows', { tag: T }, async () => {
+  test('TC13 - Vendor Purchase Invoice tab shows the columns, due is at most the bill amount, a paid bill shows ₹0, and the footer count and totals match the rows', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_005, VND_VAL_013, VND_VAL_014, VND_UI_014, VND_POS_006' } }, async () => {
     await vp.openVendor(VENDOR);
     await vp.openCustomerTab('Purchase Invoice');
     await expect(vp.visibleHead).toHaveText(['Date', 'Bill No', 'Status', 'Bill Amount', 'Due Amount']);
@@ -230,7 +230,7 @@ test.describe('Vendor', () => {
     expectClose(f.amounts[1], rows.reduce((s, r) => s + r.due, 0), 0.1, 'due total');
   });
 
-  test('VND_FUNC_006 / VND_VAL_015 / VND_POS_012 / VND_UI_007 - Payment Made tab: columns, mode text, footer count and total = sum', { tag: T }, async () => {
+  test('TC14 - Vendor Payment Made tab shows the columns, mode as text, and the footer count and total equal the sum of the rows', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_006, VND_VAL_015, VND_POS_012, VND_UI_007' } }, async () => {
     await vp.openVendor(VENDOR);
     await vp.openCustomerTab('Payment Made');
     await expect(vp.visibleHead).toHaveText(['Date', 'Bill No', 'Mode of Payment', 'Amount']);
@@ -241,7 +241,7 @@ test.describe('Vendor', () => {
     expectClose(f.amounts[0], rows.reduce((s, r) => s + r.amount, 0), 0.1, 'payment total');
   });
 
-  test('VND_FUNC_007 / 008 / VND_UI_009 / VND_POS_004 / VND_VAL_011 / VND_E2E_007 - Create → Invoice: vendor pre-selected; saved bill in statement and Purchase Invoice tab, due up', { tag: T }, async ({ page }) => {
+  test('TC15 - Create an invoice from the vendor page: the vendor is pre-selected, and the saved bill appears in the statement and Purchase Invoice tab with the due up', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_007, VND_FUNC_008, VND_UI_009, VND_POS_004, VND_VAL_011, VND_E2E_007' } }, async ({ page }) => {
     const h0 = await vp.vendorState(VENDOR);
     await vp.createBtn.click();
     await expect(vp.createItem('Invoice')).toBeVisible();
@@ -265,7 +265,7 @@ test.describe('Vendor', () => {
     expect(inv.status).toMatch(/due|overdue/i);
   });
 
-  test('VND_FUNC_009 / VND_POS_005 / 006 / VND_VAL_012 / VND_BL_003 / 007 / VND_E2E_002 / 008 - Create → Payment: vendor pre-selected; paying a bill in full lowers the due, bill Paid, payment listed (Cash)', { tag: T }, async ({ page }) => {
+  test('TC16 - Create a payment from the vendor page: the vendor is pre-selected, paying a bill in full lowers the due, the bill shows Paid and the payment is listed (Cash)', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_009, VND_POS_005, VND_POS_006, VND_VAL_012, VND_BL_003, VND_BL_007, VND_E2E_002, VND_E2E_008' } }, async ({ page }) => {
     const b = await bill(1);
     const h0 = await vp.vendorState(VENDOR);
     await vp.createFromVendor('Payment');
@@ -284,7 +284,7 @@ test.describe('Vendor', () => {
     expectClose(p.amount, b.total, 0.01, 'amount');
   });
 
-  test('VND_POS_008 / VND_BL_004 - Advance payment: Advance up, Due unchanged, Closing down', { tag: T }, async () => {
+  test('TC17 - An advance payment to a vendor raises Advance, leaves Due unchanged and lowers Closing', { tag: T, annotation: { type: 'cases', description: 'VND_POS_008, VND_BL_004' } }, async () => {
     const h0 = await vp.vendorState(VENDOR);
     await vp.bills.createPayment({ amount: 300, answer: 'Cancel' }, VENDOR);
     const h1 = await vp.vendorState(VENDOR);
@@ -293,7 +293,7 @@ test.describe('Vendor', () => {
     expectClose(h0.closing - h1.closing, 300, 0.05, 'closing');
   });
 
-  test('VND_FUNC_018 / VND_UI_008 / 012 - Advance amount is a link that opens the Advance Breakdown', { tag: T }, async ({ page }) => {
+  test('TC18 - The vendor Advance amount is a link that opens the Advance Breakdown', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_018, VND_UI_008, VND_UI_012' } }, async ({ page }) => {
     await vp.openVendor(VENDOR);
     expect(await vp._markAdvance(), 'advance shown as a link').toBe(true);
     await vp.advanceLink.click();
@@ -302,7 +302,7 @@ test.describe('Vendor', () => {
 
   // ── Profile ──────────────────────────────────────────────────────────────
 
-  test('VND_FUNC_010 / 022 / VND_UI_010 / VND_VAL_018 / VND_SEC_010 - View Details: Basic Info, Contact, Address, Bank Account, IDs, Other Info (India, +5:30, ₹); URL holds only the id; Back returns', { tag: T }, async ({ page }) => {
+  test('TC19 - Vendor View Details shows Basic Info, Contact, Address, Bank Account, IDs and Other Info (India, +5:30, ₹), the URL holds only the id, and Back returns', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_010, VND_FUNC_022, VND_UI_010, VND_VAL_018, VND_SEC_010' } }, async ({ page }) => {
     await vp.openVendor(VENDOR);
     expect(page.url()).toMatch(/\/vendor\/\d+$/);
     await vp.viewDetailsBtn.click();
@@ -315,7 +315,7 @@ test.describe('Vendor', () => {
     await expect(vp.viewDetailsBtn).toBeVisible();
   });
 
-  test('VND_FUNC_011 / 012 / 016 / VND_E2E_005 - Edit display name, email and billing address: shown in the profile and the vendor list', { tag: T }, async () => {
+  test('TC20 - Edit a vendor\'s display name, email and billing address: the changes show in the profile and the vendor list', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_011, VND_FUNC_012, VND_FUNC_016, VND_E2E_005' } }, async () => {
     const s = spec();
     await vp.openNewVendor();
     await vp.fillCustomer(s);
@@ -337,7 +337,7 @@ test.describe('Vendor', () => {
     expect(await vp.searchVendors(renamed)).toContain(renamed);
   });
 
-  test('VND_FUNC_014 / VND_BL_013 - Editing the opening balance changes Due / Closing by the difference', { tag: T }, async () => {
+  test('TC21 - Editing a vendor\'s opening balance changes Due and Closing by the difference', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_014, VND_BL_013' } }, async () => {
     const s = spec({ opening: 0 });
     await vp.openNewVendor();
     await vp.fillCustomer(s);
@@ -351,7 +351,7 @@ test.describe('Vendor', () => {
     expectClose(Math.abs(h1.closing - h0.closing), 1500, 0.02, 'closing moves by the opening balance');
   });
 
-  test('VND_FUNC_015 / 017 - Add Contact and Add Bank Details open their forms', { tag: T }, async ({ page }) => {
+  test('TC22 - "Add Contact" and "Add Bank Details" open their forms on the vendor page', { tag: T, annotation: { type: 'cases', description: 'VND_FUNC_015, VND_FUNC_017' } }, async ({ page }) => {
     await vp.openDetails(VENDOR);
     for (const btn of ['Add Contact', 'Add Bank Details']) {
       await page.getByRole('button', { name: btn }).click();
@@ -365,14 +365,14 @@ test.describe('Vendor', () => {
     }
   });
 
-  test('VND_NEG_012 - A vendor with dues has no Delete option', { tag: T }, async ({ page }) => {
+  test('TC23 - A vendor with dues has no Delete option', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_012' } }, async ({ page }) => {
     await vp.openDetails(VENDOR);
     await expect(page.getByRole('button', { name: /^Delete/ })).toHaveCount(0);
   });
 
   // ── Filters / pagination / switching ─────────────────────────────────────
 
-  test('VND_SF_006 / 007 / 008 / 010 / 011 / VND_POS_017 / VND_NEG_008 / VND_E2E_006 - Purchase Invoice tab dates: today only, reversed range, empty range; reload restores', { tag: T }, async () => {
+  test('TC24 - Vendor Purchase Invoice tab date filter: today only, reversed range and empty range work, and reload restores it', { tag: T, annotation: { type: 'cases', description: 'VND_SF_006, VND_SF_007, VND_SF_008, VND_SF_010, VND_SF_011, VND_POS_017, VND_NEG_008, VND_E2E_006' } }, async () => {
     await vp.openVendor(VENDOR);
     await vp.openCustomerTab('Purchase Invoice');
     const all = (await vp.tabFooter()).count;
@@ -391,7 +391,7 @@ test.describe('Vendor', () => {
     expect((await vp.tabFooter()).count).toBe(all);
   });
 
-  test('VND_SF_009 / VND_POS_018 - Payment Made tab: today only', { tag: T }, async () => {
+  test('TC25 - Vendor Payment Made tab date filter shows today only', { tag: T, annotation: { type: 'cases', description: 'VND_SF_009, VND_POS_018' } }, async () => {
     await vp.openVendor(VENDOR);
     await vp.openCustomerTab('Payment Made');
     const today = new Date();
@@ -401,7 +401,7 @@ test.describe('Vendor', () => {
     expect((await vp.tabFooter()).count).toBe(rows.length);
   });
 
-  test('VND_PAG_001 / 002 / 003 / 006 / 008 / 010 - Statement: 20 / page, next / previous, count constant; switching tabs returns to page 1', { tag: T }, async ({ page }) => {
+  test('TC26 - Vendor statement pagination: 20 per page, next and previous work, the count stays constant, and switching tabs returns to page 1', { tag: T, annotation: { type: 'cases', description: 'VND_PAG_001, VND_PAG_002, VND_PAG_003, VND_PAG_006, VND_PAG_008, VND_PAG_010' } }, async ({ page }) => {
     await vp.openVendor(VENDOR);
     const pag = page.locator('ul.ant-pagination').filter({ visible: true }).first();
     const count = (await vp.tabFooter()).count;
@@ -423,7 +423,7 @@ test.describe('Vendor', () => {
     await expect(page.locator('ul.ant-pagination').filter({ visible: true }).first().locator('li.ant-pagination-item-active')).toHaveText('1');
   });
 
-  test('VND_POS_016 / VND_BL_014 / VND_PAG_009 / VND_E2E_014 - Switching vendors: each has its own balances; back to the first gives the same values (page 1)', { tag: T }, async ({ page }) => {
+  test('TC27 - Switching between vendors: each has its own balances, and going back to the first gives the same values (page 1)', { tag: T, annotation: { type: 'cases', description: 'VND_POS_016, VND_BL_014, VND_PAG_009, VND_E2E_014' } }, async ({ page }) => {
     const h1 = await vp.vendorState(VENDOR);
     await vp._vendorList();
     await vp.openVendor('Abshire Group');   // a second vendor of the test org
@@ -437,7 +437,7 @@ test.describe('Vendor', () => {
 
   // ── Security ─────────────────────────────────────────────────────────────
 
-  test('VND_SEC_001 / VND_NEG_013 - Without a session the vendor page redirects to login', { tag: T }, async ({ browser, page }) => {
+  test('TC28 - Without a session the vendor page redirects to login', { tag: T, annotation: { type: 'cases', description: 'VND_SEC_001, VND_NEG_013' } }, async ({ browser, page }) => {
     await vp.openVendor(VENDOR);
     const ctx = await browser.newContext();
     const anon = await ctx.newPage();
@@ -449,23 +449,23 @@ test.describe('Vendor', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['VND_FUNC_019 / 020 / 021 / VND_POS_009 / 010 / VND_NEG_002 / 003 / 009 / 016 / VND_VAL_005 / 006 / 017 / VND_BND_003 / 004 / 007 / 010 / VND_BL_005 / 012 / 015 / 016 / 019 / 020 / VND_UI_011 / VND_PAG_007 / VND_E2E_003 / 004 / 010 / VND_ACC_005 / 008 / VND_SEC_012 / VND_PERF_005 / 010',
+  for (const [tc, id, title, why] of [
+    ['TC29', 'VND_FUNC_019 / 020 / 021 / VND_POS_009 / 010 / VND_NEG_002 / 003 / 009 / 016 / VND_VAL_005 / 006 / 017 / VND_BND_003 / 004 / 007 / 010 / VND_BL_005 / 012 / 015 / 016 / 019 / 020 / VND_UI_011 / VND_PAG_007 / VND_E2E_003 / 004 / 010 / VND_ACC_005 / 008 / VND_SEC_012 / VND_PERF_005 / 010',
       'Apply advance to invoices (Advance Breakdown → Apply Excess Amount)', 'The Advance Breakdown opens (VND_FUNC_018); the Apply Excess Amount popup flow is not automated yet.'],
-    ['VND_FUNC_013', 'Edit GST Number in the profile', 'The profile has no GST edit (GST STATUS shown without Edit).'],
-    ['VND_POS_013 / 014 / VND_NEG_015 / VND_VAL_004 / 009', 'Other Info country / TAN / IEC formats', 'IDs & Certificates and Other Info have no Edit / Add control.'],
-    ['VND_POS_015 / VND_UPL_001…008 / VND_NEG_017 / VND_SEC_013 / VND_E2E_011', 'Vendor photo upload', 'PHOTO has no upload control on the profile.'],
-    ['VND_E2E_015', 'Bank details + contact saved and shown', 'Add Contact / Add Bank Details forms are checked to open (VND_FUNC_015 / 017); saving them needs their field set.'],
-    ['VND_UI_002', 'Selected vendor highlighted', 'Visual design check.'],
-    ['VND_BND_005 / 006 / 011 / 012 / VND_PAG_004 / 005 / VND_E2E_013 / VND_SF_012', 'Exact record counts (20 / 21 / 100), single-vendor org', 'Needs a vendor / org with a controlled number of records.'],
-    ['VND_NEG_006 / VND_SEC_002', 'Another org\'s vendor by URL', 'Needs a second org.'],
-    ['VND_NEG_007 / VND_SEC_003 / 009 / 011', 'Role restrictions', 'No view-only / accountant users in the test data.'],
-    ['VND_SEC_007 / 014', 'CSRF / rate limiting', 'API-level security tests, not UI tests.'],
-    ['VND_SEC_008', 'Session timeout', 'Needs a shortened session lifetime.'],
-    ['VND_SEC_015', 'Deleted vendor by URL', 'Vendors cannot be deleted.'],
-    ['VND_PERF_001…004 / 006…009', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
-    ['VND_ACC_001 / 003 / 004 / 006 / 007', 'Keyboard list, screen reader, contrast, labels', 'Needs an accessibility audit tool (axe) / screen reader.'],
+    ['TC30', 'VND_FUNC_013', 'Edit GST Number in the profile', 'The profile has no GST edit (GST STATUS shown without Edit).'],
+    ['TC31', 'VND_POS_013 / 014 / VND_NEG_015 / VND_VAL_004 / 009', 'Other Info country / TAN / IEC formats', 'IDs & Certificates and Other Info have no Edit / Add control.'],
+    ['TC32', 'VND_POS_015 / VND_UPL_001…008 / VND_NEG_017 / VND_SEC_013 / VND_E2E_011', 'Vendor photo upload', 'PHOTO has no upload control on the profile.'],
+    ['TC33', 'VND_E2E_015', 'Bank details + contact saved and shown', 'Add Contact / Add Bank Details forms are checked to open (VND_FUNC_015 / 017); saving them needs their field set.'],
+    ['TC34', 'VND_UI_002', 'Selected vendor highlighted', 'Visual design check.'],
+    ['TC35', 'VND_BND_005 / 006 / 011 / 012 / VND_PAG_004 / 005 / VND_E2E_013 / VND_SF_012', 'Exact record counts (20 / 21 / 100), single-vendor org', 'Needs a vendor / org with a controlled number of records.'],
+    ['TC36', 'VND_NEG_006 / VND_SEC_002', 'Another org\'s vendor by URL', 'Needs a second org.'],
+    ['TC37', 'VND_NEG_007 / VND_SEC_003 / 009 / 011', 'Role restrictions', 'No view-only / accountant users in the test data.'],
+    ['TC38', 'VND_SEC_007 / 014', 'CSRF / rate limiting', 'API-level security tests, not UI tests.'],
+    ['TC39', 'VND_SEC_008', 'Session timeout', 'Needs a shortened session lifetime.'],
+    ['TC40', 'VND_SEC_015', 'Deleted vendor by URL', 'Vendors cannot be deleted.'],
+    ['TC41', 'VND_PERF_001…004 / 006…009', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
+    ['TC42', 'VND_ACC_001 / 003 / 004 / 006 / 007', 'Keyboard list, screen reader, contrast, labels', 'Needs an accessibility audit tool (axe) / screen reader.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

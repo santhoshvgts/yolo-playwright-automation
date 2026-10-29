@@ -68,7 +68,7 @@ test.describe('Payment Made', () => {
 
   // ── List ─────────────────────────────────────────────────────────────────
 
-  test('PAY_FUNC_001 / PAY_POS_001 / 011 / PAY_UI_001 / 004 / 019 - List: Date, Bill No (PAY-AUTO/NNNN), Vendor Name, Mode, Amount; primary New Payment Made; Total Count', { tag: T }, async ({ page }) => {
+  test('TC01 - The Payment Made list shows Date, Bill No (PAY-AUTO/NNNN), Vendor Name, Mode and Amount, a primary "New Payment Made" button and the Total Count', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_001, PAY_POS_001, PAY_POS_011, PAY_UI_001, PAY_UI_004, PAY_UI_019' } }, async ({ page }) => {
     await pm._searchPayments('');
     await expect(page.locator('table thead th')).toHaveText(['Date', 'Bill No', 'Vendor Name', 'Mode of Payment', 'Amount']);
     await expect(pm.newPaymentBtn).toHaveClass(/ant-btn-primary/);
@@ -82,13 +82,13 @@ test.describe('Payment Made', () => {
   });
 
   // QA (BUG-PM-06): by design the footer shows only "Total Count" (no total amount) and the mode is plain text.
-  test('PAY_POS_017 / PAY_PAG_010 / PAY_UI_019 - Footer shows the Total Count of payments', { tag: T }, async () => {
+  test('TC02 - The Payment Made list footer shows the Total Count of payments', { tag: T, annotation: { type: 'cases', description: 'PAY_POS_017, PAY_PAG_010, PAY_UI_019' } }, async () => {
     await pm._searchPayments('');
     await expect(pm.totalCountText).toBeVisible();
     expect(await pm.totalCount()).toBeGreaterThan(0);
   });
 
-  test('PAY_UI_002 / 003 / PAY_ACC_005 - Mode of Payment shown as text; vendor has an avatar', { tag: T }, async ({ page }) => {
+  test('TC03 - In the Payment Made list the Mode of Payment is shown as text and the vendor has an avatar', { tag: T, annotation: { type: 'cases', description: 'PAY_UI_002, PAY_UI_003, PAY_ACC_005' } }, async ({ page }) => {
     await pm._searchPayments('');
     const row = page.locator('table tbody tr.ant-table-row').first();
     await expect(row.locator('td').nth(3)).toHaveText(/\S/);
@@ -97,7 +97,7 @@ test.describe('Payment Made', () => {
 
   // ── Vendor step / form ───────────────────────────────────────────────────
 
-  test('PAY_FUNC_002 / PAY_UI_005 / PAY_NEG_001 / PAY_ACC_002 - New Payment Made opens with Enter: vendor search and Next, Next disabled without a vendor', { tag: T }, async ({ page }) => {
+  test('TC04 - "New Payment Made" opens with the Enter key showing vendor search and Next, and Next is disabled without a vendor', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_002, PAY_UI_005, PAY_NEG_001, PAY_ACC_002' } }, async ({ page }) => {
     await pm._searchPayments('');
     await pm.newPaymentBtn.focus();
     await page.keyboard.press('Enter');
@@ -106,7 +106,7 @@ test.describe('Payment Made', () => {
     await expect(pm.vendorNextBtn).toBeDisabled();
   });
 
-  test('PAY_FUNC_003 / 004 / PAY_BL_018 / 020 / PAY_UI_006 / 007 / 008 / 009 / 010 / 011 - Form: header, due = vendor due, pending cheque ₹0, due bills only (paid bill not listed)', { tag: T }, async ({ page }) => {
+  test('TC05 - Payment Made form shows the header, due equal to the vendor due, pending cheque ₹0 and due bills only (a paid bill is not listed)', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_003, PAY_FUNC_004, PAY_BL_018, PAY_BL_020, PAY_UI_006, PAY_UI_007, PAY_UI_008, PAY_UI_009, PAY_UI_010, PAY_UI_011' } }, async ({ page }) => {
     const open = await bill(1);
     const paid = await bill(1);
     await pm.payInvoice(paid.no, paid.total);
@@ -134,7 +134,7 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_FUNC_006 / PAY_POS_004 / PAY_BL_010 / PAY_BND_005 / 015 - OK on the prompt fills the bills oldest first (up to 21 bills)', { tag: T }, async () => {
+  test('TC06 - Choosing OK on the prompt fills the bills oldest first (up to 21 bills) in a payment made', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_006, PAY_POS_004, PAY_BL_010, PAY_BND_005, PAY_BND_015' } }, async () => {
     await pm.openNewPayment(VENDOR);
     const rows = await dueRows();
     expect(rows.length).toBeGreaterThan(0);
@@ -151,7 +151,7 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_FUNC_005 / PAY_POS_006 / PAY_BND_001 / PAY_E2E_004 / PAY_ACC_008 - Pay Full Amount (Space key) fills the total due, excess ₹0', { tag: T }, async ({ page }) => {
+  test('TC07 - "Pay Full Amount" (Space key) fills the total due and the excess is ₹0', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_005, PAY_POS_006, PAY_BND_001, PAY_E2E_004, PAY_ACC_008' } }, async ({ page }) => {
     await pm.openNewPayment(VENDOR);
     const f0 = await pm.readReceiptForm();
     await pm.payFullBox.focus();
@@ -166,7 +166,7 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_POS_005 / PAY_BND_003 / PAY_BL_002 - Paid above the total due: used = due, excess = the rest (₹99,99,99,999)', { tag: T }, async () => {
+  test('TC08 - A payment paid above the total due uses the due and puts the rest in excess (₹99,99,99,999)', { tag: T, annotation: { type: 'cases', description: 'PAY_POS_005, PAY_BND_003, PAY_BL_002' } }, async () => {
     await pm.openNewPayment(VENDOR);
     const f0 = await pm.readReceiptForm();
     await pm.setReceivedAmount('999999999', 'OK');
@@ -179,7 +179,7 @@ test.describe('Payment Made', () => {
 
   // ── Save / balances ──────────────────────────────────────────────────────
 
-  test('PAY_FUNC_008 / 009 / 016 / PAY_POS_003 / 008 / 019 / 020 / PAY_BL_001 / 005 / 015 / PAY_UI_013 / 014 - Partial payment: list (Cash), bill due down by the row amount, vendor due down, excess to advance; view breakdown', { tag: T }, async () => {
+  test('TC09 - Partial payment: the list shows it (Cash), the bill due and vendor due go down by the row amount, the excess goes to advance, and the view shows the breakdown', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_008, PAY_FUNC_009, PAY_FUNC_016, PAY_POS_003, PAY_POS_008, PAY_POS_019, PAY_POS_020, PAY_BL_001, PAY_BL_005, PAY_BL_015, PAY_UI_013, PAY_UI_014' } }, async () => {
     const b = await bill(10);
     const h0 = await pm.vendorHeader(VENDOR);
     await pm.openNewPayment(VENDOR);
@@ -210,7 +210,7 @@ test.describe('Payment Made', () => {
     expectClose(line.paid, 600, 0.01, 'bill paid in view');
   });
 
-  test('PAY_POS_002 / PAY_BND_004 / PAY_BL_012 / 016 / PAY_E2E_007 - Three bulk payments on one bill: due drops each time, Paid after the last; all three listed for the vendor', { tag: T }, async () => {
+  test('TC10 - Three bulk payments on one bill: the due drops each time, the bill shows Paid after the last, and all three are listed for the vendor', { tag: T, annotation: { type: 'cases', description: 'PAY_POS_002, PAY_BND_004, PAY_BL_012, PAY_BL_016, PAY_E2E_007' } }, async () => {
     const b = await bill(5);
     const parts = [200, 200, Math.round((b.total - 400) * 100) / 100];
     const nos = [];
@@ -227,7 +227,7 @@ test.describe('Payment Made', () => {
     for (const no of nos) expect(listed, `${no} listed`).toContain(no);
   });
 
-  test('PAY_FUNC_007 / PAY_NEG_014 / PAY_E2E_003 / PAY_BL_011 - Cancel on the prompt: all in excess; bill unchanged, vendor advance up; journal balanced with an advance line', { tag: T }, async () => {
+  test('TC11 - Choosing Cancel on the prompt puts everything in excess: the bill is unchanged, the vendor advance goes up, and the journal is balanced with an advance line', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_007, PAY_NEG_014, PAY_E2E_003, PAY_BL_011' } }, async () => {
     const b = await bill(1);
     const h0 = await pm.vendorHeader(VENDOR);
     await pm.openNewPayment(VENDOR);
@@ -248,7 +248,7 @@ test.describe('Payment Made', () => {
     expect(v.text).toMatch(/Advance|Prepaid/i);
   });
 
-  test('PAY_POS_012 / PAY_UI_015 / PAY_BL_003 / 017 - Journal of a bill payment: Account / Debit / Credit, debit = credit', { tag: T }, async () => {
+  test('TC12 - The journal of a bill payment shows Account, Debit and Credit columns, and debit equals credit', { tag: T, annotation: { type: 'cases', description: 'PAY_POS_012, PAY_UI_015, PAY_BL_003, PAY_BL_017' } }, async () => {
     const b = await bill(1);
     const no = await pay(b.total, { [b.no]: b.total });
     const v = await pm.readPaymentView(no);
@@ -259,7 +259,7 @@ test.describe('Payment Made', () => {
     expect(v.journal.map((j) => j.account).join(' ')).toMatch(/Payable|Petty Cash|Cash/i);
   });
 
-  test('PAY_POS_007 / 009 / 010 / PAY_EXP_007 / 008 - Bank Transfer shows as Bank Transfer; Reference No and notes are kept', { tag: T }, async () => {
+  test('TC13 - A payment made by Bank Transfer shows as Bank Transfer, and the Reference No and notes are kept', { tag: T, annotation: { type: 'cases', description: 'PAY_POS_007, PAY_POS_009, PAY_POS_010, PAY_EXP_007, PAY_EXP_008' } }, async () => {
     const b = await bill(1);
     const bank = await pay(b.total, { [b.no]: b.total }, { mode: 'Bank Transfer', notes: 'paid by transfer' });
     expect((await pm.paymentListRow(bank)).mode).toBe('Bank Transfer');
@@ -281,7 +281,7 @@ test.describe('Payment Made', () => {
     });
   });
 
-  test('PAY_FUNC_011 / 012 / PAY_BND_012 - Edit: prefilled; raise the bill amount 500 → 800 (due down 300), then cut to ₹0.01 (due restored)', { tag: T }, async () => {
+  test('TC14 - Edit a payment made: fields are pre-filled, raising the bill amount from 500 to 800 lowers the due by 300, and cutting it to ₹0.01 restores the due', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_011, PAY_FUNC_012, PAY_BND_012' } }, async () => {
     const b = await bill(10);
     const no = await pay(500, { [b.no]: 500 });
     expectClose((await pm.billRow(b.no)).due, b.total - 500, 0.01, 'due after 500');
@@ -300,7 +300,7 @@ test.describe('Payment Made', () => {
     expectClose((await pm.billRow(b.no)).due, b.total - 0.01, 0.01, 'due after 0.01');
   });
 
-  test('PAY_FUNC_013 / PAY_NEG_010 - Delete a payment that cleared a bill: payment gone, bill due and vendor due restored', { tag: T }, async () => {
+  test('TC15 - Delete a payment that cleared a bill: the payment is gone and the bill due and vendor due are restored', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_013, PAY_NEG_010' } }, async () => {
     const b = await bill(5);
     const h0 = await pm.vendorHeader(VENDOR);
     const no = await pay(b.total, { [b.no]: b.total });
@@ -312,7 +312,7 @@ test.describe('Payment Made', () => {
     expectClose((await pm.vendorHeader(VENDOR)).due, h0.due, 0.05, 'vendor due restored');
   });
 
-  test('PAY_FUNC_017 - Cancel on a filled new payment returns to the list without saving', { tag: T }, async ({ page }) => {
+  test('TC16 - Cancel on a filled new payment made returns to the list without saving', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_017' } }, async ({ page }) => {
     const no = await pm.openNewPayment(VENDOR);
     await pm.fillPaymentForm({ amount: 10, answer: 'Cancel' });
     await pm.discardPaymentForm();
@@ -320,13 +320,13 @@ test.describe('Payment Made', () => {
     expect(await pm.paymentExists(no), `${no} not created`).toBe(false);
   });
 
-  test('PAY_BND_002 - A ₹0.01 bulk payment reduces the bill due by ₹0.01', { tag: T }, async () => {
+  test('TC17 - A ₹0.01 bulk payment reduces the bill due by ₹0.01', { tag: T, annotation: { type: 'cases', description: 'PAY_BND_002' } }, async () => {
     const b = await bill(1);
     await pay(0.01, { [b.no]: 0.01 });
     expectClose((await pm.billRow(b.no)).due, b.total - 0.01, 0.005, 'due');
   });
 
-  test('PAY_BND_010 - Payment dated on the financial-year boundary (31 Mar 2026) is saved with that date', { tag: T }, async () => {
+  test('TC18 - A payment dated on the financial-year boundary (31 Mar 2026) is saved with that date', { tag: T, annotation: { type: 'cases', description: 'PAY_BND_010' } }, async () => {
     await pm.openNewPayment(VENDOR);
     await pm.setReceiptDate('March 31, 2026');
     await pm.fillPaymentForm({ amount: 1, answer: 'Cancel' });
@@ -336,7 +336,7 @@ test.describe('Payment Made', () => {
 
   // ── View / print ─────────────────────────────────────────────────────────
 
-  test('PAY_FUNC_009 / 018 / PAY_UI_013 / 014 / 016 / PAY_ACC_009 / PAY_EXP_004 / 005 / 006 - View: Close / Print / Edit / Delete, vendor, PAY no, breakdown, summary; Close and Escape close it', { tag: T }, async ({ page }) => {
+  test('TC19 - Payment made view shows Close, Print, Edit and Delete, the vendor, PAY number, breakdown and summary, and Close and Escape both close it', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_009, PAY_FUNC_018, PAY_UI_013, PAY_UI_014, PAY_UI_016, PAY_ACC_009, PAY_EXP_004, PAY_EXP_005, PAY_EXP_006' } }, async ({ page }) => {
     const b = await bill(1);
     const no = await pay(b.total, { [b.no]: b.total });
     const v = await pm.readPaymentView(no);
@@ -349,7 +349,7 @@ test.describe('Payment Made', () => {
     await expect(pm.paymentDrawer).toBeHidden({ timeout: 5000 });
   });
 
-  test('PAY_FUNC_010 / PAY_EXP_001 - Print in the view opens the print preview', { tag: T }, async ({ page }) => {
+  test('TC20 - Print in the payment made view opens the print preview', { tag: T, annotation: { type: 'cases', description: 'PAY_FUNC_010, PAY_EXP_001' } }, async ({ page }) => {
     const b = await bill(1);
     const no = await pay(b.total, { [b.no]: b.total });
     await pm.openPayment(no);
@@ -358,7 +358,7 @@ test.describe('Payment Made', () => {
     expect(r.popup || r.download || r.print > 0, 'print preview / dialog / PDF opened').toBe(true);
   });
 
-  test('PAY_E2E_010 / PAY_BL_013 / PAY_EXP_010 - Make Payment from the bill creates a Payment Made entry with the bill and a balanced journal', { tag: T }, async () => {
+  test('TC21 - "Make Payment" from a bill creates a Payment Made entry with the bill and a balanced journal', { tag: T, annotation: { type: 'cases', description: 'PAY_E2E_010, PAY_BL_013, PAY_EXP_010' } }, async () => {
     const b = await bill(1);
     const before = new Set((await pm.allPayments(VENDOR)).map((r) => r[1]));
     await pm.payInvoice(b.no, b.total);
@@ -378,7 +378,7 @@ test.describe('Payment Made', () => {
 
   // ── Validation ───────────────────────────────────────────────────────────
 
-  test('PAY_NEG_002 / 003 / 004 - Save with nothing filled: Paid Amount, Payment Mode and Account required', { tag: T }, async () => {
+  test('TC22 - Saving a payment made with nothing filled requires Paid Amount, Payment Mode and Account', { tag: T, annotation: { type: 'cases', description: 'PAY_NEG_002, PAY_NEG_003, PAY_NEG_004' } }, async () => {
     await pm.openNewPayment(VENDOR);
     const msg = await pm.savePaymentExpectRefused();
     expect(msg).toMatch(/Received Amount is required|Paid Amount is required/i);
@@ -387,7 +387,7 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_NEG_005 / 009 / 013 - Paid Amount and bill Payment refuse "-" and letters', { tag: T }, async () => {
+  test('TC23 - Paid Amount and the bill Payment field refuse "-" and letters', { tag: T, annotation: { type: 'cases', description: 'PAY_NEG_005, PAY_NEG_009, PAY_NEG_013' } }, async () => {
     await pm.openNewPayment(VENDOR);
     const amt = pm.receiveAmtField();
     for (const bad of ['-50', 'abc']) {
@@ -403,7 +403,7 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_NEG_008 - Paid Amount ₹0 is refused', { tag: T }, async () => {
+  test('TC24 - A Paid Amount of ₹0 is refused', { tag: T, annotation: { type: 'cases', description: 'PAY_NEG_008' } }, async () => {
     await pm.openNewPayment(VENDOR);
     await pm.fillPaymentForm({ amount: 0, answer: 'Cancel' });
     const r = await pm.trySavePayment();
@@ -412,7 +412,7 @@ test.describe('Payment Made', () => {
   });
 
   // QA (BUG-PM-04): this is the flow — a Paid Amount above the bill rows is saved and the excess goes to the vendor's advance.
-  test('PAY_NEG_006 / 007 / PAY_UI_012 / PAY_VAL_015 - Paid amount above the bill payment is saved (excess to advance)', { tag: T }, async () => {
+  test('TC25 - A paid amount above the bill payment is saved and the excess goes to advance', { tag: T, annotation: { type: 'cases', description: 'PAY_NEG_006, PAY_NEG_007, PAY_UI_012, PAY_VAL_015' } }, async () => {
     const b = await bill(10);
     await pm.openNewPayment(VENDOR);
     await pm.fillPaymentForm({ amount: b.total + 50, answer: 'Cancel', rows: { [b.no]: b.total } });
@@ -420,7 +420,7 @@ test.describe('Payment Made', () => {
     expect(r.saved, `payment saved (${r.message || 'no message'})`).toBe(true);
   });
 
-  test('PAY_BND_013 / 014 - Paid Amount keeps 2 decimals (5000.75); a 3rd decimal is rounded or refused', { tag: T }, async () => {
+  test('TC26 - Paid Amount keeps 2 decimals (5000.75), and a 3rd decimal is rounded or refused', { tag: T, annotation: { type: 'cases', description: 'PAY_BND_013, PAY_BND_014' } }, async () => {
     await pm.openNewPayment(VENDOR);
     const amt = pm.receiveAmtField();
     await pm.setReceivedAmount('5000.75', 'Cancel');
@@ -430,7 +430,7 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_VAL_009 / 010 - Bill No is auto and read-only; an empty Bill Date is refused', { tag: T }, async ({ page }) => {
+  test('TC27 - Bill No is automatic and read-only, and an empty Bill Date is refused', { tag: T, annotation: { type: 'cases', description: 'PAY_VAL_009, PAY_VAL_010' } }, async ({ page }) => {
     await pm.openNewPayment(VENDOR);
     await expect(pm.receiptNo).not.toBeEditable();
     await pm.fillPaymentForm({ amount: 1, answer: 'Cancel' });
@@ -450,7 +450,7 @@ test.describe('Payment Made', () => {
     await pm.discardPaymentForm();
   });
 
-  test('PAY_NEG_015 / PAY_SEC_005 / PAY_BND_008 / 009 - Script text in notes (≤ 250 chars) / long reference stored as text; nothing runs', { tag: T }, async ({ page }) => {
+  test('TC28 - Script text in notes (up to 250 characters) and a long reference are stored as text and nothing runs', { tag: T, annotation: { type: 'cases', description: 'PAY_NEG_015, PAY_SEC_005, PAY_BND_008, PAY_BND_009' } }, async ({ page }) => {
     const dialogs = [];
     page.on('dialog', (d) => { dialogs.push(d.message()); d.dismiss().catch(() => {}); });
     const notes = `<script>window.__xss=1</script>${'N'.repeat(200)}`;   // notes limit: 250 characters
@@ -471,7 +471,7 @@ test.describe('Payment Made', () => {
 
   // ── Search / filter / pagination ─────────────────────────────────────────
 
-  test('PAY_SF_001 / 002 / 003 / 004 / 008 / 010 / 011 / 012 / PAY_NEG_011 / 016 - Search: exact, partial, vendor, case, trimmed, no match, SQL text; count follows; clearing restores', { tag: T }, async ({ page }) => {
+  test('TC29 - Search payments made by exact, partial, vendor, case, trimmed, no match and SQL text: the count follows and clearing the search restores the list', { tag: T, annotation: { type: 'cases', description: 'PAY_SF_001, PAY_SF_002, PAY_SF_003, PAY_SF_004, PAY_SF_008, PAY_SF_010, PAY_SF_011, PAY_SF_012, PAY_NEG_011, PAY_NEG_016' } }, async ({ page }) => {
     const all = await pm.searchPayments('');
     const total = await pm.totalCount();
     const no = all[0][1];
@@ -499,7 +499,7 @@ test.describe('Payment Made', () => {
     expect(await pm.totalCount()).toBe(total);
   });
 
-  test('PAY_SF_005 / 006 / 007 / 009 / PAY_NEG_012 - Date filter: reversed range gives nothing / error; today–today only today; with vendor search; reload restores', { tag: T }, async () => {
+  test('TC30 - Payment made date filter: a reversed range gives nothing or an error, today to today shows only today, it works with vendor search, and reload restores it', { tag: T, annotation: { type: 'cases', description: 'PAY_SF_005, PAY_SF_006, PAY_SF_007, PAY_SF_009, PAY_NEG_012' } }, async () => {
     const total = (await pm.searchPayments(''), await pm.totalCount());
     await pm.setListDateRange(new Date(), addDays(new Date(), -10)).catch((e) => console.log(`reversed range not accepted: ${e.message.slice(0, 80)}`));
     const reversed = await pm.readListRows();
@@ -519,7 +519,7 @@ test.describe('Payment Made', () => {
     expect(await pm.totalCount()).toBe(total);
   });
 
-  test('PAY_PAG_001…009 / PAY_BND_006 / 007 - Pagination: 20 per page, next / previous / page number, no duplicates (one page when ≤ 20)', { tag: T }, async ({ page }) => {
+  test('TC31 - Payment made pagination: 20 per page, next, previous and page number work with no duplicates (one page when 20 or fewer)', { tag: T, annotation: { type: 'cases', description: 'PAY_PAG_001…009, PAY_BND_006, PAY_BND_007' } }, async ({ page }) => {
     await pm.searchPayments('');
     const total = await pm.totalCount();
     const pag = page.locator('ul.ant-pagination').first();
@@ -553,7 +553,7 @@ test.describe('Payment Made', () => {
 
   // ── Security / accessibility ─────────────────────────────────────────────
 
-  test('PAY_SEC_001 / 009 - Without a session: redirected to login, no payments shown, the payments API refuses', { tag: T }, async ({ browser, page }) => {
+  test('TC32 - Without a session the payments made page redirects to login, shows no payments and the payments API refuses', { tag: T, annotation: { type: 'cases', description: 'PAY_SEC_001, PAY_SEC_009' } }, async ({ browser, page }) => {
     const apiCall = page.waitForResponse((r) => /api/.test(r.url()) && /payment/i.test(r.url()) && r.request().method() === 'GET', { timeout: 30_000 }).catch(() => null);
     await pm._searchPayments('');
     const api = await apiCall;
@@ -569,7 +569,7 @@ test.describe('Payment Made', () => {
     await ctx.close();
   });
 
-  test('PAY_ACC_007 - Escape closes the Payment Mode dropdown', { tag: T }, async ({ page }) => {
+  test('TC33 - Escape closes the Payment Mode dropdown in a payment made', { tag: T, annotation: { type: 'cases', description: 'PAY_ACC_007' } }, async ({ page }) => {
     await pm.openNewPayment(VENDOR);
     await pm.receiptEditMode.locator('.ant-select-selector').click();
     await expect(page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)')).toBeVisible();
@@ -580,18 +580,18 @@ test.describe('Payment Made', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['PAY_FUNC_003 (other vendor)', 'Another vendor\'s bills not listed', 'Only one test vendor; the due list is checked against paid / unpaid bills of it.'],
-    ['PAY_POS_016 / PAY_BL_014 / PAY_E2E_008', 'Vendor advance applied to a new bill', 'No control to apply a vendor advance on the purchase side.'],
-    ['PAY_UI_020', 'Empty state with no payments', 'The org already has payments.'],
-    ['PAY_EXP_002 / 003 / 009', 'Printed content (company header, title, journal)', 'Browser print preview content needs a PDF reader.'],
-    ['PAY_SEC_002', 'Session timeout', 'Needs a shortened session lifetime.'],
-    ['PAY_SEC_006 / 007', 'View-only / Accountant role restrictions', 'No such users in the test data.'],
-    ['PAY_SEC_008 / 011', 'Another org\'s payments / vendors', 'Needs a second org.'],
-    ['PAY_SEC_010 / 012', 'CSRF / DevTools-manipulated amount', 'API-level security tests, not UI tests.'],
-    ['PAY_PERF_001…008', 'Response-time limits', 'Environment-dependent; not a functional check.'],
-    ['PAY_ACC_001 / 003 / 004 / 006', 'Tab order, screen reader, contrast', 'Needs an accessibility audit tool (axe) / screen reader.'],
+  for (const [tc, id, title, why] of [
+    ['TC34', 'PAY_FUNC_003 (other vendor)', 'Another vendor\'s bills not listed', 'Only one test vendor; the due list is checked against paid / unpaid bills of it.'],
+    ['TC35', 'PAY_POS_016 / PAY_BL_014 / PAY_E2E_008', 'Vendor advance applied to a new bill', 'No control to apply a vendor advance on the purchase side.'],
+    ['TC36', 'PAY_UI_020', 'Empty state with no payments', 'The org already has payments.'],
+    ['TC37', 'PAY_EXP_002 / 003 / 009', 'Printed content (company header, title, journal)', 'Browser print preview content needs a PDF reader.'],
+    ['TC38', 'PAY_SEC_002', 'Session timeout', 'Needs a shortened session lifetime.'],
+    ['TC39', 'PAY_SEC_006 / 007', 'View-only / Accountant role restrictions', 'No such users in the test data.'],
+    ['TC40', 'PAY_SEC_008 / 011', 'Another org\'s payments / vendors', 'Needs a second org.'],
+    ['TC41', 'PAY_SEC_010 / 012', 'CSRF / DevTools-manipulated amount', 'API-level security tests, not UI tests.'],
+    ['TC42', 'PAY_PERF_001…008', 'Response-time limits', 'Environment-dependent; not a functional check.'],
+    ['TC43', 'PAY_ACC_001 / 003 / 004 / 006', 'Tab order, screen reader, contrast', 'Needs an accessibility audit tool (axe) / screen reader.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

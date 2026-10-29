@@ -23,20 +23,20 @@ test.describe(moduleName, () => {
   test.describe.configure({ retries: 0, timeout: 600_000 });
 
   // ── Bulk Payment Received ──
-  test('TC01 - Create a bulk payment against the customer\'s due invoices and verify invoice dues and customer balances', { tag: ['@unit', '@payment'] }, async ({ page }) => {
+  test('TC01 - Create a bulk customer payment against the customer\'s due invoices and verify invoice dues and customer balances', { tag: ['@unit', '@payment'], annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {
     await new CustomerPaymentPage(page).createBulkPaymentAndVerifyBalances(paymentData);
   });
 
-  test('TC02 - Edit the bulk payment and verify invoice dues and customer balances', { tag: ['@unit', '@payment'] }, async ({ page }) => {
+  test('TC02 - Edit the bulk customer payment and verify invoice dues and customer balances', { tag: ['@unit', '@payment'], annotation: { type: 'cases', description: 'TC02' } }, async ({ page }) => {
     await new CustomerPaymentPage(page).editBulkPaymentAndVerifyBalances(paymentData);
   });
 
-  test('TC03 - Delete the bulk payment and verify customer balances return to their original values', { tag: ['@unit', '@payment'] }, async ({ page }) => {
+  test('TC03 - Delete the bulk customer payment and verify customer balances return to their original values', { tag: ['@unit', '@payment'], annotation: { type: 'cases', description: 'TC03' } }, async ({ page }) => {
     await new CustomerPaymentPage(page).deleteBulkPaymentAndVerifyBalances(paymentData);
   });
 
   // ── Receive Payment against a Sales Invoice ──
-  test('TC04 - Receive a payment against a Sales Invoice, verify its due, then unlink it and verify the due is restored', { tag: ['@unit', '@payment'] }, async ({ page }) => {
+  test('TC04 - Receive a customer payment against a sales invoice, verify its due, then unlink it and verify the due is restored', { tag: ['@unit', '@payment'], annotation: { type: 'cases', description: 'TC04' } }, async ({ page }) => {
     await new CustomerPaymentPage(page).receivePaymentAgainstSalesInvoiceAndVerify(paymentData);
   });
 });

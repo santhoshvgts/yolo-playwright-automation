@@ -5,7 +5,7 @@ test.describe.serial("Login", () => {
   test.use({ viewport: { width: 1800, height: 900 } });
   test.describe.configure({ retries: 0 });
 
-  test('TC01 - Verify admin can log in and switch into the test organisation', { tag: ['@smoke'] }, async ({ page }) => {
+  test('TC01 - Verify that the admin can log in and switch into the test organisation', { tag: ['@smoke'], annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.openApp('invoice');
     await loginPage.selectOrg();

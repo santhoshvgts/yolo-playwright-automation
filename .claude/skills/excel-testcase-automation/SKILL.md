@@ -75,8 +75,12 @@ cheque / journal / van sales → `tests/finance/` or `tests/van-sales/`. One `te
    Append anything new you learn to `reference/app-notes.md`.
 
 5. **Write the tests** in the existing spec for that area (sales → `tests/sales/02_SalesInvoiceStock.spec.js`):
-   - Own `test.describe` block per sheet, titles `"<Sheet ID> - <short behaviour>"` (e.g. `TC-E05 - …`),
-     tags `['@sales', '@<area-tag>']`.
+   - Own `test.describe` block per sheet. Title = `"TCnn - <plain sentence>"`: next free TC number
+     in that spec file (3 digits in files over 99 tests, e.g. `TC401`), a plain sentence of what is
+     done and expected, **no sheet IDs in the title**. The sheet IDs go in the annotation, written
+     out in full: `{ tag: ['@sales', '@<area-tag>'], annotation: { type: 'cases', description: 'TC-E05, TC-E06' } }`.
+     Data-driven loops: rows `['TCnn', '<sheet IDs>', …]`, destructure `[tc, id, …]`, title
+     `` `${tc} - …` ``, annotation `{ type: 'cases', description: id }`.
    - Header comment listing the skipped (covered) cases and where they are covered.
    - Reuse POMs: `SalesInvoiceStockPage` (items, stock, lines, save, list, preview, journal) and
      `SalesInvoiceEditPage` (rate/discount/GST/CESS, tax mode, dates, summary, TDS, adjustment,
@@ -88,7 +92,8 @@ cheque / journal / van sales → `tests/finance/` or `tests/van-sales/`. One `te
    - Cases the app cannot do → `test.fixme(title, async () => { /* reason */ })`.
    - The spec files use **CRLF** line endings: append big blocks by writing to a scratch file
      and `sed 's/$/\r/' block.js >> spec.js`; edit with python using `newline=''`.
-   - Verify with `npx playwright test <spec> --list --grep "<prefix>" | tail -1`.
+   - Verify with `npx playwright test <spec> --list | tail -1` (count) — `--grep` matches titles and
+     tags only, not the case IDs in annotations; find a case with `grep -n "<ID>" <spec>`.
 
 6. **Run** (see app-notes "Running"): smoke subset → full run in background → triage.
    Triage each failure as **app defect** (keep the test, it is the evidence) or **test bug**

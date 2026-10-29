@@ -16,7 +16,7 @@ test.describe(moduleName, () => {
     await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
   });
 
-  test('TC01 - Create a new product item and verify it is listed in Items', async ({ page }) => {
+  test('TC01 - Create a new product item and verify it is listed in Items', { annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {
     const pom = new Product_item_Create(page);
 
     // Navigate to product creation

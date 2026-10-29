@@ -16,7 +16,7 @@ test.describe(moduleName, () => {
     await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
   });
 
-  test('TC01 - Create a Business Vendor with GST', async ({ page }) => {
+  test('TC01 - Create a Business Vendor with GST', { annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {
     const pom = new Vendor_Create(page);
 
     // Navigate to product creation
@@ -25,7 +25,7 @@ test.describe(moduleName, () => {
     
   });
 
-  test('TC02 - Create a Business Vendor without GST', async ({ page }) => {
+  test('TC02 - Create a Business Vendor without GST', { annotation: { type: 'cases', description: 'TC02' } }, async ({ page }) => {
     const pom = new Vendor_Create(page);
 
     // Navigate to product creation
@@ -34,7 +34,7 @@ test.describe(moduleName, () => {
     
   });
 
-  test('TC03 - Create an Individual Vendor', async ({ page }) => {
+  test('TC03 - Create an Individual Vendor', { annotation: { type: 'cases', description: 'TC03' } }, async ({ page }) => {
     const pom = new Vendor_Create(page);
 
     // Navigate to product creation
@@ -43,7 +43,7 @@ test.describe(moduleName, () => {
     
   });
 
-  test('TC04 - Edit the Business Vendor with GST', async ({ page }) => {
+  test('TC04 - Edit the Business Vendor with GST', { annotation: { type: 'cases', description: 'TC04' } }, async ({ page }) => {
 
     const pom = new Vendor_Create(page);
 

@@ -41,7 +41,7 @@ test.describe(moduleName, () => {
 
   // ── Create: UOM conversion and stock limits ──────────────────────────────
 
-  test('TC01 - 61 pcs = 1 box, 625 pcs = 1 bundle: with 4000 pcs, an invoice over the stock is refused and one within it is saved', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC001 - With 61 pcs = 1 box and 625 pcs = 1 bundle and 4000 pcs in stock, a sales invoice over the stock is refused and one within it is saved', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC01' } }, async () => {
     const c = D.uomConversion;
     const item = await si.setupItem(c.item());
     expect(item.conversions).toEqual({ pcs: 1, box: 61, bundle: 625 });
@@ -65,14 +65,14 @@ test.describe(moduleName, () => {
     await si.expectStock(item, item.openingStock - sold, 'after invoice');
   });
 
-  test('TC02 - Stock 2000 pcs: an invoice for 32.79 box (61 pcs = 1 box) is saved and the stock shows 0', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC002 - With 2000 pcs in stock, a sales invoice for 32.79 box (61 pcs = 1 box) is saved and the stock shows 0', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC02' } }, async () => {
     const c = D.decimalBoxToZero;
     const item = await si.setupItem(c.item());
     await si.createInvoice(linesFor(item, [{ qty: c.box, uom: 'box' }]));
     await si.expectStock(item, 0, 'after 32.79 box');
   });
 
-  test('TC03 - Stock 2000 pcs: an invoice for 30 box (61 pcs = 1 box) leaves 170 pcs = 2.79 box', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC003 - With 2000 pcs in stock, a sales invoice for 30 box (61 pcs = 1 box) leaves 170 pcs = 2.79 box', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC03' } }, async () => {
     const c = D.decimalBoxRemainder;
     const item = await si.setupItem(c.item());
     await si.createInvoice(linesFor(item, [{ qty: c.box, uom: 'box' }]));
@@ -81,7 +81,7 @@ test.describe(moduleName, () => {
     expect(Math.round((left / 61) * 100) / 100, 'stock in box').toBe(c.expectedBoxesLeft);
   });
 
-  test('TC04 - Stock 500.99 pcs: an invoice for 1 bundle (600 pcs) is refused with a validation message', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC004 - With 500.99 pcs in stock, a sales invoice for 1 bundle (600 pcs) is refused with a validation message', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC04' } }, async () => {
     const c = D.bundleOverDecimalStock;
     const item = await si.setupItem(c.item());
     await si.startInvoice();
@@ -92,7 +92,7 @@ test.describe(moduleName, () => {
     await si.expectStock(item, item.openingStock, 'refused invoice leaves stock');
   });
 
-  test('TC05 - Stock 3500 pcs: 3501 pcs cannot be invoiced, 3500 is the maximum, and the stock stays 3500', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC005 - With 3500 pcs in stock, 3501 pcs cannot be invoiced, 3500 is the maximum, and the stock stays 3500', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC05' } }, async () => {
     const c = D.maxQty;
     const item = await si.setupItem(c.item());
     await si.startInvoice();
@@ -106,7 +106,7 @@ test.describe(moduleName, () => {
     await si.expectStock(item, c.max, 'unsaved invoice leaves stock');
   });
 
-  test('TC06 - One invoice with many items, mixed UOMs and decimal quantities reduces every item\'s stock exactly', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC006 - A single sales invoice with many items, mixed UOMs and decimal quantities reduces every item\'s stock exactly', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC06' } }, async () => {
     test.setTimeout(3_600_000);   // creates ~20 items
     const c = D.multiItemDecimal;
     const items = await si.setupItems(Array.from({ length: c.count }, (_, i) => c.item(i)));
@@ -115,7 +115,7 @@ test.describe(moduleName, () => {
     for (const item of items) await si.expectStock(item, item.openingStock - si.baseQtyOf(item, lines), item.itemName);
   });
 
-  test('TC07 - Stock 15000 pcs: several invoices for one item totalling 14500 pcs leave 500 pcs', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC007 - With 15000 pcs in stock, several sales invoices for one item totalling 14500 pcs leave 500 pcs', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC07' } }, async () => {
     const c = D.multiInvoiceSingleItem;
     const item = await si.setupItem(c.item());
     let left = item.openingStock;
@@ -127,7 +127,7 @@ test.describe(moduleName, () => {
     expect(left).toBe(500);
   });
 
-  test('TC08 - Stock 20000 pcs: one invoice with many box / pcs / bundle lines of the same item reduces the stock exactly', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC008 - With 20000 pcs in stock, one sales invoice with many box, pcs and bundle lines of the same item reduces the stock exactly', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC08' } }, async () => {
     const c = D.multiLineSingleItem;
     const item = await si.setupItem(c.item());
     const lines = linesFor(item, c.lines);
@@ -135,7 +135,7 @@ test.describe(moduleName, () => {
     await si.expectStock(item, item.openingStock - si.baseQtyOf(item, lines), 'after multi-line invoice');
   });
 
-  test('TC09 - Several items sold over several invoices in mixed UOMs (62 pcs = 1 box, 702 pcs = 1 bundle) reduce the stock exactly', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC009 - Several items sold over several sales invoices in mixed UOMs (62 pcs = 1 box, 702 pcs = 1 bundle) reduce the stock exactly', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC09' } }, async () => {
     test.setTimeout(2_400_000);   // creates 10 items
     const c = D.multiItemMultiInvoice;
     const items = await si.setupItems(Array.from({ length: c.count }, (_, i) => c.item(i)));
@@ -155,7 +155,7 @@ test.describe(moduleName, () => {
     console.log(`Total stock ${totalOpening} → ${totalLeft} pcs`);
   });
 
-  test('TC10 - Single-unit items: pcs item offers no box, box item no bundle, bundle item no pcs', { tag: ['@sales', '@si-stock'] }, async () => {
+  test('TC010 - Single-unit items offer only their own unit: a pcs item offers no box, a box item no bundle, and a bundle item no pcs', { tag: ['@sales', '@si-stock'], annotation: { type: 'cases', description: 'TC10' } }, async () => {
     for (const c of D.singleUnit) {
       const item = await si.setupItem(c.spec());
       await test.step(`${item.baseUnit} item`, async () => {
@@ -171,7 +171,7 @@ test.describe(moduleName, () => {
 
   // ── Journal ───────────────────────────────────────────────────────────────
 
-  test('TC11 - Invoice with different items posts the right journal accounts', { tag: ['@sales', '@si-journal'] }, async () => {
+  test('TC011 - A sales invoice with different items posts the right journal accounts', { tag: ['@sales', '@si-journal'], annotation: { type: 'cases', description: 'TC11' } }, async () => {
     const c = D.journalMultiItem;
     const items = await si.setupItems(c.items());
     const lines = c.lines.map((l) => ({ item: items[l.item], qty: l.qty, uom: l.uom }));
@@ -179,7 +179,7 @@ test.describe(moduleName, () => {
     si.verifyJournal(await si.readJournal(billNo), { total, lines });
   });
 
-  test('TC12 - Invoice with a single item posts the right journal accounts', { tag: ['@sales', '@si-journal'] }, async () => {
+  test('TC012 - A sales invoice with a single item posts the right journal accounts', { tag: ['@sales', '@si-journal'], annotation: { type: 'cases', description: 'TC12' } }, async () => {
     const c = D.journalSingleItem;
     const item = await si.setupItem(c.item());
     const lines = linesFor(item, c.lines);
@@ -202,25 +202,25 @@ test.describe(moduleName, () => {
     return billNo;
   };
 
-  test('TC13 - Stock 3000: invoice for 3000 leaves 0, editing it to 1500 leaves 1500', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC013 - With 3000 in stock, a sales invoice for 3000 leaves 0, and editing it to 1500 leaves 1500', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC13' } }, async () => {
     const c = D.editRound;
     const item = await si.setupItem(c.item());
     await createThenEdit(item, c.create, [c.edit]);
   });
 
-  test('TC14 - Invoice created with 553 pcs and edited to 234.67 pcs updates the stock correctly', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC014 - A sales invoice created with 553 pcs and edited to 234.67 pcs updates the stock correctly', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC14' } }, async () => {
     const c = D.editRoundToDecimal;
     const item = await si.setupItem(c.item());
     await createThenEdit(item, c.create, [c.edit]);
   });
 
-  test('TC15 - Invoice created with 42.99 pcs and edited to 31 pcs updates the stock correctly', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC015 - A sales invoice created with 42.99 pcs and edited to 31 pcs updates the stock correctly', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC15' } }, async () => {
     const c = D.editDecimalToRound;
     const item = await si.setupItem(c.item());
     await createThenEdit(item, c.create, [c.edit]);
   });
 
-  test('TC16 - Stock 100: the invoice qty raised and lowered many times keeps the stock correct after every edit', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC016 - With 100 in stock, raising and lowering the sales invoice qty many times keeps the stock correct after every edit', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC16' } }, async () => {
     test.setTimeout(1_800_000);
     const c = D.editManyTimes;
     const item = await si.setupItem(c.item());
@@ -228,7 +228,7 @@ test.describe(moduleName, () => {
     await createThenEdit(item, first, edits);
   });
 
-  test('TC17 - Stock 5000: invoice in pcs edited to 1000 pcs + 2 box + 2 bundle updates the stock correctly', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC017 - With 5000 in stock, a sales invoice in pcs edited to 1000 pcs, 2 box and 2 bundle updates the stock correctly', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC17' } }, async () => {
     const c = D.editToMixedUom;
     const item = await si.setupItem(c.item());
     const { billNo } = await si.createInvoice(linesFor(item, [{ qty: c.create }]));
@@ -242,7 +242,7 @@ test.describe(moduleName, () => {
     await si.expectStock(item, item.openingStock - si.baseQtyOf(item, edited), 'after edit to mixed UOMs');
   });
 
-  test('TC18 - Stock 2100: editing the invoice to 1000 + 1000 + 200 pcs is refused with a validation message', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC018 - With 2100 in stock, editing the sales invoice to 1000, 1000 and 200 pcs is refused with a validation message', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC18' } }, async () => {
     const c = D.editExceeding;
     const item = await si.setupItem(c.item());
     const { billNo } = await si.createInvoice(linesFor(item, [{ qty: c.create }]));
@@ -256,7 +256,7 @@ test.describe(moduleName, () => {
     await si.expectStock(item, item.openingStock - c.create, 'refused edit leaves stock');
   });
 
-  test('TC19 - Single-unit pcs item (stock 200) invoice edited to several items in mixed UOMs updates every stock correctly', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC019 - A sales invoice for a single-unit pcs item (stock 200) edited to several items in mixed UOMs updates every stock correctly', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC19' } }, async () => {
     const c = D.editAddItems;
     const [single, other] = await si.setupItems([c.single(), c.other()]);
     const { billNo } = await si.createInvoice(linesFor(single, [{ qty: c.create }]));
@@ -272,7 +272,7 @@ test.describe(moduleName, () => {
     await si.expectStock(other, other.openingStock - si.baseQtyOf(other, otherLines), 'added item after edit');
   });
 
-  test('TC20 - Journal is right for a single-item invoice and again after editing it to several items', { tag: ['@sales', '@si-edit', '@si-journal'] }, async () => {
+  test('TC020 - The journal is right for a single-item sales invoice and again after editing it to several items', { tag: ['@sales', '@si-edit', '@si-journal'], annotation: { type: 'cases', description: 'TC20' } }, async () => {
     const c = D.journalAfterEdit;
     const items = await si.setupItems(c.items());
     const created = c.create.map((l) => ({ item: items[l.item], qty: l.qty, uom: l.uom }));
@@ -288,7 +288,7 @@ test.describe(moduleName, () => {
     si.verifyJournal(journal, { total: editedTotal, lines: [...created, ...added] });
   });
 
-  test('TC21 - Draft invoice: creating and editing it (qty change, added items) posts no journal and leaves stock unchanged', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC021 - For a draft sales invoice, creating and editing it (qty change, added items) posts no journal and leaves the stock unchanged', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC21' } }, async () => {
     const c = D.draft;
     const [a, b] = await si.setupItems(c.items());
     const billNo = await si.startInvoice();
@@ -308,7 +308,7 @@ test.describe(moduleName, () => {
     await si.expectStock(b, b.openingStock, 'draft edited (item B)');
   });
 
-  test('TC22 - Editing the invoice qty from 100 to 1,000,000,000.46 pcs is refused with a validation message and the stock stays correct', { tag: ['@sales', '@si-edit'] }, async () => {
+  test('TC022 - Editing the sales invoice qty from 100 to 1,000,000,000.46 pcs is refused with a validation message and the stock stays correct', { tag: ['@sales', '@si-edit'], annotation: { type: 'cases', description: 'TC22' } }, async () => {
     const c = D.editHugeQty;
     const item = await si.setupItem(c.item());
     const { billNo } = await si.createInvoice(linesFor(item, [{ qty: c.create }]));
@@ -324,7 +324,7 @@ test.describe(moduleName, () => {
 
   // ── Delete / Cancel ───────────────────────────────────────────────────────
 
-  test('TC23 - Stock 2500: invoice for 2200 leaves 300; cancelling or deleting it gives the 2200 back (2500)', { tag: ['@sales', '@si-delete'] }, async () => {
+  test('TC023 - With 2500 in stock, a sales invoice for 2200 leaves 300, and cancelling or deleting it gives the 2200 back (2500)', { tag: ['@sales', '@si-delete'], annotation: { type: 'cases', description: 'TC23' } }, async () => {
     const c = D.deleteCancelRestore;
     const item = await si.setupItem(c.item());
 
@@ -345,7 +345,7 @@ test.describe(moduleName, () => {
     });
   });
 
-  test('TC24 - Stock 25000: deleting an invoice with mixed UOM lines restores 25000', { tag: ['@sales', '@si-delete'] }, async () => {
+  test('TC024 - With 25000 in stock, deleting a sales invoice with mixed UOM lines restores 25000', { tag: ['@sales', '@si-delete'], annotation: { type: 'cases', description: 'TC24' } }, async () => {
     const c = D.deleteMixedUom;
     const item = await si.setupItem(c.item());
     const lines = linesFor(item, c.lines);
@@ -355,11 +355,11 @@ test.describe(moduleName, () => {
     await si.expectStock(item, item.openingStock, 'after delete');
   });
 
-  for (const [id, key, title] of [
-    ['TC25', 'deleteBoxes', 'Deleting an invoice for 20 box (1 box = 51 pcs) gives 1020 pcs back'],
-    ['TC26', 'deleteBundles', 'Deleting an invoice for 20 bundle (1 bundle = 602 pcs) gives 12040 pcs back'],
+  for (const [tc, id, key, title] of [
+    ['TC025', 'TC25', 'deleteBoxes', 'Deleting an invoice for 20 box (1 box = 51 pcs) gives 1020 pcs back'],
+    ['TC026', 'TC26', 'deleteBundles', 'Deleting an invoice for 20 bundle (1 bundle = 602 pcs) gives 12040 pcs back'],
   ]) {
-    test(`${id} - ${title}`, { tag: ['@sales', '@si-delete'] }, async () => {
+    test(`${tc} - ${title}`, { tag: ['@sales', '@si-delete'], annotation: { type: 'cases', description: id } }, async () => {
       const c = D[key];
       const item = await si.setupItem(c.item());
       const { billNo } = await si.createInvoice(linesFor(item, [{ qty: c.qty, uom: c.uom }]));
@@ -370,7 +370,7 @@ test.describe(moduleName, () => {
     });
   }
 
-  test('TC27 - Stock 35900: deleting an invoice with pcs / box / bundle / box2 lines restores 35900', { tag: ['@sales', '@si-delete'] }, async () => {
+  test('TC027 - With 35900 in stock, deleting a sales invoice with pcs, box, bundle and box2 lines restores 35900', { tag: ['@sales', '@si-delete'], annotation: { type: 'cases', description: 'TC27' } }, async () => {
     const c = D.deleteFourUoms;
     const item = await si.setupItem(c.item());
     const lines = linesFor(item, c.lines);
@@ -380,7 +380,7 @@ test.describe(moduleName, () => {
     await si.expectStock(item, item.openingStock, 'after delete');
   });
 
-  test('TC28 - With invoices on different dates, deleting the 21/12/2025 invoice gives back only its qty (2750)', { tag: ['@sales', '@si-delete'] }, async () => {
+  test('TC028 - With sales invoices on different dates, deleting the 21/12/2025 invoice gives back only its qty (2750)', { tag: ['@sales', '@si-delete'], annotation: { type: 'cases', description: 'TC28' } }, async () => {
     const c = D.deleteByDate;
     const item = await si.setupItem(c.item(), { billDate: c.stockDate });
     const created = [];
@@ -397,7 +397,7 @@ test.describe(moduleName, () => {
     expect(item.openingStock - sold + target.qty).toBe(c.expectedAfterDelete);
   });
 
-  test('TC29 - After deleting every invoice of an item, Inventory, Stock Adjustment and the Sales Invoice alert all show the opening stock', { tag: ['@sales', '@si-delete'] }, async ({ page }) => {
+  test('TC029 - After deleting every sales invoice of an item, Inventory, Stock Adjustment and the Sales Invoice alert all show the opening stock', { tag: ['@sales', '@si-delete'], annotation: { type: 'cases', description: 'TC29' } }, async ({ page }) => {
     const c = D.deleteAll;
     const item = await si.setupItem(c.item());
     const billNos = [];
@@ -473,7 +473,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
 
   // ── Item Change ─────────────────────────────────────────────────────────
 
-  test('TC-E01 - Remove the existing item and add a new item: new line pre-filled, totals recalculate', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC030 - Edit a sales invoice: remove the existing item and add a new item, the new line is pre-filled and totals recalculate', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E01' } }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     const billNo = await editAndVerify(m, async () => {
       const at = m.lines.findIndex((l) => l.item === A);
@@ -496,7 +496,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E02 - Remove all items and add multiple new items: totals recalculate from scratch', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC031 - Edit a sales invoice: remove all items and add multiple new items, and totals recalculate from scratch', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E02' } }, async () => {
     const m = model([L(A, 1), L(B, 2), L(C, 3)]);
     await editAndVerify(m, async () => {
       // The edit form keeps at least one line, so add the new items first, then remove all old ones
@@ -509,7 +509,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     });
   });
 
-  test('TC-E03 - Cancel the edit after removing an item: the invoice keeps all its items', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC032 - Cancel the edit of a sales invoice after removing an item: the invoice keeps all its items', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E03' } }, async () => {
     const m = model([L(A, 1), L(B, 2), L(C, 3)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -525,7 +525,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.expectListAmount(billNo, m, 'after cancelled edit');
   });
 
-  test('TC-E04 - Saving with every item removed is refused with "At least one item is required"', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC033 - Saving a sales invoice with every item removed is refused with "At least one item is required"', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E04' } }, async () => {
     const m = model([L(A, 1), L(B, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -541,7 +541,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.expectListAmount(billNo, m, 'refused edit leaves the invoice');
   });
 
-  test('TC-E05 - Replace the middle item: items 1 and 3 unchanged, new item correct, total recalculates', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC034 - Replace the middle item of a sales invoice: items 1 and 3 are unchanged, the new item is correct and the total recalculates', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E05' } }, async () => {
     const m = model([L(A, 1, { discount: 5 }), L(B, 2), L(C, 3, { discount: 10 })]);
     const billNo = await editAndVerify(m, async () => {
       const at = m.lines.findIndex((l) => l.item === B);   // the middle item
@@ -565,7 +565,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
 
   // ── Rate & Discount ─────────────────────────────────────────────────────
 
-  test('TC-E06 - Change the rate of a single item: line total = rate × qty − discount, grand total recalculates', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC035 - Change the rate of a single item: line total = rate × qty − discount and the grand total recalculates', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E06' } }, async () => {
     const m = model([L(A, 3, { discount: 5 })]);
     await editAndVerify(m, async () => {
       await ef.setLineRate(0, 123.45);
@@ -573,7 +573,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     });
   });
 
-  test('TC-E08 - Switch a line discount from % to a fixed ₹ amount', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC036 - Switch a line discount from a percentage to a fixed ₹ amount', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E08' } }, async () => {
     const m = model([L(A, 4, { discount: 10 })]);
     const billNo = await editAndVerify(m, async () => {
       await ef.setLineDiscount(0, 25, '₹');
@@ -585,7 +585,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E09 - Change rate and discount on three items at once: every line and the totals recalculate', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC037 - Change rate and discount on three items at once: every line and the totals recalculate', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E09' } }, async () => {
     const m = model([L(A, 2, { discount: 5 }), L(B, 1), L(C, 5, { discount: 10 })]);
     await editAndVerify(m, async () => {
       for (const [i, [rate, discount]] of [[110, 8], [260.5, 12.5], [42, 2.5]].entries()) {
@@ -596,7 +596,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     });
   });
 
-  test('TC-E10 - A line discount above 100% is blocked', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC038 - A line discount above 100% is blocked', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E10' } }, async () => {
     const m = model([L(A, 2)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -605,7 +605,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.expectListAmount(billNo, m, 'invoice unchanged');
   });
 
-  test('TC-E11 - A negative rate is blocked', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC039 - A negative rate is blocked', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E11' } }, async () => {
     const m = model([L(A, 2)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -615,7 +615,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.expectListAmount(billNo, m, 'invoice unchanged');
   });
 
-  test('TC-E12 - A 100% line discount makes that line ₹0 and leaves the other items alone', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC040 - A 100% line discount makes that line ₹0 and leaves the other items alone', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E12' } }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     await editAndVerify(m, async () => {
       await ef.setLineDiscount(0, 100, '%');
@@ -625,7 +625,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     });
   });
 
-  test('TC-E13 - A line discount with 2 decimals (12.55) is stored as 12.55', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC041 - A line discount with 2 decimals (12.55) is stored as 12.55', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E13' } }, async () => {
     const m = model([L(A, 3)]);
     const billNo = await editAndVerify(m, async () => {
       expect(await ef.setLineDiscount(0, '12.55', '%')).toBe('12.55');
@@ -637,7 +637,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
   });
 
   // QA (BUG-SI-01): the input allows only 2 decimals, so the 3rd digit is dropped.
-  test('TC-E14 - A line discount with more than 2 decimals (12.557) keeps only 2 decimals (12.55)', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC042 - A line discount with more than 2 decimals (12.557) keeps only 2 decimals (12.55)', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E14' } }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 3)]));
     await ef.editInvoice(billNo);
     const shown = await ef.setLineDiscount(0, '12.557', '%');
@@ -648,7 +648,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
   // ── Zero Rate ───────────────────────────────────────────────────────────
 
   // QA (BUG-SI-03): zero-value lines / invoices are a supported flow — no warning, the invoice saves.
-  test('TC-E15 - Rate 0 on one item is accepted and saved', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC043 - A rate of 0 on one item is accepted and the invoice is saved', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E15' } }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -661,7 +661,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.expectListAmount(billNo, m, 'rate 0 saved');
   });
 
-  test('TC-E16 - Rate 0 on every item: a zero-value invoice is saved', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC044 - A rate of 0 on every item: a zero-value invoice is saved', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E16' } }, async () => {
     const m = model([L(A, 1), L(B, 1), L(C, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -671,7 +671,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.expectListAmount(billNo, m, 'zero-value invoice saved');
   });
 
-  test('TC-E17 - Zero rate on items 1 and 3: grand total = item 2 only, and the invoice saves', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC045 - A zero rate on items 1 and 3: grand total = item 2 only, and the invoice saves', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E17' } }, async () => {
     const m = model([L(A, 1), L(B, 2), L(C, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -695,7 +695,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     }
   };
 
-  test('TC-E18 - Change GST from 18% to 12%: tax amount and grand total recalculate', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC046 - Change GST from 18% to 12%: tax amount and grand total recalculate', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E18' } }, async () => {
     const m = model([L(A, 2)]);
     const billNo = await editAndVerify(m, changeTaxes(m, [{ index: 0, gst: 12 }]));
     await ef.editInvoice(billNo);
@@ -703,34 +703,34 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E19 - Change GST from 12% to 5%: grand total goes down', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC047 - Change GST from 12% to 5%: the grand total goes down', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E19' } }, async () => {
     const m = model([L(A, 2, { gst: 12 })]);
     const before = ef.computeTotals(m).total;
     await editAndVerify(m, changeTaxes(m, [{ index: 0, gst: 5 }]));
     expect(ef.computeTotals(m).total).toBeLessThan(before);
   });
 
-  test('TC-E20 - Change CESS from 2% to 4%: tax amount and grand total recalculate', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC048 - Change CESS from 2% to 4%: tax amount and grand total recalculate', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E20' } }, async () => {
     const m = model([L(A, 2, { cess: 2 })]);
     await editAndVerify(m, changeTaxes(m, [{ index: 0, cess: 4 }]));
   });
 
-  test('TC-E21 - Remove GST from an item (GST0 — the app has no "none" option): tax drops, total recalculates', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC049 - Remove GST from an item (GST0, as the app has no "none" option): tax drops and the total recalculates', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E21' } }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     await editAndVerify(m, changeTaxes(m, [{ index: 0, gst: 0 }]));
   });
 
-  test('TC-E22 - Remove CESS from an item (CESS0): tax drops, total recalculates', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC050 - Remove CESS from an item (CESS0): tax drops and the total recalculates', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E22' } }, async () => {
     const m = model([L(A, 2, { cess: 4 })]);
     await editAndVerify(m, changeTaxes(m, [{ index: 0, cess: 0 }]));
   });
 
-  test('TC-E23 - Different GST rates on three items (5% / 12% / 18%): tax = sum of each item\'s tax', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC051 - With different GST rates on three items (5%, 12% and 18%), the tax is the sum of each item\'s tax', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E23' } }, async () => {
     const m = model([L(A, 1), L(B, 1), L(C, 2)]);
     await editAndVerify(m, changeTaxes(m, [{ index: 0, gst: 5 }, { index: 1, gst: 12 }, { index: 2, gst: 18 }]));
   });
 
-  test('TC-E24 - Change GST 18%→12% and CESS 4%→2% on the same item: combined tax correct', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC052 - Change GST from 18% to 12% and CESS from 4% to 2% on the same item: the combined tax is correct', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E24' } }, async () => {
     const m = model([L(A, 3, { cess: 4 })]);
     await editAndVerify(m, changeTaxes(m, [{ index: 0, gst: 12, cess: 2 }]));
   });
@@ -751,15 +751,15 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   };
 
-  test('TC-E25 - Change the bill date to a past date: due date recalculates and the invoice saves', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC053 - Change the bill date to a past date: the due date recalculates and the invoice saves', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E25' } }, async () => {
     await changeBillDate(addDays(new Date(), -30));
   });
 
-  test('TC-E26 - Change the bill date to a future date: due date recalculates and the invoice saves', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC054 - Change the bill date to a future date: the due date recalculates and the invoice saves', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E26' } }, async () => {
     await changeBillDate(addDays(new Date(), 15));
   });
 
-  test('TC-E27 - A due date before the bill date is refused with a validation message', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC055 - A due date before the bill date is refused with a validation message', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E27' } }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 1)]));
     await ef.editInvoice(billNo);
     await ef.setDueTerm('custom');
@@ -768,7 +768,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E28 - Change the due period from 7 to 30 days: due date = bill date + 30 days', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC056 - Change the due period from 7 to 30 days: due date = bill date + 30 days', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E28' } }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 1)]));
     await ef.editInvoice(billNo);
     const { billDate } = await ef.readDates();
@@ -781,7 +781,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E29 - Custom due period with a manual due date is saved', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC057 - A custom due period with a manual due date is saved', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E29' } }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 1)]));
     await ef.editInvoice(billNo);
     const due = pickerDate(addDays(new Date(), 45));
@@ -797,22 +797,22 @@ test.describe('Sales Invoice - Edit Flow', () => {
 
   const switchTaxMode = (m, mode) => async () => { await ef.setTaxMode(mode); m.taxMode = mode; };
 
-  test('TC-E30 - Switch from Including Tax to Excluding Tax: tax is added on top, totals recalculate', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC058 - Switch from Including Tax to Excluding Tax: tax is added on top and totals recalculate', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E30' } }, async () => {
     const m = model([L(A, 2), L(C, 3)], { taxMode: 'Including Tax' });
     await editAndVerify(m, switchTaxMode(m, 'Excluding Tax'));
   });
 
-  test('TC-E31 - Switch from Excluding Tax to Including Tax: tax is taken out of the rates, totals recalculate', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC059 - Switch from Excluding Tax to Including Tax: tax is taken out of the rates and totals recalculate', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E31' } }, async () => {
     const m = model([L(A, 2), L(C, 3)]);
     await editAndVerify(m, switchTaxMode(m, 'Including Tax'));
   });
 
-  test('TC-E32 - Switch tax mode with items at GST 5% / 12% / 18%: each item recalculates at its own rate', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC060 - Switch the tax mode with items at GST 5%, 12% and 18%: each item recalculates at its own rate', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E32' } }, async () => {
     const m = model([L(A, 1, { gst: 5 }), L(B, 1, { gst: 12 }), L(C, 2)]);
     await editAndVerify(m, switchTaxMode(m, 'Including Tax'));
   });
 
-  test('TC-E33 - Switch tax mode with % line discounts: tax is on the post-discount amounts', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC061 - Switch the tax mode with percentage line discounts: tax is calculated on the post-discount amounts', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E33' } }, async () => {
     const m = model([L(A, 2, { discount: 10 }), L(B, 1, { discount: 5 })]);
     await editAndVerify(m, switchTaxMode(m, 'Including Tax'));
   });
@@ -824,18 +824,18 @@ test.describe('Sales Invoice - Edit Flow', () => {
     m.summaryDiscount = { type, value: Number(value) };
   };
 
-  test('TC-E34 - Overall discount 10%: 10% of the subtotal is deducted', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC062 - An overall discount of 10% deducts 10% of the subtotal', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E34' } }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     await editAndVerify(m, setSummaryDiscount(m, 'Percentage', 10));
   });
 
-  test('TC-E36 - Overall discount 100%: total = shipping / adjustment only', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC063 - An overall discount of 100% makes the total equal to shipping and adjustment only', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E36' } }, async () => {
     const m = model([L(A, 2)], { shipping: 50, adjustment: { type: 'Addition', value: 10 } });
     await editAndVerify(m, setSummaryDiscount(m, 'Percentage', 100));
     expect(ef.computeTotals(m).total).toBe(60);
   });
 
-  test('TC-E37 - An overall discount above 100% is blocked', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC064 - An overall discount above 100% is blocked', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E37' } }, async () => {
     const m = model([L(A, 2)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -845,12 +845,12 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.expectListAmount(billNo, m, 'invoice unchanged');
   });
 
-  test('TC-E38 - Remove the overall discount (0): total returns to subtotal + tax', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC065 - Remove the overall discount (0): the total returns to subtotal + tax', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E38' } }, async () => {
     const m = model([L(A, 2), L(B, 1)], { summaryDiscount: { type: 'Percentage', value: 15 } });
     await editAndVerify(m, setSummaryDiscount(m, 'Percentage', 0));
   });
 
-  test('TC-E39 - Overall discount with 2 decimals (15.75%) is accepted and calculated correctly', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC066 - An overall discount with 2 decimals (15.75%) is accepted and calculated correctly', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E39' } }, async () => {
     const m = model([L(A, 3), L(C, 4)]);
     const billNo = await editAndVerify(m, async () => {
       expect(await ef.setSummaryDiscount('Percentage', '15.75')).toBe('15.75');
@@ -869,7 +869,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
   };
 
   // QA (BUG-SI-04): switching the type resets the amount to 0 (current flow), so it is re-entered.
-  test('TC-E40 - Adjustment Add → Subtract: amount resets to 0, the re-entered amount is subtracted', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC067 - Change the adjustment from Add to Subtract: the amount resets to 0 and the re-entered amount is subtracted', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E40' } }, async () => {
     const m = model([L(A, 2)], { adjustment: { type: 'Addition', value: 20 } });
     await editAndVerify(m, async () => {
       expect(parseFloat(await ef.adjustmentAmount.inputValue()), 'saved adjustment loaded in edit').toBe(20);
@@ -880,12 +880,12 @@ test.describe('Sales Invoice - Edit Flow', () => {
     });
   });
 
-  test('TC-E42 - New adjustment amount in Subtract mode is subtracted from the total', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC068 - A new adjustment amount in Subtract mode is subtracted from the total', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E42' } }, async () => {
     const m = model([L(A, 2)], { adjustment: { type: 'Subtract', value: 10 } });
     await editAndVerify(m, setAdjustment(m, 'Subtract', '35.5'));
   });
 
-  test('TC-E43 - A Subtract adjustment larger than the invoice total gives ₹0 or a warning', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC069 - A Subtract adjustment larger than the invoice total gives ₹0 or a warning', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E43' } }, async () => {
     const m = model([L(A, 4)]);   // ≈ ₹472
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -896,31 +896,31 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E44 - Remove the adjustment (blank): total recalculates without it', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC070 - Remove the adjustment (blank): the total recalculates without it', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E44' } }, async () => {
     const m = model([L(A, 2)], { adjustment: { type: 'Addition', value: 25 } });
     await editAndVerify(m, setAdjustment(m, 'Addition', ''));
   });
 
-  test('TC-E45 - Adjustment with overall discount, shipping and tax: total = subtotal − discount + tax + shipping ± adjustment', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC071 - An adjustment with overall discount, shipping and tax: total = subtotal − discount + tax + shipping ± adjustment', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E45' } }, async () => {
     const m = model([L(A, 2), L(B, 1)], { summaryDiscount: { type: 'Percentage', value: 10 }, shipping: 80, adjustment: { type: 'Addition', value: 30 } });
     await editAndVerify(m, setAdjustment(m, 'Subtract', '12.5'));
   });
 
   // ── Shipping Cost ───────────────────────────────────────────────────────
 
-  test('TC-E46 - Add ₹150 shipping to an invoice without shipping: total + ₹150', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC072 - Add ₹150 shipping to an invoice without shipping: the total goes up by ₹150', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E46' } }, async () => {
     const m = model([L(A, 2)]);
     const before = ef.computeTotals(m).total;
     await editAndVerify(m, async () => { await ef.setShipping(150); m.shipping = 150; });
     expectClose(ef.computeTotals(m).total, before + 150, 0.01, 'total + 150');
   });
 
-  test('TC-E48 - Remove the shipping cost (blank): total drops by the shipping amount', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC073 - Remove the shipping cost (blank): the total drops by the shipping amount', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E48' } }, async () => {
     const m = model([L(A, 2)], { shipping: 120 });
     await editAndVerify(m, async () => { await ef.setShipping(''); m.shipping = 0; });
   });
 
-  test('TC-E49 - A negative shipping cost is blocked', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC074 - A negative shipping cost is blocked', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E49' } }, async () => {
     const m = model([L(A, 2)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -930,7 +930,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
   });
 
   // QA (BUG-SI-02): the input allows only 2 decimals, so the 3rd digit is dropped.
-  test('TC-E50 - Shipping cost with more than 2 decimals (150.999) keeps only 2 decimals (150.99)', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC075 - A shipping cost with more than 2 decimals (150.999) keeps only 2 decimals (150.99)', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E50' } }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 2)]));
     await ef.editInvoice(billNo);
     const shown = await ef.setShipping('150.999');
@@ -940,34 +940,34 @@ test.describe('Sales Invoice - Edit Flow', () => {
 
   // ── TDS / TCS ───────────────────────────────────────────────────────────
 
-  test('TC-E51 - Apply TDS (Dividend, 10%): TDS is deducted from the total', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC076 - Apply TDS (Dividend, 10%): TDS is deducted from the total', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E51' } }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     await editAndVerify(m, async () => { m.tdsRate = await ef.setTds(E.tds.dividend); });
     expect(m.tdsRate).toBe(10);
   });
 
-  test('TC-E52 - Change the TDS rate (Dividend 10% → Commission 5%): TDS recalculates', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC077 - Change the TDS rate from Dividend 10% to Commission 5%: TDS recalculates', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E52' } }, async () => {
     const m = model([L(A, 2), L(B, 1)]);
     await editAndVerify(m, async () => { m.tdsRate = await ef.setTds(E.tds.commission); }, { tds: E.tds.dividend });
     expect(m.tdsRate).toBe(5);
   });
 
-  test('TC-E53 - Remove TDS: no deduction, total goes up', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC078 - Remove TDS: no deduction is made and the total goes up', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E53' } }, async () => {
     const m = model([L(A, 2)]);
     const before = ef.computeTotals({ ...m, tdsRate: 10 }).total;
     await editAndVerify(m, async () => { await ef.removeTds(); m.tdsRate = 0; }, { tds: E.tds.dividend });
     expect(ef.computeTotals(m).total).toBeGreaterThan(before);
   });
 
-  test.fixme('TC-E54 - TDS amount 45.67 (2 decimals)', async () => {
+  test.fixme('TC079 - A TDS amount of 45.67 (2 decimals) is accepted', { annotation: { type: 'cases', description: 'TC-E54' } }, async () => {
     // The app has no TDS amount field: TDS is always section % × taxable (read-only #tax_source).
   });
 
-  test.fixme('TC-E55 - TDS amount 45.678 (more than 2 decimals)', async () => {
+  test.fixme('TC080 - A TDS amount of 45.678 (more than 2 decimals) is handled to 2 decimals', { annotation: { type: 'cases', description: 'TC-E55' } }, async () => {
     // As TC-E54: a TDS amount cannot be typed.
   });
 
-  test('TC-E56 - TDS on a small invoice (₹90) never exceeds the total (TDS is a % of the taxable amount)', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC081 - TDS on a small invoice (₹90) never exceeds the total (TDS is a percentage of the taxable amount)', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E56' } }, async () => {
     const m = model([L(C, 1, { rate: 90, gst: 0 })]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.editInvoice(billNo);
@@ -979,7 +979,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await ef.discardForm();
   });
 
-  test('TC-E57 - Change TDS with discount, shipping and adjustment set: total = subtotal − discount + tax + shipping ± adjustment − TDS', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC082 - Change TDS with discount, shipping and adjustment set: total = subtotal − discount + tax + shipping ± adjustment − TDS', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E57' } }, async () => {
     const m = model([L(A, 3), L(B, 1)], { summaryDiscount: { type: 'Percentage', value: 5 }, shipping: 60, adjustment: { type: 'Addition', value: 15 } });
     await editAndVerify(m, async () => { m.tdsRate = await ef.setTds(E.tds.dividendReduced); }, { tds: E.tds.dividend });
     expect(m.tdsRate).toBe(7.5);
@@ -1000,19 +1000,19 @@ test.describe('Sales Invoice - Edit Flow', () => {
     return m;
   };
 
-  test('TC-E58 - Round off is filled in automatically and the grand total is a round figure', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC083 - Round off is filled in automatically and the grand total is a round figure', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E58' } }, async () => {
     await nonRoundForm();
     const { total } = await ef.readRoundOff();
     expect(Number.isInteger(total), `grand total ${total} is rounded`).toBe(true);
   });
 
-  test('TC-E59 - Grand total = subtotal − discount + tax + shipping ± adjustment + round off', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC084 - Grand total = subtotal − discount + tax + shipping ± adjustment + round off', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E59' } }, async () => {
     const m = await nonRoundForm();
     const { value, total } = await ef.readRoundOff();
     expectClose(total, ef.computeTotals(m).total + value, 0.01, 'grand total incl. round off');
   });
 
-  test('TC-E60 - Round off recalculates when the shipping cost changes', { tag: ['@sales', '@si-edit-flow'] }, async () => {
+  test('TC085 - Round off recalculates when the shipping cost changes', { tag: ['@sales', '@si-edit-flow'], annotation: { type: 'cases', description: 'TC-E60' } }, async () => {
     const m = await nonRoundForm();
     await ef.readRoundOff();
     await ef.setShipping('7.35');
@@ -1024,7 +1024,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
 
   // ── Dashboard (Sales list) ──────────────────────────────────────────────
 
-  test('TC-E61 - A new invoice is listed with its bill no, customer, date and bill amount', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC086 - A new sales invoice is listed with its bill no, customer, date and bill amount', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E61' } }, async () => {
     const m = model([L(A, 2), L(C, 1)]);
     const { billNo } = await ef.createPricedInvoice(m);
     const row = await ef.expectListAmount(billNo, m);
@@ -1033,14 +1033,14 @@ test.describe('Sales Invoice - Edit Flow', () => {
     expect(row.date).toBe(listDate(new Date()));
   });
 
-  test('TC-E62 - Status badge after creation: "7 days due" for a saved invoice, "Draft" for a draft', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC087 - The status badge after creation shows "7 days due" for a saved invoice and "Draft" for a draft', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E62' } }, async () => {
     const saved = await ef.createPricedInvoice(model([L(A, 1)]));
     const draft = await ef.createPricedInvoice(model([L(A, 1)]), { draft: true });
     expect((await ef.listRow(saved.billNo)).status).toBe('7 days due');
     expect((await ef.listRow(draft.billNo)).status).toBe('Draft');
   });
 
-  test('TC-E63 - Every bill number in the Sales list is unique', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC088 - Every bill number in the Sales list is unique', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E63' } }, async () => {
     await ef.openSalesList();
     const rows = await ef.readAllListPages();
     const seen = new Set();
@@ -1050,7 +1050,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     expect(rows.length).toBe(await ef.listTotalCountValue());
   });
 
-  test('TC-E64 - A duplicate bill number cannot be entered: Bill No is auto-generated, read-only and unused', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC089 - A duplicate bill number cannot be entered: Bill No is auto-generated, read-only and unused', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E64' } }, async () => {
     const billNo = await ef.startInvoice();
     await expect(ef.billNoInput).not.toBeEditable();
     await ef.discardForm();
@@ -1058,14 +1058,14 @@ test.describe('Sales Invoice - Edit Flow', () => {
     await expect(ef.invoiceRow(billNo), `${billNo} is not used by an existing invoice`).toHaveCount(0);
   });
 
-  test('TC-E65 - Due label matches today\'s date: "7 days due" today, "3 days overdue" for an invoice due 3 days ago', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC090 - The due label matches today\'s date: "7 days due" today and "3 days overdue" for an invoice due 3 days ago', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E65' } }, async () => {
     const current = await ef.createPricedInvoice(model([L(A, 1)]));
     const overdue = await ef.createPricedInvoice(model([L(A, 1)]), { billDate: pickerDate(addDays(new Date(), -10)) });
     expect((await ef.listRow(current.billNo)).status).toBe('7 days due');
     expect((await ef.listRow(overdue.billNo)).status).toBe('3 days overdue');
   });
 
-  test('TC-E66 - A fully paid invoice shows status Paid and Due Amount ₹0', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC091 - A fully paid sales invoice shows status Paid and Due Amount ₹0', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E66' } }, async () => {
     const m = model([L(C, 2)]);
     const { billNo } = await ef.createPricedInvoice(m);
     await ef.receiveFullPayment(billNo, generateCustomerPaymentData());
@@ -1075,20 +1075,20 @@ test.describe('Sales Invoice - Edit Flow', () => {
   });
 
   // QA (BUG-SI-06): by design the list footer shows only "Total Count", no Bill / Due totals.
-  test('TC-E70 - List footer shows the Total Count of invoices', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC092 - The Sales list footer shows the Total Count of invoices', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E70' } }, async () => {
     await ef.openSalesList();
     const count = ef.page.getByText(/Total Count/i).first();
     await expect(count, 'Total Count in the list footer').toBeVisible({ timeout: 10_000 });
     expect(await count.innerText()).toMatch(/\d/);
   });
 
-  test('TC-E71 - Searching a bill number lists only that invoice', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC093 - Searching a bill number in the Sales list shows only that invoice', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E71' } }, async () => {
     const { billNo } = await ef.createPricedInvoice(model([L(A, 1)]));
     await ef._searchList(billNo);
     expect((await ef.readListPage()).map((r) => r.billNo)).toEqual([billNo]);
   });
 
-  test('TC-E72 - The date range filter lists only invoices in the range and updates the count', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC094 - The date range filter in the Sales list shows only invoices in the range and updates the count', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E72' } }, async () => {
     const billDate = addDays(new Date(), -40);
     const { billNo } = await ef.createPricedInvoice(model([L(A, 1)]), { billDate: pickerDate(billDate) });
     const [start, end] = [addDays(billDate, -5), addDays(billDate, 5)];
@@ -1102,7 +1102,7 @@ test.describe('Sales Invoice - Edit Flow', () => {
     expect(await ef.listTotalCountValue()).toBe(rows.length);
   });
 
-  test('TC-E73 - Status badge colours: Paid green, Draft yellow, days due orange, overdue red', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'] }, async () => {
+  test('TC095 - Status badge colours in the Sales list: Paid is green, Draft yellow, days due orange and overdue red', { tag: ['@sales', '@si-edit-flow', '@si-dashboard'], annotation: { type: 'cases', description: 'TC-E73' } }, async () => {
     const due = await ef.createPricedInvoice(model([L(C, 1)]));
     const overdue = await ef.createPricedInvoice(model([L(C, 1)]), { billDate: pickerDate(addDays(new Date(), -20)) });
     const draft = await ef.createPricedInvoice(model([L(C, 1)]), { draft: true });
@@ -1161,7 +1161,7 @@ test.describe('Sales Invoice - Create', () => {
 
   // ── Customer ─────────────────────────────────────────────────────────────
 
-  test('TC-01 - Select a customer and proceed: invoice opens with the customer details', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC096 - Create a sales invoice: select a customer and proceed, and the invoice opens with the customer details', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-01' } }, async () => {
     await sc.startInvoice();
     const header = await sc.customerHeaderText();
     expect(header).toContain(masterData.customerName);
@@ -1171,7 +1171,7 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-02 - Change the customer on the invoice page: the new customer\'s details load', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC097 - Change the customer on the sales invoice page: the new customer\'s details load', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-02' } }, async () => {
     knownBug('BUG-SI-07', '"Change" clears the customer but opens no picker');
     await sc.startInvoice();
     await sc.changeCustomerBtn.click();
@@ -1183,15 +1183,15 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-03 - Proceeding without a customer is blocked', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC098 - Proceeding to a sales invoice without selecting a customer is blocked', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-03' } }, async () => {
     await sc.openCustomerStep();
     await expect(sc.customerNextBtn, 'Next is disabled until a customer is chosen').toBeDisabled();
   });
 
   // ── Due period / dates ───────────────────────────────────────────────────
 
-  for (const [id, term, days] of [['TC-07', '7 days', 7], ['TC-08', '15 days', 15], ['TC-10', '60 days', 60]]) {
-    test(`${id} - Due period ${term}: due date = bill date + ${days} days`, { tag: ['@sales', '@si-create'] }, async () => {
+  for (const [tc, id, term, days] of [['TC099', 'TC-07', '7 days', 7], ['TC100', 'TC-08', '15 days', 15], ['TC101', 'TC-10', '60 days', 60]]) {
+    test(`${tc} - Due period ${term}: due date = bill date + ${days} days`, { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: id } }, async () => {
       await sc.startInvoice();
       if (term !== '7 days') await sc.setDueTerm('15 days');   // move off the default first
       await sc.setDueTerm(term);
@@ -1201,7 +1201,7 @@ test.describe('Sales Invoice - Create', () => {
     });
   }
 
-  test('TC-12 - Bill date defaults to today (due date today + 7)', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC102 - The sales invoice bill date defaults to today and the due date to today + 7', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-12' } }, async () => {
     await sc.startInvoice();
     const today = new Date();
     expect(await sc.readDates()).toEqual({ billDate: pickerDate(today), dueDate: pickerDate(addDays(today, 7)) });
@@ -1210,30 +1210,30 @@ test.describe('Sales Invoice - Create', () => {
 
   // ── Warehouse / price list / sales person (master data not available) ────
 
-  test.fixme('TC-16 - Warehouse filter shows only that warehouse\'s stock', async () => {
+  test.fixme('TC103 - The warehouse filter on a sales invoice shows only that warehouse\'s stock', { annotation: { type: 'cases', description: 'TC-16' } }, async () => {
     // The test org has a single warehouse ("Default") — needs a second warehouse with stock.
   });
-  test.fixme('TC-24 - Sales order → invoice carries the salesperson', async () => {
+  test.fixme('TC104 - Creating a sales invoice from a sales order carries over the salesperson', { annotation: { type: 'cases', description: 'TC-24' } }, async () => {
     // Needs Sales Order conversion — automated with the Sales_Order_TestCases sheet.
   });
-  test.fixme('TC-25 - Manually select a salesperson', async () => {
+  test.fixme('TC105 - Manually select a salesperson on a sales invoice', { annotation: { type: 'cases', description: 'TC-25' } }, async () => {
     // No sales persons exist in the test org (dropdown is empty).
   });
-  for (const [id, title] of [
-    ['TC-27', 'Retailer customer gets the business-category price list'],
-    ['TC-28', 'Standard customer gets the general price list'],
-    ['TC-29', 'Switching the price list after adding items refreshes the rates'],
-    ['TC-30', 'Customer without a price list uses the default rate'],
-    ['TC-39', 'Rate is filled from the active price list'],
+  for (const [tc, id, title] of [
+    ['TC106', 'TC-27', 'Retailer customer gets the business-category price list'],
+    ['TC107', 'TC-28', 'Standard customer gets the general price list'],
+    ['TC108', 'TC-29', 'Switching the price list after adding items refreshes the rates'],
+    ['TC109', 'TC-30', 'Customer without a price list uses the default rate'],
+    ['TC110', 'TC-39', 'Rate is filled from the active price list'],
   ]) {
-    test.fixme(`${id} - ${title}`, async () => {
+    test.fixme(`${tc} - ${title}`, { annotation: { type: 'cases', description: id } }, async () => {
       // No customer-specific price lists are configured — automate with the PriceList sheet.
     });
   }
 
   // ── Place of supply / reference ──────────────────────────────────────────
 
-  test('TC-19 - Place of supply in another state: IGST is posted instead of CGST + SGST', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC111 - With a place of supply in another state, IGST is posted instead of CGST + SGST', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-19' } }, async () => {
     const m = model([L(A, 2)]);
     const billNo = await sc.startInvoice();
     await sc.setPlaceOfSupply('Kerala');
@@ -1245,14 +1245,14 @@ test.describe('Sales Invoice - Create', () => {
     expect(accounts.some((a) => /CGST|SGST/i.test(a))).toBe(false);
   });
 
-  test('TC-20 - The chosen place of supply is shown in the dropdown', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC112 - The chosen place of supply is shown in the dropdown', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-20' } }, async () => {
     await sc.startInvoice();
     await sc.setPlaceOfSupply('Kerala');
     expect(await sc.selectedText(sc.placeOfSupplySelect)).toBe('Kerala');
     await sc.discardForm();
   });
 
-  test('TC-21 - An alphanumeric reference number is saved with the invoice', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC113 - An alphanumeric reference number is saved with the sales invoice', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-21' } }, async () => {
     const ref = `REF${Date.now().toString().slice(-6)}AB`;
     const billNo = await sc.startInvoice();
     await sc.fillInto(sc.refNoInput, ref);
@@ -1264,7 +1264,7 @@ test.describe('Sales Invoice - Create', () => {
   });
 
   // QA (BUG-SI-08): special characters in the reference number are allowed (current flow).
-  test('TC-23 - Special characters in the reference number are accepted and saved', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC114 - Special characters in the reference number are accepted and saved', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-23' } }, async () => {
     await sc.startInvoice();
     await sc.fillInvoice(model([L(A, 1)]));
     const typed = 'REF#@!$%';
@@ -1274,7 +1274,7 @@ test.describe('Sales Invoice - Create', () => {
 
   // ── Item entry / quantity / discount ─────────────────────────────────────
 
-  test('TC-37 - Searching with part of the item name lists the matching items', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC115 - Searching an item with part of its name lists the matching items', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-37' } }, async () => {
     await sc.startInvoice();
     const partial = A.itemName.slice(0, 6);
     const found = await sc.itemSearchOptions(partial);
@@ -1283,13 +1283,13 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-38 - Searching for an item that does not exist lists nothing', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC116 - Searching for an item that does not exist lists nothing', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-38' } }, async () => {
     await sc.startInvoice();
     expect(await sc.itemSearchOptions(`qqzz-no-such-item-${Date.now()}`)).toEqual([]);
     await sc.discardForm();
   });
 
-  test('TC-46 - Saving with a blank quantity is refused with "Quantity is required"', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC117 - Saving a sales invoice with a blank quantity is refused with "Quantity is required"', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-46' } }, async () => {
     knownBug('BUG-SI-09', 'blank quantity: save does nothing and shows no message');
     await sc.startInvoice();
     await sc.addLine(A, 1);
@@ -1298,7 +1298,7 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-47 - Saving with quantity 0 is refused with a validation message', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC118 - Saving a sales invoice with quantity 0 is refused with a validation message', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-47' } }, async () => {
     await sc.startInvoice();
     await sc.addLine(A, 1);
     await sc.typeValue(sc.lineQty(sc.lineRows.nth(0)), '0');
@@ -1306,7 +1306,7 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-55 - A ₹ line discount larger than the line total is blocked', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC119 - A ₹ line discount larger than the line total is blocked', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-55' } }, async () => {
     await sc.startInvoice();
     await sc.addLine(C, 2);   // ₹80
     const row = sc.lineRows.nth(0);
@@ -1316,7 +1316,7 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-58 - A line total with more than 2 decimals is shown to 2 decimals', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC120 - A line total with more than 2 decimals is shown to 2 decimals', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-58' } }, async () => {
     await sc.startInvoice();
     await sc.addLine(A, 1.5);
     await sc.setLineRate(0, '10.33');   // 15.495
@@ -1328,7 +1328,7 @@ test.describe('Sales Invoice - Create', () => {
 
   // ── Subtotal ─────────────────────────────────────────────────────────────
 
-  test('TC-59 - Subtotal with one item = that line total', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC121 - The subtotal with one item equals that line total', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-59' } }, async () => {
     await sc.startInvoice();
     const m = model([L(B, 3, { discount: 10 })]);
     await sc.fillInvoice(m);
@@ -1336,7 +1336,7 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-60 - Subtotal with three items = sum of the line totals', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC122 - The subtotal with three items equals the sum of the line totals', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-60' } }, async () => {
     await sc.startInvoice();
     const m = model([L(A, 2), L(B, 1, { discount: 5 }), L(C, 4)]);
     await sc.fillInvoice(m);
@@ -1344,7 +1344,7 @@ test.describe('Sales Invoice - Create', () => {
     await sc.discardForm();
   });
 
-  test('TC-61 - Removing an item lowers the subtotal by its line total', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC123 - Removing an item lowers the subtotal by its line total', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-61' } }, async () => {
     await sc.startInvoice();
     const m = model([L(A, 2), L(B, 1), L(C, 4)]);
     await sc.fillInvoice(m);
@@ -1355,7 +1355,7 @@ test.describe('Sales Invoice - Create', () => {
   });
 
   // QA (BUG-SI-02): the input allows only 2 decimals, so the 3rd digit is dropped.
-  test('TC-66 - An overall discount with 3 decimals (5.555%) keeps only 2 decimals (5.55)', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC124 - An overall discount with 3 decimals (5.555%) keeps only 2 decimals (5.55)', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-66' } }, async () => {
     await sc.startInvoice();
     await sc.fillInvoice(model([L(A, 2)]));
     const shown = await sc.setSummaryDiscount('Percentage', '5.555');
@@ -1365,7 +1365,7 @@ test.describe('Sales Invoice - Create', () => {
 
   // ── Complete invoice / save / cancel ─────────────────────────────────────
 
-  test('TC-79 - Full invoice: 5 items with mixed rates, discounts, GST / CESS, overall discount, shipping and adjustment', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC125 - Create a full sales invoice with 5 items of mixed rates, discounts, GST and CESS, plus overall discount, shipping and adjustment', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-79' } }, async () => {
     const m = model([
       L(A, 2, { discount: 10 }),
       L(B, 1, { gst: 12, discount: 15, discountMode: '₹' }),
@@ -1377,18 +1377,18 @@ test.describe('Sales Invoice - Create', () => {
     await sc.expectListAmount(billNo, m, 'full invoice');
   });
 
-  test.fixme('TC-80 - Sales order → invoice: all fields inherited', async () => {
+  test.fixme('TC126 - Creating a sales invoice from a sales order inherits all fields', { annotation: { type: 'cases', description: 'TC-80' } }, async () => {
     // Needs Sales Order conversion — automated with the Sales_Order_TestCases sheet.
   });
 
-  test('TC-83 - Saving with no item rows is blocked', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC127 - Saving a sales invoice with no item rows is blocked', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-83' } }, async () => {
     await sc.startInvoice();
     await expect(sc.saveBtn.locator('xpath=ancestor::button[1]')).toBeDisabled();
     await expect(sc.saveDraftBtn).toBeDisabled();
     await sc.discardForm();
   });
 
-  test('TC-85 - Cancelling a new invoice creates no record', { tag: ['@sales', '@si-create'] }, async () => {
+  test('TC128 - Cancelling a new sales invoice creates no record', { tag: ['@sales', '@si-create'], annotation: { type: 'cases', description: 'TC-85' } }, async () => {
     const billNo = await sc.startInvoice();
     await sc.fillInvoice(model([L(A, 1)]));
     await sc.discardForm();
@@ -1445,7 +1445,7 @@ test.describe('Sales Invoice - Payment', () => {
 
   // ── Record Payment modal ─────────────────────────────────────────────────
 
-  test('TC-RP-01 / 02 / 03 - Payment popup shows Bill Amount, Due Amount, Pending Cheque ₹0 and all payment fields', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC129 - The sales invoice payment popup shows Bill Amount, Due Amount, Pending Cheque ₹0 and all payment fields', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-01, TC-RP-02, TC-RP-03' } }, async () => {
     const { billNo, total } = await newInvoice();
     await sp.openRecordPayment(billNo);
     const p = await sp.readPaymentModal();
@@ -1458,7 +1458,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-04 - Receipt number (RCPT) is shown in the popup before saving', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC130 - The receipt number (RCPT) is shown in the payment popup before saving', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-04' } }, async () => {
     knownBug('BUG-SI-10', 'Record Payment popup shows no receipt number before saving');
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
@@ -1466,7 +1466,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-05 / 06 - Payment date defaults to today; modes are Cash, Cheque, Bank Transfer, Undeposited fund, UPI', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC131 - The payment date defaults to today and the modes are Cash, Cheque, Bank Transfer, Undeposited fund and UPI', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-05, TC-RP-06' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
     expect((await sp.readPaymentModal()).date).toBe(paymentDate(new Date()));
@@ -1474,7 +1474,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-08 - Saving without a received amount is refused ("Receive amount is required")', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC132 - Saving a payment without a received amount is refused ("Receive amount is required")', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-08' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({});
@@ -1482,7 +1482,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-09 - Saving without a payment account is refused ("Account is required")', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC133 - Saving a payment without a payment account is refused ("Account is required")', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-09' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({ account: null, amount: 50 });
@@ -1490,7 +1490,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-10 - A zero received amount is refused', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC134 - A zero received amount is refused', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-10' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({ amount: '0' });
@@ -1498,7 +1498,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-11 - A negative received amount is blocked', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC135 - A negative received amount is blocked', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-11' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({});
@@ -1507,7 +1507,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-13 - A received amount above the invoice due is blocked (capped at the due)', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC136 - A received amount above the invoice due is blocked (capped at the due)', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-13' } }, async () => {
     const { billNo, total } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({});
@@ -1516,7 +1516,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test('TC-RP-14 / 15 - Note is optional; Cancel closes the popup without recording a payment', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC137 - The payment note is optional, and Cancel closes the popup without recording a payment', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-14, TC-RP-15' } }, async () => {
     const { billNo, total } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({ amount: 40 });
@@ -1532,8 +1532,8 @@ test.describe('Sales Invoice - Payment', () => {
 
   // ── Payment date / mode ──────────────────────────────────────────────────
 
-  for (const [id, label, offset] of [['TC-RP-16', 'today', 0], ['TC-RP-17', 'a past date', -20], ['TC-RP-18', 'a future date', 20]]) {
-    test(`${id} - Payment dated ${label} is recorded with that date`, { tag: ['@sales', '@si-payment'] }, async () => {
+  for (const [tc, id, label, offset] of [['TC138', 'TC-RP-16', 'today', 0], ['TC139', 'TC-RP-17', 'a past date', -20], ['TC140', 'TC-RP-18', 'a future date', 20]]) {
+    test(`${tc} - Payment dated ${label} is recorded with that date`, { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: id } }, async () => {
       const { billNo, total } = await newInvoice();
       const date = paymentDate(addDays(new Date(), offset));
       await sp.recordPayment(billNo, { amount: 50, date });
@@ -1544,8 +1544,8 @@ test.describe('Sales Invoice - Payment', () => {
     });
   }
 
-  for (const [id, mode] of [['TC-RP-19', 'Cash'], ['TC-RP-21', 'Bank Transfer'], ['TC-RP-22', 'UPI'], ['TC-RP-23', 'Undeposited fund']]) {
-    test(`${id} - Payment via ${mode} is saved with that mode and reduces the due`, { tag: ['@sales', '@si-payment'] }, async () => {
+  for (const [tc, id, mode] of [['TC141', 'TC-RP-19', 'Cash'], ['TC142', 'TC-RP-21', 'Bank Transfer'], ['TC143', 'TC-RP-22', 'UPI'], ['TC144', 'TC-RP-23', 'Undeposited fund']]) {
+    test(`${tc} - Payment via ${mode} is saved with that mode and reduces the due`, { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: id } }, async () => {
       const { billNo, total } = await newInvoice();
       await sp.recordPayment(billNo, { amount: 60, mode });
       const [p] = await sp.readInvoicePayments(billNo);
@@ -1554,7 +1554,7 @@ test.describe('Sales Invoice - Payment', () => {
     });
   }
 
-  test('TC-RP-20 - Cheque payment stays pending: due unchanged, Pending Cheque shows the amount', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC145 - A cheque payment stays pending: the due is unchanged and Pending Cheque shows the amount', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-20' } }, async () => {
     const { billNo, total } = await newInvoice();
     await sp.recordPayment(billNo, { amount: 50, mode: 'Cheque', chequeNo: `${Date.now()}`.slice(-6) });
     const [p] = await sp.readInvoicePayments(billNo);
@@ -1565,14 +1565,14 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test.fixme('TC-RP-24 - Cheque payment: status Paid only after the cheque is cleared', async () => {
+  test.fixme('TC146 - For a cheque payment, the invoice status becomes Paid only after the cheque is cleared', { annotation: { type: 'cases', description: 'TC-RP-24' } }, async () => {
     // Clearing a cheque is in Cheque Tracker — automate with the Cheque_Tracker sheet.
   });
 
   // ── Partial payment + invoice edit ───────────────────────────────────────
 
-  for (const [id, newQty] of [['TC-RP-29', 15], ['TC-RP-30', 8]]) {
-    test(`${id} - Partially paid invoice, qty edited to ${newQty}: status "days due" with the new balance`, { tag: ['@sales', '@si-payment'] }, async () => {
+  for (const [tc, id, newQty] of [['TC147', 'TC-RP-29', 15], ['TC148', 'TC-RP-30', 8]]) {
+    test(`${tc} - Partially paid invoice, qty edited to ${newQty}: status "days due" with the new balance`, { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: id } }, async () => {
       const { billNo } = await newInvoice(10);   // ₹1180
       await sp.recordPayment(billNo, { amount: 600 });
       await sp.editInvoice(billNo);
@@ -1586,7 +1586,7 @@ test.describe('Sales Invoice - Payment', () => {
 
   // ── Delete payment / invoice → advance ───────────────────────────────────
 
-  test('TC-RP-31 - Deleting a full payment restores the due and keeps the paid amount as customer advance', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC149 - Deleting a full payment restores the due and keeps the paid amount as customer advance', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-31' } }, async () => {
     const { billNo, total } = await newInvoice();
     await sp.recordPayment(billNo, { full: true });
     const advanceBefore = await sp.readCustomerAdvance(customer);
@@ -1595,7 +1595,7 @@ test.describe('Sales Invoice - Payment', () => {
     expectClose(await sp.readCustomerAdvance(customer), advanceBefore + total, 0.02, 'advance after deleting the payment');
   });
 
-  test('TC-RP-32 - Deleting a paid invoice turns the paid amount into customer advance', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC150 - Deleting a paid sales invoice turns the paid amount into customer advance', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-RP-32' } }, async () => {
     const { billNo, total } = await newInvoice();
     await sp.recordPayment(billNo, { full: true });
     const advanceBefore = await sp.readCustomerAdvance(customer);
@@ -1613,13 +1613,13 @@ test.describe('Sales Invoice - Payment', () => {
     expectClose(await sp.readCustomerAdvance(customer), advanceBefore + total, 0.02, 'advance after deleting the paid invoice');
   });
 
-  test.fixme('TC-RP-34 - Print the receipt after saving', async () => {
+  test.fixme('TC151 - Print the payment receipt after saving', { annotation: { type: 'cases', description: 'TC-RP-34' } }, async () => {
     // Print opens the browser print dialog — not verifiable in automation; check manually.
   });
 
   // ── Payment Received (new receipt) ───────────────────────────────────────
 
-  test('TC-PR-04 - A receipt larger than the selected invoices\' total is refused', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC152 - A receipt larger than the selected invoices\' total is refused', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-PR-04' } }, async () => {
     const { billNo, total } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({});
@@ -1628,8 +1628,8 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  for (const [id, value, pattern] of [['TC-PR-08', '0', /valid amount|greater than zero/i], ['TC-PR-10', '', /required/i]]) {
-    test(`${id} - Receipt amount "${value || 'empty'}" is refused`, { tag: ['@sales', '@si-payment'] }, async () => {
+  for (const [tc, id, value, pattern] of [['TC153', 'TC-PR-08', '0', /valid amount|greater than zero/i], ['TC154', 'TC-PR-10', '', /required/i]]) {
+    test(`${tc} - Receipt amount "${value || 'empty'}" is refused`, { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: id } }, async () => {
       const { billNo } = await newInvoice();
       await sp.openRecordPayment(billNo);
       await sp.fillPayment(value ? { amount: value } : {});
@@ -1638,7 +1638,7 @@ test.describe('Sales Invoice - Payment', () => {
     });
   }
 
-  test('TC-PR-09 - A negative receipt amount is blocked', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC155 - A negative receipt amount is blocked', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-PR-09' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.openRecordPayment(billNo);
     await sp.fillPayment({});
@@ -1647,13 +1647,13 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.payCancel.click();
   });
 
-  test.fixme('TC-PR-12 - Print a Payment Received receipt', async () => {
+  test.fixme('TC156 - Print a Payment Received receipt', { annotation: { type: 'cases', description: 'TC-PR-12' } }, async () => {
     // Print opens the browser print dialog — not verifiable in automation; check manually.
   });
 
   // ── Payment edit ─────────────────────────────────────────────────────────
 
-  test('TC-PE-08 - Three partial payments on one invoice; editing the 2nd recalculates the due from all three', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC157 - Make three partial payments on one invoice, then editing the 2nd payment recalculates the due from all three', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-PE-08' } }, async () => {
     const { billNo, total } = await newInvoice(10);   // ₹1180
     for (const amount of [100, 200, 300]) await sp.recordPayment(billNo, { amount });
     const payments = await sp.readInvoicePayments(billNo);
@@ -1666,8 +1666,8 @@ test.describe('Sales Invoice - Payment', () => {
     expectClose((await sp.listRow(billNo)).due, total - 650, 0.02, 'due after editing the 2nd payment');
   });
 
-  for (const [id, from, to] of [['TC-PE-09', 'Cash', 'UPI'], ['TC-PE-14', 'Bank Transfer', 'Cheque']]) {
-    test(`${id} - Change a receipt's payment mode ${from} → ${to}: amount unchanged, mode updated`, { tag: ['@sales', '@si-payment'] }, async () => {
+  for (const [tc, id, from, to] of [['TC158', 'TC-PE-09', 'Cash', 'UPI'], ['TC159', 'TC-PE-14', 'Bank Transfer', 'Cheque']]) {
+    test(`${tc} - Change a receipt's payment mode ${from} → ${to}: amount unchanged, mode updated`, { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: id } }, async () => {
       const { billNo } = await newInvoice();
       await sp.recordPayment(billNo, { amount: 70, mode: from });
       const [p] = await sp.readInvoicePayments(billNo);
@@ -1680,7 +1680,7 @@ test.describe('Sales Invoice - Payment', () => {
     });
   }
 
-  test('TC-PE-10 - Payment of a cancelled invoice cannot be edited', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC160 - The payment of a cancelled invoice cannot be edited', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-PE-10' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.recordPayment(billNo, { amount: 50 });
     const [p] = await sp.readInvoicePayments(billNo);
@@ -1708,7 +1708,7 @@ test.describe('Sales Invoice - Payment', () => {
 
   // ── Fail scenarios: paid invoices edited / deleted ───────────────────────
 
-  test('TC-SC-01 / 09 - Editing a fully paid invoice shows "invoice is fully paid — adjust the payment first"', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC161 - Editing a fully paid invoice shows "invoice is fully paid — adjust the payment first"', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-SC-01, TC-SC-09' } }, async () => {
     const { billNo } = await newInvoice(10);
     await sp.recordPayment(billNo, { full: true });
     await sp.editInvoice(billNo);
@@ -1717,7 +1717,7 @@ test.describe('Sales Invoice - Payment', () => {
     await expect(sp.validationMessage.filter({ hasText: /paid|payment/i }).first(), 'fully-paid warning').toBeVisible({ timeout: 10_000 });
   });
 
-  test('TC-SC-02 - Deleting a paid invoice is blocked or requires removing the payment first', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC162 - Deleting a paid invoice is blocked or requires removing the payment first', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-SC-02' } }, async () => {
     const { billNo } = await newInvoice();
     await sp.recordPayment(billNo, { full: true });
     await sp.openInvoice(billNo);
@@ -1727,7 +1727,7 @@ test.describe('Sales Invoice - Payment', () => {
     await sp.page.getByRole('button', { name: 'No' }).click().catch(() => {});
   });
 
-  test('TC-SC-05 - Setting a paid invoice to ₹0 asks to adjust the payments first', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC163 - Setting a paid invoice to ₹0 asks to adjust the payments first', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-SC-05' } }, async () => {
     const { billNo } = await newInvoice(2);
     await sp.recordPayment(billNo, { full: true });
     await sp.editInvoice(billNo);
@@ -1736,8 +1736,8 @@ test.describe('Sales Invoice - Payment', () => {
     await expect(sp.validationMessage.filter({ hasText: /payment/i }).first(), 'payments-exist warning').toBeVisible({ timeout: 10_000 });
   });
 
-  for (const [id, label, pay] of [['TC-SC-06', 'fully', { full: true }], ['TC-SC-08', 'partially', { amount: 100 }]]) {
-    test(`${id} - A ${label} paid invoice set to ₹0: the payment moves to customer advance`, { tag: ['@sales', '@si-payment'] }, async () => {
+  for (const [tc, id, label, pay] of [['TC164', 'TC-SC-06', 'fully', { full: true }], ['TC165', 'TC-SC-08', 'partially', { amount: 100 }]]) {
+    test(`${tc} - A ${label} paid invoice set to ₹0: the payment moves to customer advance`, { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: id } }, async () => {
       const { billNo, total } = await newInvoice(2);
       await sp.recordPayment(billNo, pay);
       const paid = pay.full ? total : pay.amount;
@@ -1751,7 +1751,7 @@ test.describe('Sales Invoice - Payment', () => {
     });
   }
 
-  test('TC-SC-10 - Fully paid invoice, qty increased: total up, status due, balance = difference', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC166 - For a fully paid invoice with the qty increased, the total goes up, the status becomes due and the balance equals the difference', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-SC-10' } }, async () => {
     const { billNo, total } = await newInvoice(10);   // ₹1180
     await sp.recordPayment(billNo, { full: true });
     await sp.editInvoice(billNo);
@@ -1764,7 +1764,7 @@ test.describe('Sales Invoice - Payment', () => {
     expect(row.status).toMatch(/days due|days overdue|partially/i);
   });
 
-  test('TC-SC-11 - Fully paid invoice, qty decreased: stays Paid, the overpaid amount becomes advance', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC167 - For a fully paid invoice with the qty decreased, the status stays Paid and the overpaid amount becomes advance', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-SC-11' } }, async () => {
     const { billNo, total } = await newInvoice(10);
     await sp.recordPayment(billNo, { full: true });
     const advanceBefore = await sp.readCustomerAdvance(customer);
@@ -1778,7 +1778,7 @@ test.describe('Sales Invoice - Payment', () => {
     expectClose(await sp.readCustomerAdvance(customer), advanceBefore + (total - newTotal), 0.02, 'overpaid amount as advance');
   });
 
-  test('TC-SC-12 - Payment history is intact after changing the qty of a paid invoice', { tag: ['@sales', '@si-payment'] }, async () => {
+  test('TC168 - Payment history is intact after changing the qty of a paid invoice', { tag: ['@sales', '@si-payment'], annotation: { type: 'cases', description: 'TC-SC-12' } }, async () => {
     const { billNo, total } = await newInvoice(10);
     await sp.recordPayment(billNo, { full: true });
     const before = await sp.readInvoicePayments(billNo);
@@ -1790,12 +1790,12 @@ test.describe('Sales Invoice - Payment', () => {
     expectClose(after.reduce((s, p) => s + p.amount, 0), total, 0.02, 'paid amount unchanged');
   });
 
-  for (const [id, title] of [
-    ['TC-SC-04', 'Reports are accurate after the middle invoice is paid'],
-    ['TC-SC-07', 'Outstanding / advance reports after a paid invoice is set to ₹0'],
-    ['TC-SC-13', 'Outstanding / advance reports after a paid invoice\'s qty change'],
+  for (const [tc, id, title] of [
+    ['TC169', 'TC-SC-04', 'Reports are accurate after the middle invoice is paid'],
+    ['TC170', 'TC-SC-07', 'Outstanding / advance reports after a paid invoice is set to ₹0'],
+    ['TC171', 'TC-SC-13', 'Outstanding / advance reports after a paid invoice\'s qty change'],
   ]) {
-    test.fixme(`${id} - ${title}`, async () => {
+    test.fixme(`${tc} - ${title}`, { annotation: { type: 'cases', description: id } }, async () => {
       // Outstanding / advance reports are not automated yet — add with a Reports sheet.
     });
   }
@@ -1859,7 +1859,7 @@ test.describe('Bulk Payment - New Receipt', () => {
 
   // ── Page load ────────────────────────────────────────────────────────────
 
-  test('TC-UI-01 / 02 / 03 / 04 / 06 / 07 - New Receipt opens with RCPT no, today\'s date, customer, due / pending cheque and a ₹0 summary', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC172 - A new bulk payment receipt opens with the RCPT no, today\'s date, customer, due and pending cheque, and a ₹0 summary', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-01, TC-UI-02, TC-UI-03, TC-UI-04, TC-UI-06, TC-UI-07' } }, async () => {
     await bp.openNewReceipt(TC);
     const f = await bp.readReceiptForm();
     expect(f.receiptNo).toMatch(/RCPT/i);
@@ -1873,7 +1873,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-05 / 23 - Due Invoices lists the customer\'s outstanding invoices with amount and balance', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC173 - Due Invoices on the new receipt lists the customer\'s outstanding invoices with amount and balance', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-05, TC-UI-23' } }, async () => {
     const inv1 = await invoice(A, 1);
     const inv2 = await invoice(C, 3);
     await bp.openNewReceipt(TC);
@@ -1888,7 +1888,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-08 - "Change" on the receipt page opens the customer picker', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC174 - "Change" on the new receipt page opens the customer picker', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-08' } }, async () => {
     knownBug('BUG-BR-01', '"Change" on a new receipt opens no customer picker');
     await bp.openNewReceipt(TC);
     await bp.changeCustomerBtn.click();
@@ -1897,7 +1897,7 @@ test.describe('Bulk Payment - New Receipt', () => {
 
   // ── Receipt account / amount / mode ──────────────────────────────────────
 
-  test('TC-UI-09 / 10 - Receipt Account lists the accounts and Petty Cash can be selected', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC175 - Receipt Account on the new receipt lists the accounts and Petty Cash can be selected', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-09, TC-UI-10' } }, async () => {
     await bp.openNewReceipt(TC);
     await bp.receiptAccount.locator('.ant-select-selector').click();
     const options = (await bp.openOptionTexts.allInnerTexts()).map((t) => t.trim());
@@ -1908,7 +1908,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-11 - Saving without a Receipt Account is refused', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC176 - Saving a new receipt without a Receipt Account is refused', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-11' } }, async () => {
     await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
     await bp.setReceivedAmount(100, 'Cancel');
@@ -1924,14 +1924,14 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-12 - Saving with no received amount is refused ("Received Amount is required")', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC177 - Saving a new receipt with no received amount is refused ("Received Amount is required")', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-12' } }, async () => {
     await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
     expect(await bp.saveReceiptExpectRefused()).toMatch(/received amount is required/i);
     await bp.discardForm();
   });
 
-  test('TC-UI-13 - A zero received amount is refused', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC178 - A zero received amount on the new receipt is refused', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-13' } }, async () => {
     await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
     await bp.setReceivedAmount('0', 'Cancel');
@@ -1939,7 +1939,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-14 / 15 - Negative and alphabetic received amounts are rejected', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC179 - Negative and alphabetic received amounts on the new receipt are rejected', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-14, TC-UI-15' } }, async () => {
     await bp.openNewReceipt(TC);
     for (const bad of ['-500', 'abc']) {
       const shown = await bp.typeValue(bp.receiveAmtField(), bad);
@@ -1951,7 +1951,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-16 / 17 - A decimal received amount (500.75) is saved to 2 decimals', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC180 - A decimal received amount (500.75) on the new receipt is saved to 2 decimals', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-16, TC-UI-17' } }, async () => {
     const receiptNo = await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
     await bp.setReceivedAmount('500.75', 'Cancel');
@@ -1960,7 +1960,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     expect((await bp.receiptListRow(receiptNo)).received).toBe(500.75);
   });
 
-  test('TC-UI-18 / 19 - Payment Mode lists all modes and is required', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC181 - Payment Mode on the new receipt lists all modes and is required', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-18, TC-UI-19' } }, async () => {
     await bp.openNewReceipt(TC);
     await bp.receiptEditMode.locator('.ant-select-selector').click();
     const modes = (await bp.openOptionTexts.allInnerTexts()).map((t) => t.trim());
@@ -1972,7 +1972,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-22 / 35 / 36 - Reference No and Additional Notes are saved with the receipt', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC182 - Reference No and Additional Notes are saved with the new receipt', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-22, TC-UI-35, TC-UI-36' } }, async () => {
     const ref = `REF-2026-${Date.now().toString().slice(-4)}`;
     const note = `Bulk receipt note ${Date.now()}`;
     const receiptNo = await bp.openNewReceipt(TC);
@@ -1991,7 +1991,7 @@ test.describe('Bulk Payment - New Receipt', () => {
 
   // ── Due invoices / popup / summary ───────────────────────────────────────
 
-  test('TC-UI-24 / 31 / 32 / 33 - Row payments update the summary: Used = Σ rows, Excess = Received − Used', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC183 - Row payments update the receipt summary: Used = sum of rows and Excess = Received − Used', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-24, TC-UI-31, TC-UI-32, TC-UI-33' } }, async () => {
     const inv = await invoice(A, 10);   // ₹1180
     await bp.openNewReceipt(TC);
     await bp.setReceivedAmount(1000, 'Cancel');
@@ -2002,7 +2002,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-34 - Excess is ₹0 when the received amount equals the amount used', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC184 - Bulk payment new receipt: excess is ₹0 when the received amount equals the amount used', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-34' } }, async () => {
     const inv = await invoice(A, 10);
     await bp.openNewReceipt(TC);
     await bp.setReceivedAmount(600, 'Cancel');
@@ -2012,7 +2012,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-25 - A row payment above that invoice\'s balance is blocked', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC185 - Bulk payment new receipt: a row payment above that invoice\'s balance is blocked', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-25' } }, async () => {
     const inv = await invoice(C, 2);   // ₹94.40
     await bp.openNewReceipt(TC);
     await bp.setReceivedAmount(500, 'Cancel');
@@ -2023,7 +2023,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-27 - A fully paid invoice is listed with Balance ₹0', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC186 - Bulk payment new receipt: a fully paid invoice is listed with Balance ₹0', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-27' } }, async () => {
     const inv = await invoice(C, 1);
     await bp.recordPayment(inv.billNo, { full: true });
     await bp.openNewReceipt(TC);
@@ -2033,7 +2033,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-28 / 29 - Entering a received amount asks to reflect it; OK spreads it over the invoice payments', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC187 - Bulk payment new receipt: entering a received amount asks to reflect it, and OK spreads it over the invoice payments', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-28, TC-UI-29' } }, async () => {
     await invoice(A, 2);
     await bp.openNewReceipt(TC);
     const due = (await bp.readReceiptForm()).due;
@@ -2045,7 +2045,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-30 - Cancel on the popup leaves every invoice payment at 0', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC188 - Bulk payment new receipt: Cancel on the popup leaves every invoice payment at 0', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-30' } }, async () => {
     await invoice(A, 1);
     await bp.openNewReceipt(TC);
     expect(await bp.setReceivedAmount(100, 'Cancel')).toBe(true);
@@ -2055,7 +2055,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.discardForm();
   });
 
-  test('TC-UI-37 - Cancel on a new receipt creates no record', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC189 - Cancel on a new bulk receipt creates no record', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-UI-37' } }, async () => {
     const receiptNo = await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
     await bp.setReceivedAmount(10, 'Cancel');
@@ -2070,7 +2070,7 @@ test.describe('Bulk Payment - New Receipt', () => {
   // ── Bulk payment ─────────────────────────────────────────────────────────
 
   // QA (BUG-BR-04): paying more than the total due is correct — the excess goes to the customer's advance.
-  test('TC-BP-04 - A receipt above the total of all due invoices is saved (excess goes to advance)', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC190 - A bulk receipt above the total of all due invoices is saved, with the excess going to advance', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-BP-04' } }, async () => {
     await invoice(C, 1);
     await bp.openNewReceipt(TC);
     const due = (await bp.readReceiptForm()).due;
@@ -2079,12 +2079,12 @@ test.describe('Bulk Payment - New Receipt', () => {
     await bp.saveNewReceipt();
   });
 
-  test.fixme('TC-BP-11 - Print a bulk receipt', async () => {
+  test.fixme('TC191 - Print a bulk receipt', { annotation: { type: 'cases', description: 'TC-BP-11' } }, async () => {
     // Print opens the browser print dialog — not verifiable in automation; check manually.
   });
 
-  for (const [id, label, offset] of [['TC-BP-12', 'a past date', -15], ['TC-BP-13', 'a future date', 15]]) {
-    test(`${id} - Receipt dated ${label} is saved with that date`, { tag: ['@sales', '@si-bulk'] }, async () => {
+  for (const [tc, id, label, offset] of [['TC192', 'TC-BP-12', 'a past date', -15], ['TC193', 'TC-BP-13', 'a future date', 15]]) {
+    test(`${tc} - Receipt dated ${label} is saved with that date`, { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: id } }, async () => {
       const receiptNo = await bp.openNewReceipt(TC);
       const date = addDays(new Date(), offset);
       await bp.receiptDate.click();
@@ -2098,7 +2098,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     });
   }
 
-  test('TC-BP-14 / 15 - Manual split: one invoice paid in full, another partly → Paid and remaining due', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC194 - Manual split on a bulk receipt: one invoice paid in full and another partly, so one is Paid and the other has the remaining due', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-BP-14, TC-BP-15' } }, async () => {
     const inv1 = await invoice(C, 2);   // ₹94.40
     const inv2 = await invoice(A, 5);   // ₹590
     await bp.openNewReceipt(TC);
@@ -2114,7 +2114,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     expect(r2.status).toMatch(/days due|partially/i);
   });
 
-  test('TC-BP-18 - Excess on a bulk receipt is kept as customer advance', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC195 - Excess on a bulk receipt is kept as customer advance', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-BP-18' } }, async () => {
     const inv = await invoice(C, 1);
     const advanceBefore = await bp.readCustomerAdvance(TC);
     await bp.openNewReceipt(TC);
@@ -2126,7 +2126,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     expectClose(await bp.readCustomerAdvance(TC), advanceBefore + 200, 0.02, 'customer advance');
   });
 
-  test('TC-BP-19 - Paying every selected invoice in full marks them all Paid', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC196 - Paying every selected invoice in full on a bulk receipt marks them all Paid', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-BP-19' } }, async () => {
     const invs = [await invoice(C, 1), await invoice(C, 2), await invoice(A, 1)];
     await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
@@ -2136,7 +2136,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     for (const inv of invs) expect(await bp.listRow(inv.billNo)).toMatchObject({ status: 'Paid', due: 0 });
   });
 
-  test('TC-BP-20 - 50% of each invoice paid: each shows half its amount as due', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC197 - Paying 50% of each invoice on a bulk receipt: each invoice shows half its amount as due', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-BP-20' } }, async () => {
     const invs = [await invoice(A, 2), await invoice(C, 5)];
     await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
@@ -2150,7 +2150,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     }
   });
 
-  test('TC-BP-23 - Every receipt number in Payment Received is unique', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC198 - Every receipt number in Payment Received is unique', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-BP-23' } }, async () => {
     const all = await bp.allReceiptNumbers();
     const seen = new Set();
     const dups = all.filter((n) => (seen.has(n) ? true : (seen.add(n), false)));
@@ -2158,7 +2158,7 @@ test.describe('Bulk Payment - New Receipt', () => {
     expect(dups, 'duplicate receipt numbers').toEqual([]);
   });
 
-  test('TC-BP-24 - Receipt into Petty Cash posts Petty Cash Dr for the amount', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC199 - A bulk receipt into Petty Cash posts Petty Cash Dr for the amount', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-BP-24' } }, async () => {
     const receiptNo = await bp.openNewReceipt(TC);
     await bp.pickOption(bp.receiptAccount, 'Petty Cash');
     await bp.setReceiptPaymentMode('Cash');
@@ -2172,7 +2172,7 @@ test.describe('Bulk Payment - New Receipt', () => {
 
   // ── Invoice status ───────────────────────────────────────────────────────
 
-  test('TC-IS-06 - Deleting a bulk receipt returns every invoice it paid to its original due', { tag: ['@sales', '@si-bulk'] }, async () => {
+  test('TC200 - Deleting a bulk receipt returns every invoice it paid to its original due', { tag: ['@sales', '@si-bulk'], annotation: { type: 'cases', description: 'TC-IS-06' } }, async () => {
     const invs = [await invoice(C, 1), await invoice(A, 1)];
     const receiptNo = await bp.openNewReceipt(TC);
     await bp.setReceiptPaymentMode('Cash');
@@ -2233,7 +2233,7 @@ test.describe('Customer Transaction', () => {
   const header = async () => { await ct.openCustomer(CUST); return ct.readHeader(); };
   const stmtRow = (rows, no) => rows.filter((r) => r.no === no);
 
-  test('TC-TD-01 - Customer page shows balances, the transaction tabs and the statement columns', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC201 - Customer page shows the balances, the transaction tabs and the statement columns', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-TD-01' } }, async () => {
     await ct.openCustomer(CUST);
     const h = await ct.readHeader();
     for (const [k, v] of Object.entries(h)) expect(Number.isFinite(v), `header ${k}`).toBe(true);
@@ -2245,7 +2245,7 @@ test.describe('Customer Transaction', () => {
       expect.arrayContaining(['Date', 'Transaction No', 'Transaction Detail', 'Amount', 'Payment', 'Balance Due']));
   });
 
-  test('TC-TD-06 / TC-SI-05 / TC-SI-14 - A draft invoice is not counted, and deleting it changes nothing', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC202 - A draft invoice is not counted in the customer transactions, and deleting it changes nothing', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-TD-06, TC-SI-05, TC-SI-14' } }, async () => {
     const before = await header();
     const draft = await invoice(A, 2, { draft: true });
     const afterDraft = await header();
@@ -2257,7 +2257,7 @@ test.describe('Customer Transaction', () => {
     expectClose(afterDelete.closing, before.closing, 0.01, 'closing after deleting the draft');
   });
 
-  test('TC-TD-07 / TC-SI-01 - A saved invoice is listed (bill no, date, amount, due, status) and adds to due and closing balance', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC203 - A saved invoice is listed on the customer page with bill no, date, amount, due and status, and adds to the due and closing balance', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-TD-07, TC-SI-01' } }, async () => {
     const before = await header();
     const inv = await invoice(A, 3);
     const after = await header();
@@ -2274,7 +2274,7 @@ test.describe('Customer Transaction', () => {
     expectClose(si.due, inv.total, 0.01, 'Due Amount');
   });
 
-  test('TC-SI-02 - Clicking a bill number in the statement opens that invoice', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC204 - Clicking a bill number in the customer statement opens that invoice', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-SI-02' } }, async () => {
     const inv = await invoice(C, 2);
     await ct.openCustomer(CUST);
     await ct.openFromStatement(inv.billNo);
@@ -2284,7 +2284,7 @@ test.describe('Customer Transaction', () => {
     await expect(drawer).toContainText(C.itemName);
   });
 
-  test('TC-SI-03 / TC-PT-02 - A fully paid invoice shows Paid, ₹0 due, and its payment in the statement', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC205 - A fully paid invoice shows Paid and ₹0 due, and its payment appears in the customer statement', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-SI-03, TC-PT-02' } }, async () => {
     const inv = await invoice(C, 3);
     const before = await header();
     await ct.recordPayment(inv.billNo, { full: true });
@@ -2299,7 +2299,7 @@ test.describe('Customer Transaction', () => {
     expect(si).toMatchObject({ status: 'Paid', due: 0 });
   });
 
-  test('TC-SI-04 / TC-PT-01 / TC-PT-03 / TC-BC-02 - Partial payment: RCPT row with date, amount and mode; due and closing drop by the payment', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC206 - Partial payment on an invoice: the statement shows an RCPT row with date, amount and mode, and the due and closing balance drop by the payment', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-SI-04, TC-PT-01, TC-PT-03, TC-BC-02' } }, async () => {
     const inv = await invoice(A, 10);   // ₹1180
     const before = await header();
     await ct.recordPayment(inv.billNo, { amount: 600, mode: 'Cash' });
@@ -2317,7 +2317,7 @@ test.describe('Customer Transaction', () => {
     expectClose(si.due, inv.total - 600, 0.01, 'invoice due');
   });
 
-  test('TC-SI-06 / TC-SI-11 - Editing invoices updates their statement amounts and the due', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC207 - Editing invoices updates their amounts in the customer statement and the due', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-SI-06, TC-SI-11' } }, async () => {
     const invs = [await invoice(C, 1), await invoice(C, 2), await invoice(C, 3)];
     const before = await header();
     const newQty = [4, 1, 6];
@@ -2333,7 +2333,7 @@ test.describe('Customer Transaction', () => {
     for (const [i, inv] of invs.entries()) expectClose(stmtRow(rows, inv.billNo)[0].amount, newTotals[i], 0.01, `${inv.billNo} amount`);
   });
 
-  test('TC-SI-12 / TC-BC-05 - Deleting an unpaid invoice removes it and takes its amount off due and closing', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC208 - Deleting an unpaid invoice removes it from the customer statement and takes its amount off the due and closing balance', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-SI-12, TC-BC-05' } }, async () => {
     const before = await header();
     const inv = await invoice(A, 2);
     await ct.deleteInvoice(inv.billNo);
@@ -2343,7 +2343,7 @@ test.describe('Customer Transaction', () => {
     expect(stmtRow(await ct.readStatement(), inv.billNo)).toHaveLength(0);
   });
 
-  test('TC-SI-15 / TC-SI-18 - Deleting the middle invoices leaves the others and the right due', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC209 - Deleting the middle invoices leaves the other invoices and the correct due', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-SI-15, TC-SI-18' } }, async () => {
     const before = await header();
     const invs = [await invoice(C, 1), await invoice(C, 2), await invoice(C, 3), await invoice(C, 4)];
     for (const inv of [invs[1], invs[2]]) await ct.deleteInvoice(inv.billNo);
@@ -2354,7 +2354,7 @@ test.describe('Customer Transaction', () => {
     expect([invs[1], invs[2]].every((i) => stmtRow(rows, i.billNo).length === 0)).toBe(true);
   });
 
-  test('TC-TD-09 / TC-SI-16 / TC-SI-17 / TC-SC-03 / TC-BC-10 - Back-dated invoices are listed by date and the running balance stays consistent after editing the middle one', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC210 - Back-dated invoices are listed by date, and the running balance stays consistent after editing the middle one', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-TD-09, TC-SI-16, TC-SI-17, TC-SC-03, TC-BC-10' } }, async () => {
     const days = [-6, -4, -2];
     const invs = [];
     for (const d of days) invs.push(await invoice(C, 1, { billDate: pickerDate(addDays(new Date(), d)) }));
@@ -2373,7 +2373,7 @@ test.describe('Customer Transaction', () => {
     }
   });
 
-  test('TC-SI-19 - Paying the middle of three invoices: only it shows Paid', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC211 - Paying the middle one of three invoices: only that invoice shows Paid', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-SI-19' } }, async () => {
     const invs = [await invoice(C, 1), await invoice(C, 2), await invoice(C, 3)];
     await ct.recordPayment(invs[1].billNo, { full: true });
     await ct.openCustomer(CUST);
@@ -2383,7 +2383,7 @@ test.describe('Customer Transaction', () => {
     for (const inv of [invs[0], invs[2]]) expectClose(status(inv).due, inv.total, 0.01, `${inv.billNo} still due`);
   });
 
-  test('TC-PT-04 - Editing a payment amount (600 → 800) updates the statement and the Payment Report', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC212 - Editing a payment amount from 600 to 800 updates the customer statement and the Payment Report', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-PT-04' } }, async () => {
     const inv = await invoice(A, 10);
     await ct.recordPayment(inv.billNo, { amount: 600 });
     const [p] = await ct.readInvoicePayments(inv.billNo);
@@ -2396,7 +2396,7 @@ test.describe('Customer Transaction', () => {
     expect((await ct.readPaymentReport()).find((r) => r.receiptNo === p.number).received).toBe(800);
   });
 
-  test('TC-PT-08 - Deleting a payment removes it from the statement and restores the invoice due', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC213 - Deleting a payment removes it from the customer statement and restores the invoice due', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-PT-08' } }, async () => {
     const inv = await invoice(A, 5);
     await ct.recordPayment(inv.billNo, { amount: 300 });
     const [p] = await ct.readInvoicePayments(inv.billNo);
@@ -2410,7 +2410,7 @@ test.describe('Customer Transaction', () => {
     expectClose((await ct.readCustomerInvoices()).find((r) => r.billNo === inv.billNo).due, inv.total, 0.01, 'invoice due restored');
   });
 
-  test('TC-PT-11 - One bulk receipt for two invoices: one RCPT row, both invoices Paid', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC214 - One bulk receipt for two invoices shows one RCPT row in the statement, and both invoices are Paid', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-PT-11' } }, async () => {
     const invs = [await invoice(C, 1), await invoice(C, 2)];
     const receiptNo = await ct.openNewReceipt(CUST);
     await ct.setReceiptPaymentMode('Cash');
@@ -2426,7 +2426,7 @@ test.describe('Customer Transaction', () => {
     for (const inv of invs) expect(list.find((r) => r.billNo === inv.billNo)).toMatchObject({ status: 'Paid', due: 0 });
   });
 
-  test('TC-VD-01 - View Details opens the customer profile', { tag: ['@sales', '@si-customer-tx'] }, async () => {
+  test('TC215 - View Details on the customer transactions page opens the customer profile', { tag: ['@sales', '@si-customer-tx'], annotation: { type: 'cases', description: 'TC-VD-01' } }, async () => {
     await ct.openCustomer(CUST);
     await ct.viewDetailsBtn.click();
     await expect(ct.page).toHaveURL(/\/org-info/);
@@ -2483,7 +2483,7 @@ test.describe('Sales Order', () => {
 
   // ── Number / dates / defaults ────────────────────────────────────────────
 
-  test('TC-SO-01 / 02 / 03 - SO number is auto-generated SO-AUTO/NNNN, read-only and increments by 1', { tag: ['@sales', '@so'] }, async () => {
+  test('TC216 - Sales order number is auto-generated as SO-AUTO/NNNN, is read-only and increments by 1', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-01, TC-SO-02, TC-SO-03' } }, async () => {
     const first = await order([L(C, 1)]);
     const no = await so.startInvoice({ customerName: CUST });
     await expect(so.billNoInput).not.toBeEditable();
@@ -2492,7 +2492,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-04 / 20 / 22 / 48 - Defaults: SO date and expected delivery today, 7-day term, Default warehouse; saves with no delivery date', { tag: ['@sales', '@so'] }, async () => {
+  test('TC217 - New sales order defaults: SO date and expected delivery are today, payment term is 7 days and warehouse is Default, and it saves with no delivery date', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-04, TC-SO-20, TC-SO-22, TC-SO-48' } }, async () => {
     await so.startInvoice({ customerName: CUST });
     const h = await so.readOrderHeader();
     expect(h).toMatchObject({ soDate: pickerDate(new Date()), expectedDeliveryDate: pickerDate(new Date()), term: '7 days', warehouse: 'Default', deliveryDate: '' });
@@ -2501,16 +2501,16 @@ test.describe('Sales Order', () => {
     expect(await so.listRow(o.no)).toMatchObject({ date: listDate(new Date()), status: 'Pending' });
   });
 
-  for (const [id, label, offset] of [['TC-SO-05', 'a past date', -30], ['TC-SO-06', 'a future date', 20]]) {
-    test(`${id} - Order dated ${label} is saved with that date`, { tag: ['@sales', '@so'] }, async () => {
+  for (const [tc, id, label, offset] of [['TC218', 'TC-SO-05', 'a past date', -30], ['TC219', 'TC-SO-06', 'a future date', 20]]) {
+    test(`${tc} - Order dated ${label} is saved with that date`, { tag: ['@sales', '@so'], annotation: { type: 'cases', description: id } }, async () => {
       const d = addDays(new Date(), offset);
       const o = await order([L(C, 1)], { billDate: pickerDate(d) });
       expect((await so.listRow(o.no)).date).toBe(listDate(d));
     });
   }
 
-  for (const [id, term] of [['TC-SO-07', '7 days'], ['TC-SO-08', '15 days'], ['TC-SO-09', '30 days'], ['TC-SO-10', '60 days'], ['TC-SO-11', 'custom']]) {
-    test(`${id} - Payment term "${term}" is saved with the order`, { tag: ['@sales', '@so'] }, async () => {
+  for (const [tc, id, term] of [['TC220', 'TC-SO-07', '7 days'], ['TC221', 'TC-SO-08', '15 days'], ['TC222', 'TC-SO-09', '30 days'], ['TC223', 'TC-SO-10', '60 days'], ['TC224', 'TC-SO-11', 'custom']]) {
+    test(`${tc} - Payment term "${term}" is saved with the order`, { tag: ['@sales', '@so'], annotation: { type: 'cases', description: id } }, async () => {
       const no = await so.startInvoice({ customerName: CUST });
       await so.setDueTerm(term === '7 days' ? '15 days' : '7 days');
       await so.setDueTerm(term);
@@ -2522,7 +2522,7 @@ test.describe('Sales Order', () => {
     });
   }
 
-  test('TC-SO-12 - Payment term cannot be left blank (it always has a value)', { tag: ['@sales', '@so'] }, async () => {
+  test('TC225 - A sales order\'s payment term cannot be left blank because it always has a value', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-12' } }, async () => {
     await so.startInvoice({ customerName: CUST });
     await so.dueTermSelect.hover();
     expect(await so.dueTermSelect.locator('.ant-select-clear').count(), 'no clear control on Payment Term').toBe(0);
@@ -2530,8 +2530,8 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  for (const [id, mode] of [['TC-SO-13', 'Road'], ['TC-SO-14', 'Rail'], ['TC-SO-15', 'Air'], ['TC-SO-16', 'Ship']]) {
-    test(`${id} - Mode of transport "${mode}" is saved with the order`, { tag: ['@sales', '@so'] }, async () => {
+  for (const [tc, id, mode] of [['TC226', 'TC-SO-13', 'Road'], ['TC227', 'TC-SO-14', 'Rail'], ['TC228', 'TC-SO-15', 'Air'], ['TC229', 'TC-SO-16', 'Ship']]) {
+    test(`${tc} - Mode of transport "${mode}" is saved with the order`, { tag: ['@sales', '@so'], annotation: { type: 'cases', description: id } }, async () => {
       const no = await so.startInvoice({ customerName: CUST, transport: mode });
       await so.addLine(C, 1);
       await so.save();
@@ -2541,7 +2541,7 @@ test.describe('Sales Order', () => {
     });
   }
 
-  test('TC-SO-17 / 100 - Without items save is disabled; without mode of transport save is refused', { tag: ['@sales', '@so'] }, async () => {
+  test('TC230 - Sales order without items has save disabled, and without a mode of transport save is refused', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-17, TC-SO-100' } }, async () => {
     await so.startInvoice({ customerName: CUST, transport: null });
     await expect(so.saveBtn.locator('xpath=ancestor::button[1]'), 'save disabled with no items').toBeDisabled();
     await so.addLine(C, 1);
@@ -2549,7 +2549,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-18 / 21 - Delivery and expected delivery dates after the order date are saved', { tag: ['@sales', '@so'] }, async () => {
+  test('TC231 - Sales order delivery and expected delivery dates after the order date are saved', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-18, TC-SO-21' } }, async () => {
     const no = await so.startInvoice({ customerName: CUST });
     const [delivery, expected] = [pickerDate(addDays(new Date(), 5)), pickerDate(addDays(new Date(), 8))];
     await so.setDeliveryDate(delivery);
@@ -2564,7 +2564,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-19 - A delivery date before the order date is refused', { tag: ['@sales', '@so'] }, async () => {
+  test('TC232 - A sales order delivery date before the order date is refused', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-19' } }, async () => {
     knownBug('BUG-SO-01', 'delivery date before the order date accepted');
     await so.startInvoice({ customerName: CUST });
     const typed = pickerDate(addDays(new Date(), -3));
@@ -2576,7 +2576,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-23 / 24 / 25 - Place of supply: Tamil Nadu → CGST + SGST, another state → IGST (changed after items are added)', { tag: ['@sales', '@so'] }, async () => {
+  test('TC233 - Sales order place of supply: Tamil Nadu gives CGST + SGST and another state gives IGST, including when changed after items are added', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-23, TC-SO-24, TC-SO-25' } }, async () => {
     const tn = await order([L(A, 1)]);
     await so.openInvoice(tn.no);
     await expect(so.previewDrawer).toContainText('CGST');
@@ -2592,7 +2592,7 @@ test.describe('Sales Order', () => {
 
   // ── Tax mode / items / UOM / rate ────────────────────────────────────────
 
-  test('TC-SO-29 / 30 / 31 / 32 - Including Tax with GST 5% / 12% / 18% items, switched to Excluding: totals correct and saved', { tag: ['@sales', '@so'] }, async () => {
+  test('TC234 - Sales order with Including Tax and GST 5%, 12% and 18% items, switched to Excluding: totals are correct and saved', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-29, TC-SO-30, TC-SO-31, TC-SO-32' } }, async () => {
     const m = model([L(A, 1, { gst: 5 }), L(B, 1, { gst: 12 }), L(C, 2)], { taxMode: 'Including Tax' });
     const no = await so.startInvoice({ customerName: CUST });
     await so.fillInvoice(m);
@@ -2604,7 +2604,7 @@ test.describe('Sales Order', () => {
     expectClose((await so.listRow(no)).bill, so.computeTotals(m).total, 0.03, 'list Bill Amount');
   });
 
-  test('TC-SO-33 / 38 - Selected item comes with rate (≤ 2 decimals), GST and UOM pre-filled', { tag: ['@sales', '@so'] }, async () => {
+  test('TC235 - A selected item on a sales order comes with rate (up to 2 decimals), GST and UOM pre-filled', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-33, TC-SO-38' } }, async () => {
     await so.startInvoice({ customerName: CUST });
     await so.addLine(B, 1);
     const line = await so.readLine(0);
@@ -2614,7 +2614,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-37 - A long item name is shown in full on the order line', { tag: ['@sales', '@so'] }, async () => {
+  test('TC236 - A long item name is shown in full on the sales order line', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-37' } }, async () => {
     // Created without a stock check — the inventory list is not what this case is about
     const long = await so.itemPage.createItemWithUoms({ name: `Lifespice Kitchen Queen Garam Masala 100g Pouch-2 ${Date.now().toString().slice(-5)}`, baseUnit: 'pcs', price: '56', alternates: [] });
     await so.startInvoice({ customerName: CUST });
@@ -2623,7 +2623,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-39 - Rate 0 on an order shows a "rate cannot be zero" warning', { tag: ['@sales', '@so'] }, async () => {
+  test('TC237 - Rate 0 on a sales order shows a "rate cannot be zero" warning', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-39' } }, async () => {
     knownBug('BUG-SO-02', 'rate 0 saved on a sales order without a message');
     await so.startInvoice({ customerName: CUST });
     await so.addLine(A, 1);
@@ -2631,7 +2631,7 @@ test.describe('Sales Order', () => {
     await so.saveExpectWarning(/rate|zero/i);
   });
 
-  test('TC-SO-40 - An empty rate is refused ("Rate is required")', { tag: ['@sales', '@so'] }, async () => {
+  test('TC238 - An empty rate on a sales order is refused with "Rate is required"', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-40' } }, async () => {
     knownBug('BUG-SO-02', 'empty rate saved on a sales order without a message');
     await so.startInvoice({ customerName: CUST });
     await so.addLine(A, 1);
@@ -2642,7 +2642,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-42 / 43 / 44 / 45 - UOM pcs / box / bundle set the rate by conversion, and the rate can be overridden', { tag: ['@sales', '@so'] }, async () => {
+  test('TC239 - On a sales order, UOM pcs, box and bundle set the rate by conversion, and the rate can be overridden', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-42, TC-SO-43, TC-SO-44, TC-SO-45' } }, async () => {
     const u = await so.setupItem(pcsItem('SO-UOM', { box: 12, bundle: 60, stock: 500 }));
     await so.startInvoice({ customerName: CUST });
     await so.addLine(u, 2);
@@ -2656,7 +2656,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-SO-54 / 96 / 97 - Order with 4 items, decimal rates / qty / discounts, overall discount, shipping and adjustment is saved with the right total', { tag: ['@sales', '@so'] }, async () => {
+  test('TC240 - Sales order with 4 items, decimal rates, qty and discounts, overall discount, shipping and adjustment is saved with the right total', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-54, TC-SO-96, TC-SO-97' } }, async () => {
     const o = await order([
       L(A, 2.5, { rate: 56.75, discount: 12.5 }),
       L(B, 1, { gst: 12, cess: 1, discount: 15, discountMode: '₹' }),
@@ -2669,7 +2669,7 @@ test.describe('Sales Order', () => {
   // ── Stock / convert ──────────────────────────────────────────────────────
 
   // QA (BUG-SO-03): a sales order does not touch inventory; stock moves only when it is invoiced.
-  test('TC-SO-56 - Saving a sales order leaves the item stock unchanged', { tag: ['@sales', '@so'] }, async () => {
+  test('TC241 - Saving a sales order leaves the item stock unchanged', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-56' } }, async () => {
     const before = await so.readStock(C);
     await order([L(C, 4)]);
     await so.open();
@@ -2677,7 +2677,7 @@ test.describe('Sales Order', () => {
     expect(after, 'stock unchanged by the order').toBe(before);
   });
 
-  test('TC-SO-57 / Sales_Invoice TC-80 - Convert an order to an invoice: lines and reference carried over, order Converted, stock down by the qty', { tag: ['@sales', '@so'] }, async () => {
+  test('TC242 - Convert a sales order to an invoice: lines and reference are carried over, the order becomes Converted and stock goes down by the qty', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-57, Sales_Invoice TC-80' } }, async () => {
     const o = await order([L(C, 3), L(B, 1)]);
     const before = await so.readStock(C);
     const siNo = await so.convertToInvoice(o.no);
@@ -2694,7 +2694,7 @@ test.describe('Sales Order', () => {
     expect(before - (await so.readStock(C)), 'stock down by 3').toBe(3);
   });
 
-  test('TC-SO-98 - Save As Draft is available on a new sales order', { tag: ['@sales', '@so'] }, async () => {
+  test('TC243 - Save As Draft is available on a new sales order', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-98' } }, async () => {
     await so.startInvoice({ customerName: CUST });
     await so.addLine(C, 1);
     await expect(so.saveDraftBtn, '"Save As Draft" button').toBeVisible({ timeout: 5000 });
@@ -2703,7 +2703,7 @@ test.describe('Sales Order', () => {
 
   // ── Save / edit / cancel / delete ────────────────────────────────────────
 
-  test('TC-SO-101 - Editing a saved order (qty) updates its amount', { tag: ['@sales', '@so'] }, async () => {
+  test('TC244 - Editing the qty of a saved sales order updates its amount', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-101' } }, async () => {
     const o = await order([L(C, 2)]);
     await so.editInvoice(o.no);
     await so.setLine(0, 7);
@@ -2711,7 +2711,7 @@ test.describe('Sales Order', () => {
     expectClose((await so.listRow(o.no)).bill, so.computeTotals(model([L(C, 7)])).total, 0.02, 'edited amount');
   });
 
-  test('TC-SO-102 - Cancelling a new order creates no record', { tag: ['@sales', '@so'] }, async () => {
+  test('TC245 - Cancelling a new sales order creates no record', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-102' } }, async () => {
     const no = await so.startInvoice({ customerName: CUST });
     await so.addLine(C, 1);
     await so.discardForm();
@@ -2719,15 +2719,15 @@ test.describe('Sales Order', () => {
     await expect(so.invoiceRow(no)).toHaveCount(0);
   });
 
-  test('TC-SO-103 - Deleting a saved order removes it', { tag: ['@sales', '@so'] }, async () => {
+  test('TC246 - Deleting a saved sales order removes it', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-103' } }, async () => {
     const o = await order([L(C, 1)]);
     await so.deleteOrder(o.no);
   });
 
   // ── Order edit flow (order-specific fields) ──────────────────────────────
 
-  for (const [id, label, offset] of [['TC-OE-20', 'a past date', -12], ['TC-OE-21', 'a future date', 12]]) {
-    test(`${id} - Changing the SO date to ${label} on edit is saved`, { tag: ['@sales', '@so'] }, async () => {
+  for (const [tc, id, label, offset] of [['TC247', 'TC-OE-20', 'a past date', -12], ['TC248', 'TC-OE-21', 'a future date', 12]]) {
+    test(`${tc} - Changing the SO date to ${label} on edit is saved`, { tag: ['@sales', '@so'], annotation: { type: 'cases', description: id } }, async () => {
       const o = await order([L(C, 1)]);
       const d = addDays(new Date(), offset);
       await so.editInvoice(o.no);
@@ -2737,7 +2737,7 @@ test.describe('Sales Order', () => {
     });
   }
 
-  test('TC-OE-22 - On edit, a delivery date before the SO date is refused', { tag: ['@sales', '@so'] }, async () => {
+  test('TC249 - Editing a sales order: a delivery date before the SO date is refused', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-OE-22' } }, async () => {
     knownBug('BUG-SO-01', 'delivery date before the order date accepted on edit');
     const o = await order([L(C, 1)]);
     await so.editInvoice(o.no);
@@ -2749,7 +2749,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-OE-23 / 24 - On edit, payment term 7 → 30 days and transport Road → Air are saved', { tag: ['@sales', '@so'] }, async () => {
+  test('TC250 - Editing a sales order: payment term changed from 7 to 30 days and transport from Road to Air are saved', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-OE-23, TC-OE-24' } }, async () => {
     const o = await order([L(C, 1)]);
     await so.editInvoice(o.no);
     await so.setDueTerm('30 days');
@@ -2760,7 +2760,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-OE-25 - Mode of transport cannot be removed on edit', { tag: ['@sales', '@so'] }, async () => {
+  test('TC251 - The mode of transport cannot be removed when editing a sales order', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-OE-25' } }, async () => {
     const o = await order([L(C, 1)]);
     await so.editInvoice(o.no);
     await so.transportSelect.hover();
@@ -2775,7 +2775,7 @@ test.describe('Sales Order', () => {
     await so.discardForm();
   });
 
-  test('TC-OE-44 - Edit the order qty, convert to an invoice: stock drops by the edited qty', { tag: ['@sales', '@so'] }, async () => {
+  test('TC252 - Edit the sales order qty then convert it to an invoice: stock drops by the edited qty', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-OE-44' } }, async () => {
     const o = await order([L(C, 2)]);
     await so.editInvoice(o.no);
     await so.setLine(0, 5);
@@ -2790,7 +2790,7 @@ test.describe('Sales Order', () => {
 
   // ── Customer transaction view of orders (deferred from Customer_Transaction) ─
 
-  test('CT TC-SO-01 / 02 / 03 - The order is listed on the customer\'s Sales Order tab with its amount and opens on click', { tag: ['@sales', '@so'] }, async () => {
+  test('TC253 - A sales order is listed on the customer\'s Sales Order tab with its amount and opens on click', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'CT TC-SO-01, CT TC-SO-02, CT TC-SO-03' } }, async () => {
     const o = await order([L(C, 3)]);
     await so.openCustomer(CUST);
     const row = (await so.readCustomerOrders()).find((r) => r.text.includes(o.no));
@@ -2800,7 +2800,7 @@ test.describe('Sales Order', () => {
     await expect(so.page.locator('.ant-drawer-content').filter({ hasText: o.no }).last()).toBeVisible();
   });
 
-  test('CT TC-SO-04 / 05 / 06 / 07 / 09 - Editing (qty up / down) and deleting orders is reflected on the customer\'s Sales Order tab', { tag: ['@sales', '@so'] }, async () => {
+  test('TC254 - Editing sales orders (qty up and down) and deleting them is reflected on the customer\'s Sales Order tab', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'CT TC-SO-04, CT TC-SO-05, CT TC-SO-06, CT TC-SO-07, CT TC-SO-09' } }, async () => {
     const [o1, o2, o3] = [await order([L(C, 10)]), await order([L(C, 10)]), await order([L(C, 1)])];
     for (const [o, q] of [[o1, 15], [o2, 5]]) {
       await so.editInvoice(o.no);
@@ -2817,7 +2817,7 @@ test.describe('Sales Order', () => {
   });
 
   // QA (BUG-SO-05): the "Converted" status is not developed yet.
-  test.fixme('CT TC-SO-08 - A converted sales order cannot be deleted (Converted status not developed yet)', { tag: ['@sales', '@so'] }, async () => {
+  test.fixme('TC255 - A converted sales order cannot be deleted (Converted status not developed yet)', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'CT TC-SO-08' } }, async () => {
     const o = await order([L(C, 1)]);
     await so.convertToInvoice(o.no);
     await so.saveConvertedInvoice();
@@ -2833,18 +2833,18 @@ test.describe('Sales Order', () => {
 
   // ── Not automatable with the current test data ───────────────────────────
 
-  for (const [id, title, why] of [
-    ['TC-SO-26', 'Select a sales person', 'No sales persons exist in the test org.'],
-    ['TC-SO-27', 'Customer\'s assigned sales person in the dropdown', 'No sales persons exist in the test org.'],
-    ['TC-SO-35', 'Search item by SKU', 'Test items have no SKU codes.'],
-    ['TC-SO-46', 'Warehouse filter limits items to that warehouse\'s stock', 'Only one warehouse ("Default").'],
-    ['TC-SO-47', 'Item with zero stock in the selected warehouse', 'Only one warehouse ("Default").'],
-    ['TC-SO-49', 'Retailer customer gets the business-category price list', 'No customer-specific price lists — PriceList sheet.'],
-    ['TC-SO-50', 'Standard customer gets the general price list', 'No customer-specific price lists — PriceList sheet.'],
-    ['TC-SO-51', 'Changing the price list refreshes the rates', 'No customer-specific price lists — PriceList sheet.'],
-    ['TC-SO-52', 'Customer without a price list uses the default rate', 'No customer-specific price lists — PriceList sheet.'],
+  for (const [tc, id, title, why] of [
+    ['TC256', 'TC-SO-26', 'Select a sales person', 'No sales persons exist in the test org.'],
+    ['TC257', 'TC-SO-27', 'Customer\'s assigned sales person in the dropdown', 'No sales persons exist in the test org.'],
+    ['TC258', 'TC-SO-35', 'Search item by SKU', 'Test items have no SKU codes.'],
+    ['TC259', 'TC-SO-46', 'Warehouse filter limits items to that warehouse\'s stock', 'Only one warehouse ("Default").'],
+    ['TC260', 'TC-SO-47', 'Item with zero stock in the selected warehouse', 'Only one warehouse ("Default").'],
+    ['TC261', 'TC-SO-49', 'Retailer customer gets the business-category price list', 'No customer-specific price lists — PriceList sheet.'],
+    ['TC262', 'TC-SO-50', 'Standard customer gets the general price list', 'No customer-specific price lists — PriceList sheet.'],
+    ['TC263', 'TC-SO-51', 'Changing the price list refreshes the rates', 'No customer-specific price lists — PriceList sheet.'],
+    ['TC264', 'TC-SO-52', 'Customer without a price list uses the default rate', 'No customer-specific price lists — PriceList sheet.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });
 
@@ -2922,7 +2922,7 @@ test.describe('Credit Note', () => {
 
   // ── Number / dates / defaults / customer ─────────────────────────────────
 
-  test('TC-CN-01 / 02 / 03 - CN number is auto-generated CN-AUTO/NNNN, read-only (no duplicate or over-long number can be typed) and increments by 1', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC265 - Credit note number is auto-generated as CN-AUTO/NNNN, is read-only (no duplicate or over-long number can be typed) and increments by 1', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-01, TC-CN-02, TC-CN-03' } }, async () => {
     const first = await credit([L(C, 1)]);
     const no = await cn.startInvoice({ customerName: CUST });
     await expect(cn.billNoInput).not.toBeEditable();
@@ -2931,22 +2931,22 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-CN-04 / 07 / 18 - Defaults: date today, Default warehouse, no invoice; the customer is shown in the header', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC266 - New credit note defaults: date is today, warehouse is Default, no invoice is linked, and the customer is shown in the header', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-04, TC-CN-07, TC-CN-18' } }, async () => {
     await cn.startInvoice({ customerName: CUST });
     expect(await cn.readCreditHeader()).toMatchObject({ billDate: pickerDate(new Date()), warehouse: 'Default', invoice: '' });
     expect((await cn.customerHeaderText()).toLowerCase()).toContain(CUST);
     await cn.discardForm();
   });
 
-  for (const [id, label, offset] of [['TC-CN-05 / TC-UCN-02', 'a past date', -30], ['TC-CN-06 / TC-UCN-03', 'a future date', 20]]) {
-    test(`${id} - Credit note dated ${label} is saved with that date`, { tag: ['@sales', '@cn'] }, async () => {
+  for (const [tc, id, label, offset] of [['TC267', 'TC-CN-05 / TC-UCN-02', 'a past date', -30], ['TC268', 'TC-CN-06 / TC-UCN-03', 'a future date', 20]]) {
+    test(`${tc} - Credit note dated ${label} is saved with that date`, { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: id } }, async () => {
       const d = addDays(new Date(), offset);
       const c = await credit([L(C, 1)], { billDate: pickerDate(d) });
       expect((await cn.listRow(c.no)).date).toBe(listDate(d));
     });
   }
 
-  test('TC-CN-08 - Change the customer on the credit note: the new customer\'s details load', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC269 - Changing the customer on a credit note loads the new customer\'s details', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-08' } }, async () => {
     await cn.startInvoice({ customerName: CUST });
     await cn.changeCustomerBtn.click();
     // The credit note's "Change" shows its own "Select Customer" picker (no #si_select_cus)
@@ -2965,7 +2965,7 @@ test.describe('Credit Note', () => {
 
   // ── Invoice No / reason / ref / unlinked ─────────────────────────────────
 
-  test('TC-CN-10 / 12 / TC-LCN-19 / 20 / TC-UCN-11 / 12 - Invoice No lists only this customer\'s invoices; linking one copies no lines (adapted)', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC270 - On a credit note, Invoice No lists only this customer\'s invoices, and linking one copies no lines (adapted)', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-10, TC-CN-12, TC-LCN-19, TC-LCN-20, TC-UCN-11, TC-UCN-12' } }, async () => {
     const inv = await invoice([L(A, 1)]);
     const others = await cn.otherCustomerInvoices(CUST);
     await cn.startInvoice({ customerName: CUST });
@@ -2978,7 +2978,7 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-CN-11 / 13 / 15 / 57 - Unlinked CN with a reason and an alphanumeric Ref No: Save and Send lists it Open, no invoice, full remaining; reason / ref kept', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC271 - Unlinked credit note with a reason and an alphanumeric Ref No: Save and Send lists it as Open with no invoice and full remaining, and the reason and ref are kept', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-11, TC-CN-13, TC-CN-15, TC-CN-57' } }, async () => {
     const c = await credit([L(C, 2)], { reason: 'Damaged goods returned', refNo: 'RET-A1b2' });
     const r = await cn.listRow(c.no);
     expect(r).toMatchObject({ customer: CUST, status: 'Open' });
@@ -2990,7 +2990,7 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-CN-19 / 20 - Place of supply: Tamil Nadu → CGST + SGST, another state → IGST', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC272 - Credit note place of supply: Tamil Nadu gives CGST + SGST and another state gives IGST', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-19, TC-CN-20' } }, async () => {
     const tn = await credit([L(A, 1)]);
     await cn.openInvoice(tn.no);
     await expect(cn.previewDrawer).toContainText('CGST');
@@ -3006,7 +3006,7 @@ test.describe('Credit Note', () => {
 
   // ── Tax mode / items / totals ────────────────────────────────────────────
 
-  test('TC-CN-23 / 24 / 25 - Including Tax, switched to Excluding Tax: totals recalculate and the saved amount matches', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC273 - Credit note with Including Tax switched to Excluding Tax: totals recalculate and the saved amount matches', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-23, TC-CN-24, TC-CN-25' } }, async () => {
     const m = model([L(A, 1, { gst: 5 }), L(B, 1, { gst: 12 }), L(C, 2)], { taxMode: 'Including Tax' });
     const no = await cn.startInvoice({ customerName: CUST });
     await cn.fillInvoice(m);
@@ -3018,7 +3018,7 @@ test.describe('Credit Note', () => {
     expectClose((await cn.listRow(no)).amount, cn.computeTotals(m).total, 0.03, 'list Credit Amount');
   });
 
-  test('TC-CN-26 / 27 / 34 / 42 / 43 / 45 - Several items with own rate, GST and CESS: rate pre-filled, each taxed at its rate, saved amount correct', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC274 - Credit note with several items, each with its own rate, GST and CESS: rate is pre-filled, each item is taxed at its rate and the saved amount is correct', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-26, TC-CN-27, TC-CN-34, TC-CN-42, TC-CN-43, TC-CN-45' } }, async () => {
     await cn.startInvoice({ customerName: CUST });
     await cn.addLine(B, 1);
     expect((await cn.readLine(0)).rate, 'rate pre-filled from the item').toBe(Number(B.price));
@@ -3027,7 +3027,7 @@ test.describe('Credit Note', () => {
     expectClose((await cn.listRow(c.no)).amount, c.total, 0.05, 'list Credit Amount');
   });
 
-  test('TC-CN-28 - Removing an item recalculates the total; saved amount matches', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC275 - Removing an item from a credit note recalculates the total, and the saved amount matches', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-28' } }, async () => {
     const m = model([L(A, 1), L(C, 2)]);
     const no = await cn.startInvoice({ customerName: CUST });
     await cn.fillInvoice(m);
@@ -3038,7 +3038,7 @@ test.describe('Credit Note', () => {
     expectClose((await cn.listRow(no)).amount, cn.computeTotals(m).total, 0.03, 'list Credit Amount');
   });
 
-  test('TC-CN-46 / 48 / 50 / 51 - Overall discount, shipping, TDS and adjustment: totals correct and saved amount matches', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC276 - Credit note with overall discount, shipping, TDS and adjustment: totals are correct and the saved amount matches', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-46, TC-CN-48, TC-CN-50, TC-CN-51' } }, async () => {
     const m = model([L(A, 2), L(B, 1, { gst: 12 })], { summaryDiscount: { type: 'Percentage', value: 5 }, shipping: 50, adjustment: { type: 'Addition', value: 10 } });
     const no = await cn.startInvoice({ customerName: CUST });
     await cn.fillInvoice(m, { tds: E.tds.commission });
@@ -3049,13 +3049,13 @@ test.describe('Credit Note', () => {
 
   // ── Validation ───────────────────────────────────────────────────────────
 
-  test('TC-CN-29 / 58 - Without items the credit note cannot be saved (Save disabled)', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC277 - A credit note without items cannot be saved because Save is disabled', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-29, TC-CN-58' } }, async () => {
     await cn.startInvoice({ customerName: CUST });
     await expect(cn.saveBtn.locator('xpath=ancestor-or-self::button[1]'), 'save disabled with no items').toBeDisabled();
     await cn.discardForm();
   });
 
-  test('TC-CN-30 - Quantity 0: either refused, or saved without changing stock', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC278 - Credit note quantity 0 is either refused or saved without changing stock', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-30' } }, async () => {
     const before = await cn.readStock(C);
     const no = await cn.startInvoice({ customerName: CUST });
     await cn.addLine(C, 1);
@@ -3066,7 +3066,7 @@ test.describe('Credit Note', () => {
     expect(await cn.readStock(C), 'stock unchanged by a zero-qty credit note').toBe(before);
   });
 
-  test('TC-CN-31 - Saving with a blank quantity is refused', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC279 - Saving a credit note with a blank quantity is refused', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-31' } }, async () => {
     await cn.startInvoice({ customerName: CUST });
     await cn.addLine(C, 1);
     await cn.typeValue(cn.lineQty(cn.lineRows.nth(0)), '');
@@ -3075,7 +3075,7 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-CN-35 - A zero rate gets a warning', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC280 - A zero rate on a credit note gets a warning', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-35' } }, async () => {
     knownBug('BUG-CN-01', 'rate 0 on a credit note saved without a message');
     await cn.startInvoice({ customerName: CUST });
     await cn.addLine(C, 1);
@@ -3086,7 +3086,7 @@ test.describe('Credit Note', () => {
 
   // ── Stock / draft / delete / edit / cancel ───────────────────────────────
 
-  test('TC-CN-32 / 33 - Stock goes up by the credited quantity (whole and decimal)', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC281 - Stock goes up by the credited quantity, for whole and decimal quantities', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-32, TC-CN-33' } }, async () => {
     const s0 = await cn.readStock(C);
     await credit([L(C, 5)]);
     const s1 = await cn.readStock(C);
@@ -3095,14 +3095,14 @@ test.describe('Credit Note', () => {
     expectClose((await cn.readStock(C)) - s1, 2.5, 0.001, 'stock up by 2.5');
   });
 
-  test('TC-ST-05 (CT) - Invoice 10 then credit note 5 for the same item: stock down by 5 net', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC282 - Invoice of 10 then credit note of 5 for the same item: stock is down by 5 net', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-ST-05 (CT)' } }, async () => {
     const s0 = await cn.readStock(C);
     const inv = await invoice([L(C, 10)]);
     await credit([L(C, 5)], { invoiceNo: inv.no });
     expect(s0 - (await cn.readStock(C))).toBe(5);
   });
 
-  test('TC-CN-54 / 55 / 56 - Draft: listed as Draft and editable, stock unchanged, not in the transaction statement', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC283 - Draft credit note is listed as Draft and is editable, stock is unchanged and it is not in the transaction statement', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-54, TC-CN-55, TC-CN-56' } }, async () => {
     const before = await cn.readStock(C);
     const c = await credit([L(C, 4)], { draft: true });
     expect((await cn.listRow(c.no)).status).toBe('Draft');
@@ -3114,7 +3114,7 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-CN-59 / TC-ST-06 (CT) - Deleting an unlinked credit note removes it and takes the returned stock back out', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC284 - Deleting an unlinked credit note removes it and takes the returned stock back out', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-59, TC-ST-06 (CT)' } }, async () => {
     const s0 = await cn.readStock(C);
     const c = await credit([L(C, 5)]);
     expect(await cn.readStock(C)).toBe(s0 + 5);
@@ -3122,7 +3122,7 @@ test.describe('Credit Note', () => {
     expect(await cn.readStock(C), 'stock back to the pre-CN value').toBe(s0);
   });
 
-  test('TC-CN-60 / CT TC-CN-04 / 05 - Editing qty 5 → 3 and the rate: amount, stock and statement follow', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC285 - Editing a credit note qty from 5 to 3 and the rate: amount, stock and statement follow', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-60, CT TC-CN-04, CT TC-CN-05' } }, async () => {
     const c = await credit([L(C, 5)]);
     const s1 = await cn.readStock(C);
     await cn.editInvoice(c.no);
@@ -3140,7 +3140,7 @@ test.describe('Credit Note', () => {
     expect([row.amount, row.payment].some((v) => Math.abs(v - total) < 0.05), `statement shows ${total}: ${JSON.stringify(row)}`).toBe(true);
   });
 
-  test('TC-CN-61 - Cancelling a new credit note creates no record', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC286 - Cancelling a new credit note creates no record', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-61' } }, async () => {
     const no = await cn.startInvoice({ customerName: CUST });
     await cn.addLine(C, 1);
     await cn.discardForm();
@@ -3150,7 +3150,7 @@ test.describe('Credit Note', () => {
 
   // ── Linked credit note ───────────────────────────────────────────────────
 
-  test('TC-LCN-01 / 02 / 03 - Linked CN dated on or after the invoice date is saved; before it is refused', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC287 - A linked credit note dated on or after the invoice date is saved, and one dated before it is refused', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-01, TC-LCN-02, TC-LCN-03' } }, async () => {
     const d0 = addDays(new Date(), -5);
     const inv = await invoice([L(A, 3)], { billDate: pickerDate(d0) });
     await credit([L(A, 1)], { invoiceNo: inv.no, billDate: pickerDate(d0) });
@@ -3165,7 +3165,7 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-LCN-04 / 09 / TC-UCN-04 / CT TC-CN-02 / TC-BC-03 - Partial linked CN: saved, auto-applied to the invoice; invoice and customer due down by the CN', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC288 - Partial linked credit note is saved and auto-applied to the invoice, and the invoice and customer due go down by the credit note amount', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-04, TC-LCN-09, TC-UCN-04, CT TC-CN-02, TC-BC-03' } }, async () => {
     const inv = await invoice([L(A, 10)]);
     const h0 = await header();
     const c = await credit([L(A, 5)], { invoiceNo: inv.no });
@@ -3178,7 +3178,7 @@ test.describe('Credit Note', () => {
     expectClose(h0.closing - h1.closing, c.total, 0.05, 'Closing Balance down by the CN');
   });
 
-  test('TC-LCN-05 / 07 - CN equal to the invoice (same qty and rate): invoice fully credited, CN fully used', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC289 - Credit note equal to the invoice (same qty and rate): the invoice is fully credited and the credit note is fully used', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-05, TC-LCN-07' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const c = await credit([L(A, 2)], { invoiceNo: inv.no });
     expectClose(c.total, inv.total, 0.01, 'CN total = invoice total');
@@ -3189,7 +3189,7 @@ test.describe('Credit Note', () => {
   });
 
   // QA (BUG-CN-02): a linked credit note above the invoice quantity / total is the current flow.
-  test('TC-LCN-06 - CN quantity above the linked invoice quantity is saved', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC290 - A credit note quantity above the linked invoice quantity is saved', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-06' } }, async () => {
     const inv = await invoice([L(A, 1)]);
     await cn.startInvoice({ customerName: CUST, invoiceNo: inv.no });
     await cn.addLine(A, 3);
@@ -3197,7 +3197,7 @@ test.describe('Credit Note', () => {
     expect(r.saved, `qty 3 vs invoiced 1 is accepted (${r.message || 'no message'})`).toBe(true);
   });
 
-  test('TC-LCN-08 / CT TC-CN-06 - CN total above the linked invoice total is saved (on create and on edit)', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC291 - A credit note total above the linked invoice total is saved, on create and on edit', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-08, CT TC-CN-06' } }, async () => {
     const inv = await invoice([L(A, 1)]);
     await cn.startInvoice({ customerName: CUST, invoiceNo: inv.no });
     await cn.fillInvoice(model([L(A, 1, { rate: 500 })]));
@@ -3211,7 +3211,7 @@ test.describe('Credit Note', () => {
     expect(edited.saved, 'edit: CN raised above the invoice amount is accepted').toBe(true);
   });
 
-  test('TC-LCN-10 / 11 / CT TC-CN-07 - Deleting a linked CN asks for confirmation, restores the invoice due and takes the stock back out', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC292 - Deleting a linked credit note asks for confirmation, restores the invoice due and takes the stock back out', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-10, TC-LCN-11, CT TC-CN-07' } }, async () => {
     const inv = await invoice([L(A, 4)]);
     const s0 = await cn.readStock(A);
     const c = await credit([L(A, 2)], { invoiceNo: inv.no });
@@ -3223,14 +3223,14 @@ test.describe('Credit Note', () => {
     expect(await cn.readStock(A), 'stock back').toBe(s0);
   });
 
-  test('TC-LCN-12 - An invoice with a linked credit note cannot be deleted', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC293 - An invoice with a linked credit note cannot be deleted', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-12' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     await credit([L(A, 1)], { invoiceNo: inv.no });
     const r = await si.tryDeleteInvoice(inv.no);
     expect(r.deleted, `invoice with a linked CN must not be deleted (${r.message})`).toBe(false);
   });
 
-  test('TC-LCN-14 - Replacing the item on the invoice after a CN is linked: invoice saves, CN stays linked', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC294 - Replacing the item on an invoice after a credit note is linked: the invoice saves and the credit note stays linked', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-14' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await si.editInvoice(inv.no);
@@ -3241,7 +3241,7 @@ test.describe('Credit Note', () => {
   });
 
   // QA (BUG-CN-03): line items can be added to a credit note directly, even when it is linked to an invoice.
-  test('TC-LCN-16 - Replacing the item on a linked CN with one not on the invoice is saved', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC295 - Replacing the item on a linked credit note with one not on the invoice is saved', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-16' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await cn.editInvoice(c.no);
@@ -3251,7 +3251,7 @@ test.describe('Credit Note', () => {
     expect(r.saved, `item not on the invoice is accepted (${r.message || 'no message'})`).toBe(true);
   });
 
-  test('TC-LCN-17 / 18 - Extra item not on the invoice: saved, total includes it, still linked, stock up for the extra item', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC296 - Extra item on a linked credit note that is not on the invoice: it is saved, the total includes it, the credit note is still linked and stock goes up for the extra item', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-17, TC-LCN-18' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const sB = await cn.readStock(B);
     const c = await credit([L(A, 1), L(B, 1)], { invoiceNo: inv.no });
@@ -3261,7 +3261,7 @@ test.describe('Credit Note', () => {
     expect(await cn.readStock(B), 'extra item stock up by 1').toBe(sB + 1);
   });
 
-  test('TC-LCN-21 - Unlinking the invoice in the CN: amount change is accepted', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC297 - Unlinking the invoice in a credit note: an amount change is accepted', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-21' } }, async () => {
     const inv = await invoice([L(A, 3)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await cn.editInvoice(c.no);
@@ -3273,7 +3273,7 @@ test.describe('Credit Note', () => {
     expectClose(r.amount, cn.computeTotals(model([L(A, 2)])).total, 0.05, 'Credit Amount after unlink + edit');
   });
 
-  test('TC-LCN-22 - After unlinking the invoice, adding items to the CN is refused', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC298 - After unlinking the invoice from a credit note, adding items to the credit note is refused', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-22' } }, async () => {
     const inv = await invoice([L(A, 3)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await cn.editInvoice(c.no);
@@ -3284,7 +3284,7 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-LCN-23 / 24 / 26 - After unlinking, the invoice rate and items can change and the CN amount stays the same', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC299 - After unlinking a credit note, the invoice rate and items can change and the credit note amount stays the same', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-23, TC-LCN-24, TC-LCN-26' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await cn.editInvoice(c.no);
@@ -3298,7 +3298,7 @@ test.describe('Credit Note', () => {
     expectClose((await cn.listRow(c.no)).amount, c.total, 0.05, 'CN amount unchanged');
   });
 
-  test('TC-LCN-25 - After unlinking, editing the CN does not change the invoice due', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC300 - After unlinking a credit note, editing it does not change the invoice due', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-25' } }, async () => {
     const inv = await invoice([L(A, 3)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv.no });
     await cn.editInvoice(c.no);
@@ -3313,7 +3313,7 @@ test.describe('Credit Note', () => {
 
   // ── Re-linking on edit ───────────────────────────────────────────────────
 
-  test('TC-UCN-05 - Linking a partly paid invoice: CN applied up to the invoice due, the rest stays remaining', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC301 - Linking a credit note to a partly paid invoice: it is applied up to the invoice due and the rest stays as remaining', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-05' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     await pay.recordPayment(inv.no, { amount: 200 });
     const d = await due(inv.no);
@@ -3322,7 +3322,7 @@ test.describe('Credit Note', () => {
     expectClose((await cn.listRow(c.no)).remaining, c.total - d, 0.05, 'CN remaining = CN − invoice due');
   });
 
-  test('TC-UCN-06 - Linking an invoice while editing an unlinked CN does not auto-apply it', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC302 - Linking an invoice while editing an unlinked credit note does not auto-apply it', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-06' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const c = await credit([L(A, 1)]);
     await cn.editInvoice(c.no);
@@ -3334,7 +3334,7 @@ test.describe('Credit Note', () => {
     expectClose(await due(inv.no), inv.total, 0.05, 'invoice due not auto-adjusted on edit');
   });
 
-  test('TC-UCN-07 - Changing the linked invoice on edit links the new one; CN amount unchanged', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC303 - Changing the linked invoice on a credit note edit links the new invoice, and the credit note amount is unchanged', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-07' } }, async () => {
     const inv1 = await invoice([L(A, 2)]);
     const inv2 = await invoice([L(A, 2)]);
     const c = await credit([L(A, 1)], { invoiceNo: inv1.no });
@@ -3346,7 +3346,7 @@ test.describe('Credit Note', () => {
     expectClose(r.amount, c.total, 0.05, 'CN amount unchanged');
   });
 
-  test('TC-UCN-08 / 10 - Same customer, different item and smaller amount than the invoice: mapping saved', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC304 - Credit note for the same customer with a different item and a smaller amount than the invoice: the mapping is saved', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-08, TC-UCN-10' } }, async () => {
     const inv = await invoice([L(B, 4)]);
     const c = await credit([L(C, 1)], { invoiceNo: inv.no });
     const r = await cn.listRow(c.no);
@@ -3356,7 +3356,7 @@ test.describe('Credit Note', () => {
 
   // ── Apply to Invoices ────────────────────────────────────────────────────
 
-  test('TC-LCN-27 / 28 / TC-UCN-13 / 14 - Apply to Invoices lists only this customer\'s invoices', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC305 - Apply to Invoices on a credit note lists only this customer\'s invoices', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-LCN-27, TC-LCN-28, TC-UCN-13, TC-UCN-14' } }, async () => {
     const c = await credit([L(A, 1)]);
     const inv = await invoice([L(C, 1)]);
     const others = await cn.otherCustomerInvoices(CUST);
@@ -3367,7 +3367,7 @@ test.describe('Credit Note', () => {
     await cn.cancelApply();
   });
 
-  test('TC-UCN-15 / 18 - Partial apply: invoice due and CN remaining drop by the amount; items and rates unchanged on both', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC306 - Partial apply of a credit note: invoice due and credit note remaining drop by the amount, and items and rates are unchanged on both', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-15, TC-UCN-18' } }, async () => {
     const inv = await invoice([L(B, 2)]);
     const c = await credit([L(A, 3)]);
     await cn.openApply(c.no);
@@ -3386,7 +3386,7 @@ test.describe('Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('TC-UCN-16 / 19 / CT TC-CN-09 - Full apply: invoice due 0 and CN remaining 0; both shown in the statement', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC307 - Full apply of a credit note: invoice due is 0 and credit note remaining is 0, and both are shown in the statement', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-16, TC-UCN-19, CT TC-CN-09' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const c = await credit([L(A, 2)]);
     await cn.openApply(c.no);
@@ -3399,11 +3399,11 @@ test.describe('Credit Note', () => {
     expect(nos).toEqual(expect.arrayContaining([inv.no, c.no]));
   });
 
-  for (const [id, title, invLines, cnLines] of [
-    ['TC-UCN-17', 'more than the invoice balance', () => [L(C, 1)], () => [L(A, 2)]],
-    ['TC-UCN-20', 'more than the credit note balance', () => [L(A, 2)], () => [L(C, 1)]],
+  for (const [tc, id, title, invLines, cnLines] of [
+    ['TC308', 'TC-UCN-17', 'more than the invoice balance', () => [L(C, 1)], () => [L(A, 2)]],
+    ['TC309', 'TC-UCN-20', 'more than the credit note balance', () => [L(A, 2)], () => [L(C, 1)]],
   ]) {
-    test(`${id} - Applying ${title} is refused`, { tag: ['@sales', '@cn'] }, async () => {
+    test(`${tc} - Applying ${title} is refused`, { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: id } }, async () => {
       const inv = await invoice(invLines());
       const c = await credit(cnLines());
       await cn.openApply(c.no);
@@ -3414,7 +3414,7 @@ test.describe('Credit Note', () => {
     });
   }
 
-  test('TC-UCN-21 - One CN split over two invoices: CN remaining 0, both invoices settled', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC310 - One credit note split over two invoices: credit note remaining is 0 and both invoices are settled', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-21' } }, async () => {
     const i1 = await invoice([L(B, 1)]);
     const i2 = await invoice([L(B, 1)]);
     const c = await credit([L(A, 5)]);
@@ -3427,7 +3427,7 @@ test.describe('Credit Note', () => {
     expectClose(await due(i2.no), i2.total - (c.total - i1.total), 0.05, 'invoice 2 due');
   });
 
-  test('TC-UCN-22 - Lowering a CN below its applied amount: refused, or the application shrinks (never a negative remaining)', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC311 - Lowering a credit note below its applied amount is either refused or the application shrinks, and the remaining is never negative', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-UCN-22' } }, async () => {
     const inv = await invoice([L(B, 2)]);
     const c = await credit([L(A, 3)]);
     await cn.openApply(c.no);
@@ -3444,7 +3444,7 @@ test.describe('Credit Note', () => {
 
   // ── Customer transaction / balances (deferred from Customer_Transaction) ─
 
-  test('CT TC-CN-01 / 03 / 10 - Three credit notes (linked and unlinked) appear in the customer statement and Credit Notes tab with their amounts', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC312 - Three credit notes (linked and unlinked) appear in the customer statement and the Credit Notes tab with their amounts', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'CT TC-CN-01, CT TC-CN-03, CT TC-CN-10' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     const cs = [await credit([L(C, 1)]), await credit([L(C, 2)]), await credit([L(A, 1)], { invoiceNo: inv.no })];
     await cn.openCustomer(CUST);
@@ -3458,7 +3458,7 @@ test.describe('Credit Note', () => {
     for (const c of cs) expect(tab.some((r) => r.text.includes(c.no)), `${c.no} in Credit Notes tab`).toBe(true);
   });
 
-  test('CT TC-CN-08 - Deleting a partly applied credit note is refused', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC313 - Deleting a partly applied credit note is refused', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'CT TC-CN-08' } }, async () => {
     const inv = await invoice([L(B, 1)]);
     const c = await credit([L(A, 5)]);
     await cn.openApply(c.no);
@@ -3468,7 +3468,7 @@ test.describe('Credit Note', () => {
     expect(r.deleted, `partly applied CN must not be deleted (${r.message})`).toBe(false);
   });
 
-  test('CT TC-BC-06 / TC-TD-08 - Invoice, sales order, payment and credit note: due moves by invoice − payment − CN, the order does not count', { tag: ['@sales', '@cn'] }, async ({ page }) => {
+  test('TC314 - With an invoice, sales order, payment and credit note, the due moves by invoice minus payment minus credit note, and the sales order does not count', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'CT TC-BC-06, TC-TD-08' } }, async ({ page }) => {
     const so = new SalesOrderPage(page);
     const h0 = await header();
     const inv = await invoice([L(B, 2)]);
@@ -3480,7 +3480,7 @@ test.describe('Credit Note', () => {
     expectClose(h1.closing - h0.closing, inv.total - 200 - c.total, 0.05, 'Closing Balance change');
   });
 
-  test('CT TC-BC-07 / TC-ST-08 - Invoices 20 + 15 (+1 deleted), first edited to 10, payment, CN 5: stock and closing balance correct', { tag: ['@sales', '@cn'] }, async () => {
+  test('TC315 - Invoices of 20 and 15 (plus one deleted), the first edited to 10, then a payment and a credit note of 5: stock and closing balance are correct', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'CT TC-BC-07, TC-ST-08' } }, async () => {
     const s0 = await cn.readStock(C);
     const h0 = await header();
     const i1 = await invoice([L(C, 20)]);
@@ -3500,16 +3500,16 @@ test.describe('Credit Note', () => {
 
   // ── Not automatable with the current test data / app ─────────────────────
 
-  for (const [id, title, why] of [
-    ['TC-CN-17', 'Warehouse filter limits items to that warehouse', 'Only one warehouse ("Default").'],
-    ['TC-UCN-09', 'Linked invoice from a different warehouse', 'Only one warehouse ("Default").'],
-    ['TC-CN-21', 'Select a sales person', 'No sales persons exist in the test org.'],
-    ['TC-LCN-13', 'Change the item unit on the invoice after a CN is linked', 'Priced test items are single-UOM; UOM conversion is covered by TC01–TC29.'],
-    ['TC-LCN-15', 'Change the item unit on a linked CN', 'Priced test items are single-UOM; UOM conversion is covered by TC01–TC29.'],
-    ['TC-LCN-29', 'Remove the copied linked item on the CN', 'Linking does not copy invoice lines into the CN — there is no "linked item".'],
-    ['TC-LCN-30', 'Remove the copied linked item on the invoice', 'Linking does not copy invoice lines into the CN — there is no "linked item".'],
+  for (const [tc, id, title, why] of [
+    ['TC316', 'TC-CN-17', 'Warehouse filter limits items to that warehouse', 'Only one warehouse ("Default").'],
+    ['TC317', 'TC-UCN-09', 'Linked invoice from a different warehouse', 'Only one warehouse ("Default").'],
+    ['TC318', 'TC-CN-21', 'Select a sales person', 'No sales persons exist in the test org.'],
+    ['TC319', 'TC-LCN-13', 'Change the item unit on the invoice after a CN is linked', 'Priced test items are single-UOM; UOM conversion is covered by TC01–TC29.'],
+    ['TC320', 'TC-LCN-15', 'Change the item unit on a linked CN', 'Priced test items are single-UOM; UOM conversion is covered by TC01–TC29.'],
+    ['TC321', 'TC-LCN-29', 'Remove the copied linked item on the CN', 'Linking does not copy invoice lines into the CN — there is no "linked item".'],
+    ['TC322', 'TC-LCN-30', 'Remove the copied linked item on the invoice', 'Linking does not copy invoice lines into the CN — there is no "linked item".'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });
 
@@ -3585,7 +3585,7 @@ test.describe('Payment & Credit Note', () => {
   // ── Payment edit / dates / amounts ───────────────────────────────────────
 
   // QA (BUG-PCN-01): editing the payment of a settled invoice is the current flow.
-  test('PCF TC-PE-16 - Editing the payment of a fully settled invoice is saved', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC323 - Editing the payment of a fully settled invoice is saved', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-PE-16' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     await pay.recordPayment(inv.no, { amount: inv.total });
     const p = await firstPayment(inv.no);
@@ -3595,8 +3595,8 @@ test.describe('Payment & Credit Note', () => {
     expect(r.saved, 'payment edit after full settlement is accepted').toBe(true);
   });
 
-  for (const [id, title, days] of [['PCF TC-DE-02', 'an earlier date', 2], ['PCF TC-DE-03', 'the invoice date', 0]]) {
-    test(`${id} - Payment date edited to ${title} is saved`, { tag: ['@sales', '@pcf'] }, async () => {
+  for (const [tc, id, title, days] of [['TC324', 'PCF TC-DE-02', 'an earlier date', 2], ['TC325', 'PCF TC-DE-03', 'the invoice date', 0]]) {
+    test(`${tc} - Payment date edited to ${title} is saved`, { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: id } }, async () => {
       const d0 = addDays(new Date(), -10);
       const inv = await invoice([L(A, 1)], { billDate: pickerDate(d0) });
       await pay.recordPayment(inv.no, { amount: 50, date: paymentDate(addDays(d0, 5)) });
@@ -3611,8 +3611,8 @@ test.describe('Payment & Credit Note', () => {
   }
 
   // QA (BUG-PCN-02): any receipt date can be set on edit (current flow).
-  for (const [id, label, offset] of [['PCF TC-DE-04', 'a future date', 15], ['PCF TC-DE-05', 'a date before the invoice', -5]]) {
-    test(`${id} - Editing the payment date to ${label} is saved`, { tag: ['@sales', '@pcf'] }, async () => {
+  for (const [tc, id, label, offset] of [['TC326', 'PCF TC-DE-04', 'a future date', 15], ['TC327', 'PCF TC-DE-05', 'a date before the invoice', -5]]) {
+    test(`${tc} - Editing the payment date to ${label} is saved`, { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: id } }, async () => {
       const d0 = addDays(new Date(), -3);
       const inv = await invoice([L(A, 1)], { billDate: pickerDate(d0) });
       await pay.recordPayment(inv.no, { amount: 50, date: paymentDate(d0) });
@@ -3627,7 +3627,7 @@ test.describe('Payment & Credit Note', () => {
   }
 
   // QA (BUG-PCN-03): the invoice date stays editable after a partial payment (current flow).
-  test('PCF TC-DE-06 - Editing the invoice date after a partial payment is saved', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC328 - Editing the invoice date after a partial payment is saved', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-DE-06' } }, async () => {
     const inv = await invoice([L(A, 4)], { billDate: pickerDate(addDays(new Date(), -2)) });
     await pay.recordPayment(inv.no, { amount: 100 });
     await si.editInvoice(inv.no);
@@ -3635,7 +3635,7 @@ test.describe('Payment & Credit Note', () => {
     expect(await invoiceSaved(), 'invoice date change after payment is accepted').toBe(true);
   });
 
-  test('PCF TC-DA-02 - Invoice amount raised after a partial payment: due = new total − paid', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC329 - Invoice amount raised after a partial payment: due equals the new total minus the amount paid', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-DA-02' } }, async () => {
     const inv = await invoice([L(A, 10)]);
     await pay.recordPayment(inv.no, { amount: 500 });
     await si.editInvoice(inv.no);
@@ -3646,7 +3646,7 @@ test.describe('Payment & Credit Note', () => {
 
   // ── Credit note payment ──────────────────────────────────────────────────
 
-  test('PCF TC-CP-03 - Two credit notes applied to one invoice: invoice Paid, both credit notes used up', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC330 - Two credit notes applied to one invoice: the invoice is Paid and both credit notes are used up', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CP-03' } }, async () => {
     const inv = await invoice([L(A, 5)]);
     const c1 = await credit([L(A, 2)]);
     const c2 = await credit([L(A, 3)]);
@@ -3661,7 +3661,7 @@ test.describe('Payment & Credit Note', () => {
     for (const c of [c1, c2]) expectClose((await cn.listRow(c.no)).remaining, 0, 0.05, `${c.no} remaining`);
   });
 
-  test('PCF TC-CP-09 - A fully paid invoice is not offered in Apply to Invoices', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC331 - A fully paid invoice is not offered in a credit note\'s Apply to Invoices', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CP-09' } }, async () => {
     const inv = await invoice([L(A, 1)]);
     await pay.recordPayment(inv.no, { amount: inv.total });
     const c = await credit([L(A, 1)]);
@@ -3671,7 +3671,7 @@ test.describe('Payment & Credit Note', () => {
   });
 
   // QA (BUG-CN-06): a credit note against a fully paid invoice is accepted; its amount goes to the advance.
-  test('PCF TC-CC-11 / 17 - A credit note against a fully paid invoice is saved (amount goes to advance)', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC332 - A credit note against a fully paid invoice is saved, with the amount going to advance', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CC-11, PCF TC-CC-17' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     await pay.recordPayment(inv.no, { amount: inv.total });
     await cn.startInvoice({ customerName: CUST });
@@ -3683,7 +3683,7 @@ test.describe('Payment & Credit Note', () => {
   });
 
   // QA (BUG-CN-08): a future-dated credit note can be applied to an earlier invoice (current flow).
-  test('PCF TC-CP-10 - A future-dated credit note can be applied to an earlier invoice', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC333 - A future-dated credit note can be applied to an earlier invoice', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CP-10' } }, async () => {
     const inv = await invoice([L(A, 2)], { billDate: pickerDate(addDays(new Date(), -5)) });
     const c = await credit([L(A, 1)], { billDate: pickerDate(addDays(new Date(), 5)) });
     await cn.openApply(c.no);
@@ -3692,7 +3692,7 @@ test.describe('Payment & Credit Note', () => {
     await cn.saveApply();
   });
 
-  test('PCF TC-CC-19 - Paid invoice, then a credit note raised and increased: saved with the new amount', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC334 - Paid invoice, then a credit note raised and increased: it is saved with the new amount', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CC-19' } }, async () => {
     const inv = await invoice([L(A, 2)]);
     await pay.recordPayment(inv.no, { amount: inv.total });
     const c = await credit([L(A, 2)]);
@@ -3703,7 +3703,7 @@ test.describe('Payment & Credit Note', () => {
   });
 
   // QA (BUG-CN-09): a linked credit note dated after the payment is the current flow.
-  test('PCF TC-CC-22 - A linked credit note dated after the invoice\'s payment date is saved', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC335 - A linked credit note dated after the invoice\'s payment date is saved', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CC-22' } }, async () => {
     const d0 = addDays(new Date(), -10);
     const inv = await invoice([L(A, 4)], { billDate: pickerDate(d0) });
     await pay.recordPayment(inv.no, { amount: 100, date: paymentDate(addDays(d0, 2)) });
@@ -3715,7 +3715,7 @@ test.describe('Payment & Credit Note', () => {
 
   // ── Credit note inventory ────────────────────────────────────────────────
 
-  test('PCF TC-CI-02 - Full return: invoice 20, credit note 20 → stock fully restored', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC336 - Full return with invoice of 20 and credit note of 20: stock is fully restored', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CI-02' } }, async () => {
     const s0 = await cn.readStock(C);
     const inv = await invoice([L(C, 20)]);
     expect(await cn.readStock(C)).toBe(s0 - 20);
@@ -3723,7 +3723,7 @@ test.describe('Payment & Credit Note', () => {
     expect(await cn.readStock(C)).toBe(s0);
   });
 
-  test('PCF TC-CI-03 / TC-CC-02 - Two items sold 20 / 15, returned 10 / 5 on one credit note: each stock correct', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC337 - Two items sold as 20 and 15 and returned as 10 and 5 on one credit note: each item\'s stock is correct', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CI-03, TC-CC-02' } }, async () => {
     const [sA, sC] = [await cn.readStock(A), await cn.readStock(C)];
     const inv = await invoice([L(A, 20), L(C, 15)]);
     await credit([L(A, 10), L(C, 5)], { invoiceNo: inv.no });
@@ -3731,7 +3731,7 @@ test.describe('Payment & Credit Note', () => {
     expect(sC - (await cn.readStock(C)), 'item C net −10').toBe(10);
   });
 
-  test('PCF TC-CI-07 - A credit note for an item with zero stock is refused', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC338 - A credit note for an item with zero stock is refused', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CI-07' } }, async () => {
     const z = await cn.setupItem({ name: itemName('CN-0'), baseUnit: 'pcs', price: '40', alternates: [] });
     await cn.startInvoice({ customerName: CUST });
     await cn.addLine(z, 5);
@@ -3740,7 +3740,7 @@ test.describe('Payment & Credit Note', () => {
     await cn.discardForm();
   });
 
-  test('PCF TC-CI-09 - A deleted invoice is no longer offered for a credit note', { tag: ['@sales', '@pcf'] }, async () => {
+  test('TC339 - A deleted invoice is no longer offered for a credit note', { tag: ['@sales', '@pcf'], annotation: { type: 'cases', description: 'PCF TC-CI-09' } }, async () => {
     const inv = await invoice([L(A, 10)]);
     await si.deleteInvoice(inv.no);
     await cn.startInvoice({ customerName: CUST });
@@ -3801,7 +3801,7 @@ test.describe('Customer Create / Edit', () => {
 
   // ── Form / required fields / name ────────────────────────────────────────
 
-  test('TC-S1-01 / 02 / TC-S2-01 / TC-S3-01 - New customer form shows every field on one form (adapted from 3 steps); Business Location India (display); GST status Registered / UnRegistered', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC340 - New customer form shows every field on one form (adapted from 3 steps), with Business Location India (display) and GST status Registered or UnRegistered', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-01, TC-S1-02, TC-S2-01, TC-S3-01' } }, async () => {
     await cu.openNewCustomer();
     for (const l of [cu.nameInput, cu.openingBalance, cu.phoneInput, cu.emailInput, cu.addAddressBtn]) await expect(l).toBeVisible();
     for (const id of ['business_type', 'business_category', 'business_tags', 'registration_type']) await expect(cu.select(id), id).toBeVisible();
@@ -3811,7 +3811,7 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  test('TC-S1-04 / 14 / 30 / TC-S3-04 - Saving an empty form: Name, Business Type and GST Status are required', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC341 - Saving an empty customer form requires Name, Business Type and GST Status', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-04, TC-S1-14, TC-S1-30, TC-S3-04' } }, async () => {
     await cu.openNewCustomer();
     const r = await cu.trySaveCustomer();
     expect(r.saved).toBe(false);
@@ -3819,7 +3819,7 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  test('TC-S1-05 - A name of spaces only is refused ("Name is Required")', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC342 - A customer name of spaces only is refused with "Name is Required"', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-05' } }, async () => {
     await fillNew({ name: '    ' });
     const r = await cu.trySaveCustomer();
     expect(r.saved, 'spaces-only name must be refused').toBe(false);
@@ -3827,14 +3827,14 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  for (const [id, base] of [['TC-S1-03', 'Krishna Sweets'], ['TC-S1-06', 'Krishna & Sons Pvt. Ltd.'], ['TC-S1-07', 'Store 99 Distributors']]) {
-    test(`${id} - Customer named "${base} …" is created and listed`, { tag: ['@sales', '@customer'] }, async () => {
+  for (const [tc, id, base] of [['TC343', 'TC-S1-03', 'Krishna Sweets'], ['TC344', 'TC-S1-06', 'Krishna & Sons Pvt. Ltd.'], ['TC345', 'TC-S1-07', 'Store 99 Distributors']]) {
+    test(`${tc} - Customer named "${base} …" is created and listed`, { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: id } }, async () => {
       const name = await create({ name: `${base} ${uniq()}` });
       expect(await cu.searchCustomers(name)).toContain(name);
     });
   }
 
-  test('TC-S1-08 - A 300-character name is truncated or refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC346 - A 300-character customer name is either truncated or refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-08' } }, async () => {
     const long = `ZZ ${'L'.repeat(297)}`;
     await fillNew({ name: long });
     const shown = await cu.nameInput.inputValue();
@@ -3845,7 +3845,7 @@ test.describe('Customer Create / Edit', () => {
   });
 
   // QA (BUG-CU-01): there is no duplicate-name check, customers with the same name can be created.
-  test('TC-S1-09 / TC-S3-13 - A duplicate customer name is accepted', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC347 - A duplicate customer name is accepted', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-09, TC-S3-13' } }, async () => {
     const name = await create();
     await fillNew({ name });
     const r = await cu.trySaveCustomer();
@@ -3854,7 +3854,7 @@ test.describe('Customer Create / Edit', () => {
 
   // ── Business type / category / tag ───────────────────────────────────────
 
-  test('TC-S1-10 / 11 / 12 / 13 - Retailer, Wholesaler, Manufacturer, Distributor (Distributor/Agency) can be picked and each loads its categories', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC348 - Customer Business Types Retailer, Wholesaler, Manufacturer and Distributor (Distributor/Agency) can be picked, and each loads its categories', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-10, TC-S1-11, TC-S1-12, TC-S1-13' } }, async () => {
     await cu.openNewCustomer();
     const missing = [];
     for (const type of ['Retailer', 'Wholesaler', 'Manufacturer', 'Distributor/Agency']) {
@@ -3868,7 +3868,7 @@ test.describe('Customer Create / Edit', () => {
     expect(missing, 'types without any business category (category is mandatory)').toEqual([]);
   });
 
-  test('TC-S1-15 / 18 - Changing the Business Type resets the category and offers that type\'s categories', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC349 - Changing the customer Business Type resets the category and offers that type\'s categories', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-15, TC-S1-18' } }, async () => {
     await cu.openNewCustomer();
     await cu.pick('business_type', 'Wholesaler');
     const wholesale = await cu.selectOptions('business_category');
@@ -3880,7 +3880,7 @@ test.describe('Customer Create / Edit', () => {
   });
 
   // QA (BUG-CU-02): Business Category is mandatory by design.
-  test('TC-S1-17 - Business Category is mandatory: saving without one is refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC350 - Customer Business Category is mandatory, and saving without one is refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-17' } }, async () => {
     await fillNew({ category: undefined });
     const r = await cu.trySaveCustomer();
     expect(r.saved, 'saved without a category').toBe(false);
@@ -3888,7 +3888,7 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  test('TC-S1-16 / 19 / 21 / TC-S2-02 / 09 / 14 / 17 / 18 / 20 / 22 / TC-S3-10 / 12 - Customer with every field: all details saved (type, category, two tags, phone, sub-domain email, billing without line 2, shipping = billing)', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC351 - Customer with every field filled: all details are saved (type, category, two tags, phone, sub-domain email, billing without line 2, shipping same as billing)', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-16, TC-S1-19, TC-S1-21, TC-S2-02, TC-S2-09, TC-S2-14, TC-S2-17, TC-S2-18, TC-S2-20, TC-S2-22, TC-S3-10, TC-S3-12' } }, async () => {
     const s = spec({ tags: ['Tag XJ13OP', 'Tag RDPSKN'], phone: '9876543210', email: `user${uniq()}@mail.company.com`, address: ADDR, opening: '250' });
     await cu.createCustomer(s);
     await cu.openDetails(s.name);
@@ -3903,7 +3903,7 @@ test.describe('Customer Create / Edit', () => {
 
   // ── Opening balance ──────────────────────────────────────────────────────
 
-  test('TC-S1-22 / TC-OB-01 / 04 / CT TC-TD-02 - Debit opening balance ₹5,000: customer Due and statement show it', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC352 - Customer with a Debit opening balance of ₹5,000: the customer Due and statement show it', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-22, TC-OB-01, TC-OB-04, CT TC-TD-02' } }, async () => {
     const name = await create({ opening: '5000' });
     const h = await header(name);
     expect(h.due).toBe(5000);
@@ -3912,22 +3912,22 @@ test.describe('Customer Create / Edit', () => {
   });
 
   // QA (BUG-CU-03): Credit was removed; a customer's opening balance is Debit only.
-  test('TC-S1-23 / 28 / TC-OB-02 / 14 - Opening balance type offers Debit only', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC353 - Customer opening balance type offers Debit only', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-23, TC-S1-28, TC-OB-02, TC-OB-14' } }, async () => {
     await cu.openNewCustomer();
     const types = await cu.selectOptions('opening_balance_type');
     await cu.closeForm();
     expect(types, 'opening balance types').toEqual(['Debit']);
   });
 
-  test('TC-S1-24 / TC-OB-03 / CT TC-TD-10 - No opening balance: Due and Closing ₹0, statement empty', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC354 - Customer with no opening balance: Due and Closing are ₹0 and the statement is empty', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-24, TC-OB-03, CT TC-TD-10' } }, async () => {
     const name = await create();
     const h = await header(name);
     expect([h.due, h.advance, h.closing]).toEqual([0, 0, 0]);
     expect(await cu.readStatement()).toEqual([]);
   });
 
-  for (const [id, value] of [['TC-S1-25', '-1000'], ['TC-S1-26 / TC-OB-16', 'abc']]) {
-    test(`${id} - Opening balance "${value}" is refused`, { tag: ['@sales', '@customer'] }, async () => {
+  for (const [tc, id, value] of [['TC355', 'TC-S1-25', '-1000'], ['TC356', 'TC-S1-26 / TC-OB-16', 'abc']]) {
+    test(`${tc} - Opening balance "${value}" is refused`, { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: id } }, async () => {
       await fillNew({ opening: value });
       const shown = await cu.openingBalance.inputValue();
       if (shown !== value) { console.log(`Opening balance input refused "${value}" (shows "${shown}")`); await cu.closeForm(); return; }
@@ -3937,19 +3937,19 @@ test.describe('Customer Create / Edit', () => {
     });
   }
 
-  test('TC-S1-27 / TC-OB-17 - Decimal opening balance 500.89 is kept to 2 decimals', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC357 - A decimal customer opening balance of 500.89 is kept to 2 decimals', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S1-27, TC-OB-17' } }, async () => {
     const name = await create({ opening: '500.89' });
     expect((await header(name)).due).toBe(500.89);
   });
 
-  test('CT TC-BC-01 - Opening balance + invoice: Closing Balance = opening + invoice', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC358 - Customer opening balance plus an invoice: Closing Balance equals opening plus invoice', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'CT TC-BC-01' } }, async () => {
     const name = await create({ opening: '500', address: ADDR });
     const m = model([L(A, 2)]);
     await si.createPricedInvoice(m, { customerName: name });
     expectClose((await header(name)).closing, 500 + si.computeTotals(m).total, 0.05, 'Closing Balance');
   });
 
-  test('TC-OB-07 / 08 / 09 / 10 - Opening balance edited 5,000 → 8,000 → 4,000 → 0 (no payments): Due follows', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC359 - Customer opening balance edited from 5,000 to 8,000 to 4,000 to 0 with no payments: Due follows each change', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-OB-07, TC-OB-08, TC-OB-09, TC-OB-10' } }, async () => {
     const name = await create({ opening: '5000' });
     for (const v of [8000, 4000, 0]) {
       await cu.openDetails(name);
@@ -3958,7 +3958,7 @@ test.describe('Customer Create / Edit', () => {
     }
   });
 
-  test('TC-OB-05 / 06 / 18 / Bulk TC-UI-26 / TC-BP-16 - Opening balance row in New Receipt; paying it clears the Due', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC360 - The opening balance appears as a row in New Receipt, and paying it clears the customer Due', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-OB-05, TC-OB-06, TC-OB-18, Bulk TC-UI-26, TC-BP-16' } }, async () => {
     const name = await create({ opening: '500.89' });
     await pay.openNewReceipt(name);
     const row = await pay.receiptRow('Opening Balance');
@@ -3972,8 +3972,8 @@ test.describe('Customer Create / Edit', () => {
   });
 
   // QA (BUG-CU-04): the opening balance stays editable after a payment (current flow).
-  for (const [id, title, paid] of [['TC-OB-11', 'a partial', 4000], ['TC-OB-12', 'a full', 10000]]) {
-    test(`${id} - Opening balance can be edited after ${title} payment`, { tag: ['@sales', '@customer'] }, async () => {
+  for (const [tc, id, title, paid] of [['TC361', 'TC-OB-11', 'a partial', 4000], ['TC362', 'TC-OB-12', 'a full', 10000]]) {
+    test(`${tc} - Opening balance can be edited after ${title} payment`, { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: id } }, async () => {
       const name = await create({ opening: '10000' });
       await pay.openNewReceipt(name);
       await pay.setReceiptPaymentMode('Cash');
@@ -3986,7 +3986,7 @@ test.describe('Customer Create / Edit', () => {
     });
   }
 
-  test('TC-OB-13 - Opening balance edited to a negative value is refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC363 - Editing a customer opening balance to a negative value is refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-OB-13' } }, async () => {
     const name = await create({ opening: '3000' });
     await cu.openDetails(name);
     const r = await cu.editTextField('OPENING BALANCE', -2000);
@@ -3994,7 +3994,7 @@ test.describe('Customer Create / Edit', () => {
     else await cu.cancelFieldEdit();
   });
 
-  test('TC-OB-15 - Opening balance partly paid: Due = opening − paid in the customer header and statement', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC364 - Customer opening balance partly paid: Due equals opening minus paid in the customer header and statement', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-OB-15' } }, async () => {
     const name = await create({ opening: '500.89' });
     await pay.openNewReceipt(name);
     await pay.setReceiptPaymentMode('Cash');
@@ -4008,8 +4008,8 @@ test.describe('Customer Create / Edit', () => {
 
   // ── Phone / email ────────────────────────────────────────────────────────
 
-  for (const [id, phone] of [['TC-S2-04', 'abc1234567'], ['TC-S2-05', '98765'], ['TC-S2-06', '987654321099'], ['TC-S2-07', '+91-9876543210']]) {
-    test(`${id} - Phone "${phone}" is refused or reduced to 10 digits`, { tag: ['@sales', '@customer'] }, async () => {
+  for (const [tc, id, phone] of [['TC365', 'TC-S2-04', 'abc1234567'], ['TC366', 'TC-S2-05', '98765'], ['TC367', 'TC-S2-06', '987654321099'], ['TC368', 'TC-S2-07', '+91-9876543210']]) {
+    test(`${tc} - Phone "${phone}" is refused or reduced to 10 digits`, { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: id } }, async () => {
       if (id !== 'TC-S2-04') knownBug('BUG-CU-05', `phone "${phone}" not validated`);
       await fillNew({ phone });
       const shown = await cu.phoneInput.inputValue();
@@ -4020,14 +4020,14 @@ test.describe('Customer Create / Edit', () => {
     });
   }
 
-  test('TC-S2-08 - Phone starting with 0: either accepted or refused with a phone message', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC369 - A customer phone starting with 0 is either accepted or refused with a phone message', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S2-08' } }, async () => {
     await fillNew({ phone: '0123456789' });
     const r = await cu.trySaveCustomer();
     if (!r.saved) { expect(r.errors.join(' ')).toMatch(/phone|mobile|number/i); await cu.closeForm(); }
   });
 
-  for (const [id, email] of [['TC-S2-11', 'testexample.com'], ['TC-S2-12', 'test@'], ['TC-S2-13', 'test @example.com']]) {
-    test(`${id} - Email "${email}" is refused ("Invalid Email!")`, { tag: ['@sales', '@customer'] }, async () => {
+  for (const [tc, id, email] of [['TC370', 'TC-S2-11', 'testexample.com'], ['TC371', 'TC-S2-12', 'test@'], ['TC372', 'TC-S2-13', 'test @example.com']]) {
+    test(`${tc} - Email "${email}" is refused ("Invalid Email!")`, { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: id } }, async () => {
       await fillNew({ email });
       const r = await cu.trySaveCustomer();
       expect(r.saved).toBe(false);
@@ -4038,7 +4038,7 @@ test.describe('Customer Create / Edit', () => {
 
   // ── Address ──────────────────────────────────────────────────────────────
 
-  test('TC-S2-15 - Add Address opens the billing form with "Use Billing address as your Shipping Address" ticked', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC373 - Add Address on a customer opens the billing form with "Use Billing address as your Shipping Address" ticked', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S2-15' } }, async () => {
     await cu.openNewCustomer();
     await cu.addAddressBtn.click();
     for (const id of ['billing_address1', 'billing_address2', 'billing_city', 'billing_pincode']) await expect(cu.page.locator(`#${id}`), id).toBeVisible();
@@ -4047,8 +4047,8 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  for (const [id, pincode] of [['TC-S2-19 (letters)', 'ABCDE'], ['TC-S2-19 (5 digits)', '12345']]) {
-    test(`${id} - Pincode "${pincode}" is refused`, { tag: ['@sales', '@customer'] }, async () => {
+  for (const [tc, id, pincode] of [['TC374', 'TC-S2-19 (letters)', 'ABCDE'], ['TC375', 'TC-S2-19 (5 digits)', '12345']]) {
+    test(`${tc} - Pincode "${pincode}" is refused`, { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: id } }, async () => {
       await cu.openNewCustomer();
       await cu.fillCustomer(spec());
       await cu.fillAddress({ ...ADDR, pincode });
@@ -4059,7 +4059,7 @@ test.describe('Customer Create / Edit', () => {
     });
   }
 
-  test('TC-S2-21 - Billing address without Address Line 1 is refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC376 - A customer billing address without Address Line 1 is refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S2-21' } }, async () => {
     await cu.openNewCustomer();
     await cu.fillCustomer(spec());
     await cu.fillAddress({ ...ADDR, line1: '' });
@@ -4067,7 +4067,7 @@ test.describe('Customer Create / Edit', () => {
     await cu.closeForm();
   });
 
-  test('TC-S2-23 - A different shipping address is saved separately', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC377 - A different customer shipping address is saved separately', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S2-23' } }, async () => {
     const s = spec({ address: { ...ADDR, shipping: { line1: '7 Port Road', city: 'Kochi', state: 'Kerala', pincode: '682001' } } });
     await cu.createCustomer(s);
     await cu.openDetails(s.name);
@@ -4078,7 +4078,7 @@ test.describe('Customer Create / Edit', () => {
 
   // QA (BUG-CU-08): working as designed — with "Use Billing address as your Shipping Address" unticked,
   // the shipping fields are required; a billing-only address is saved by keeping that box ticked.
-  test('TC-S2-24 - Shipping address left blank with "Use Billing address" unticked: shipping fields are required', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC378 - Customer shipping address left blank with "Use Billing address" unticked: the shipping fields are required', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S2-24' } }, async () => {
     const s = spec({ address: { ...ADDR, sameShipping: false } });
     await cu.openNewCustomer();
     await cu.fillCustomer(s);
@@ -4089,7 +4089,7 @@ test.describe('Customer Create / Edit', () => {
 
   // ── GST ──────────────────────────────────────────────────────────────────
 
-  test('TC-S3-02 / 05 - Registered customer with a valid GSTIN is created', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC379 - A Registered customer with a valid GSTIN is created', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-S3-02, TC-S3-05' } }, async () => {
     const s = spec({ gst: 'Registered', gstin: validGstin() });
     await cu.createCustomer(s);
     await cu.openDetails(s.name);
@@ -4097,8 +4097,8 @@ test.describe('Customer Create / Edit', () => {
     expect(d.gst, 'GST STATUS shows Registered or the GSTIN').toMatch(new RegExp(`Registered|${s.gstin}`, 'i'));
   });
 
-  for (const [id, gstin, msg] of [['TC-S3-06', '33ABCDE1234', /GST/i], ['TC-S3-07', 'INVALID123', /Invalid GST/i], ['TC-S3-08', '', /Gst Num is Required/i]]) {
-    test(`${id} - Registered with GSTIN "${gstin}" is refused`, { tag: ['@sales', '@customer'] }, async () => {
+  for (const [tc, id, gstin, msg] of [['TC380', 'TC-S3-06', '33ABCDE1234', /GST/i], ['TC381', 'TC-S3-07', 'INVALID123', /Invalid GST/i], ['TC382', 'TC-S3-08', '', /Gst Num is Required/i]]) {
+    test(`${tc} - Registered with GSTIN "${gstin}" is refused`, { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: id } }, async () => {
       await fillNew({ gst: 'Registered', gstin });
       const r = await cu.trySaveCustomer();
       expect(r.saved).toBe(false);
@@ -4109,7 +4109,7 @@ test.describe('Customer Create / Edit', () => {
 
   // ── Edit (View Details) ──────────────────────────────────────────────────
 
-  test('TC-CE-01 / 28 / CT TC-VD-02 / 08 - Renaming a customer with invoices: details and existing invoices show the new name', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC383 - Renaming a customer that has invoices: the details and the existing invoices show the new name', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-01, TC-CE-28, CT TC-VD-02, CT TC-VD-08' } }, async () => {
     const name = await create({ address: ADDR });
     const { billNo } = await si.createPricedInvoice(model([L(A, 1)]), { customerName: name });
     const renamed = `${name} Renamed`;
@@ -4119,7 +4119,7 @@ test.describe('Customer Create / Edit', () => {
     expect((await si.listRow(billNo)).customer).toBe(renamed);
   });
 
-  test('TC-CE-02 / CT TC-VD-07 - Clearing the name on edit is refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC384 - Clearing the customer name on edit is refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-02, CT TC-VD-07' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     const r = await cu.editTextField('DISPLAY NAME', '');
@@ -4127,7 +4127,7 @@ test.describe('Customer Create / Edit', () => {
     await cu.cancelFieldEdit();
   });
 
-  test('TC-CE-03 / 04 / 05 - Business Type changed Wholesaler → Distributor/Agency → Manufacturer on edit', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC385 - Customer Business Type changed on edit from Wholesaler to Distributor/Agency to Manufacturer', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-03, TC-CE-04, TC-CE-05' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     for (const type of ['Distributor/Agency', 'Manufacturer']) {
@@ -4136,7 +4136,7 @@ test.describe('Customer Create / Edit', () => {
     }
   });
 
-  test('TC-CE-07 - Business Category changed on edit', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC386 - Customer Business Category changed on edit', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-07' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     const before = (await cu.readDetails()).category;
@@ -4145,14 +4145,14 @@ test.describe('Customer Create / Edit', () => {
     expect((await cu.readDetails()).category).toBe(other);
   });
 
-  test('TC-CE-08 - Business Tag added on edit', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC387 - Customer Business Tag added on edit', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-08' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     expect((await cu.addTag('Tag X2DKBE')).saved).toBe(true);
     expect((await cu.readDetails()).tags).toContain('Tag X2DKBE');
   });
 
-  test('TC-CE-10 / 11 / 13 / CT TC-VD-06 - Phone and email added, then the phone changed on edit', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC388 - Customer phone and email added, then the phone changed on edit', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-10, TC-CE-11, TC-CE-13, CT TC-VD-06' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     const email = `edit${uniq()}@example.com`;
@@ -4162,7 +4162,7 @@ test.describe('Customer Create / Edit', () => {
     expect(await cu.readDetails()).toMatchObject({ phone: '9123456780', email });
   });
 
-  test('TC-CE-12 - Phone edited to 5 digits is refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC389 - Customer phone edited to 5 digits is refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-12' } }, async () => {
     knownBug('BUG-CU-05', 'phone edited to 5 digits not validated');
     const name = await create({ phone: '9876543210' });
     await cu.openDetails(name);
@@ -4171,7 +4171,7 @@ test.describe('Customer Create / Edit', () => {
     await cu.cancelFieldEdit();
   });
 
-  test('TC-CE-14 - Email edited to "notanemail" is refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC390 - Customer email edited to "notanemail" is refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-14' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     const r = await cu.editTextField('EMAIL', 'notanemail');
@@ -4180,7 +4180,7 @@ test.describe('Customer Create / Edit', () => {
     await cu.cancelFieldEdit();
   });
 
-  test('TC-CE-15 / 16 / 18 / 19 - Address added, then billing changed and shipping set separately, then shipping synced to billing', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC391 - Customer address added, then billing changed and shipping set separately, then shipping synced to billing', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-15, TC-CE-16, TC-CE-18, TC-CE-19' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     await cu.editAddress(ADDR);
@@ -4194,7 +4194,7 @@ test.describe('Customer Create / Edit', () => {
     expect(d.shipping.replace(/\s|,/g, '')).toBe(d.billing.replace(/\s|,/g, ''));
   });
 
-  test('TC-CE-17 / CT TC-VD-04 - Billing state changed to Kerala: a new invoice uses IGST', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC392 - Customer billing state changed to Kerala: a new invoice uses IGST', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-17, CT TC-VD-04' } }, async () => {
     const name = await create({ address: ADDR });
     await cu.openDetails(name);
     await cu.editAddress({ state: 'Kerala', pincode: '682001', city: 'Kochi' });
@@ -4206,7 +4206,7 @@ test.describe('Customer Create / Edit', () => {
     await expect(si.page.locator('.ant-drawer-content').filter({ visible: true }).last()).toContainText('IGST');
   });
 
-  test('TC-CE-20 - Pincode edited to "ABCDE" is refused', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC393 - Customer pincode edited to "ABCDE" is refused', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-20' } }, async () => {
     const name = await create({ address: ADDR });
     await cu.openDetails(name);
     await cu.fillAddress({ pincode: 'ABCDE' });
@@ -4215,14 +4215,14 @@ test.describe('Customer Create / Edit', () => {
   });
 
   // QA (BUG-CU-06): GST details cannot be edited on the customer details screen.
-  test('TC-CE-21 / 22 / 23 / CT TC-VD-05 - GST status has no Edit on the customer details', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC394 - GST status has no Edit option on the customer details', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-21, TC-CE-22, TC-CE-23, CT TC-VD-05' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     await expect(cu.page.getByText('GST STATUS').first(), 'GST STATUS shown').toBeVisible({ timeout: 10_000 });
     await expect(cu.editButtonOf('GST STATUS'), 'no Edit button for GST STATUS').toHaveCount(0);
   });
 
-  test('TC-CE-25 - Cancelling a field edit keeps the original value', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC395 - Cancelling a customer field edit keeps the original value', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-25' } }, async () => {
     const name = await create({ phone: '9876543210' });
     await cu.openDetails(name);
     const m = await cu.openFieldEdit('PHONE NUMBER');
@@ -4232,14 +4232,14 @@ test.describe('Customer Create / Edit', () => {
   });
 
   // QA (BUG-CU-07): customers cannot be deleted, only marked Inactive.
-  test('TC-CE-26 / 27 - A customer has no Delete, only Inactive', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC396 - A customer has no Delete option, only Inactive', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-26, TC-CE-27' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     await expect(cu.page.getByText(/Inactive/i).first(), 'Inactive on the customer details').toBeVisible({ timeout: 10_000 });
     await expect(cu.page.getByRole('button', { name: /^Delete$/ }), 'no Delete on the customer details').toHaveCount(0);
   });
 
-  test('TC-CE-26 (adapted) - "Inactive" removes the customer from the customer list', { tag: ['@sales', '@customer'] }, async () => {
+  test('TC397 - Marking a customer "Inactive" removes it from the customer list', { tag: ['@sales', '@customer'], annotation: { type: 'cases', description: 'TC-CE-26 (adapted)' } }, async () => {
     const name = await create();
     await cu.openDetails(name);
     await cu.inactiveBtn.click();
@@ -4250,12 +4250,12 @@ test.describe('Customer Create / Edit', () => {
 
   // ── Not automatable / not in this app ────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['TC-S2-25', 'Back from Step 2 keeps Step 1 data', 'The customer form is a single page — no steps / Back.'],
-    ['TC-S3-09', 'Back from Step 3 keeps Step 2 data', 'The customer form is a single page — no steps / Back.'],
-    ['TC-CE-09 / CT TC-VD-03', 'Business type change switches the invoice price list', 'No customer-specific price lists — PriceList sheet.'],
-    ['TC-CE-24', 'GST status change: existing invoices unaffected', 'GST status cannot be edited (TC-CE-21).'],
+  for (const [tc, id, title, why] of [
+    ['TC398', 'TC-S2-25', 'Back from Step 2 keeps Step 1 data', 'The customer form is a single page — no steps / Back.'],
+    ['TC399', 'TC-S3-09', 'Back from Step 3 keeps Step 2 data', 'The customer form is a single page — no steps / Back.'],
+    ['TC400', 'TC-CE-09 / CT TC-VD-03', 'Business type change switches the invoice price list', 'No customer-specific price lists — PriceList sheet.'],
+    ['TC401', 'TC-CE-24', 'GST status change: existing invoices unaffected', 'GST status cannot be edited (TC-CE-21).'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

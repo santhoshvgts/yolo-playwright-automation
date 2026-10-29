@@ -47,7 +47,7 @@ test.describe('Offers', () => {
 
   // ── List / form ──────────────────────────────────────────────────────────
 
-  test('OFR_FUNC_001 / OFR_UI_001 / 002 / 003 / OFR_ACC_005 - List: Scheme Name, Scheme Type, Scheme Application, Status (text), No Of Schemes; Offers button; Total Count', { tag: T }, async ({ page }) => {
+  test('TC01 - Offers list shows Scheme Name, Scheme Type, Scheme Application, Status (text) and No Of Schemes columns, the Offers button and Total Count', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_001, OFR_UI_001, OFR_UI_002, OFR_UI_003, OFR_ACC_005' } }, async ({ page }) => {
     await of.openPricingList();
     await expect(page.locator('table thead th').filter({ visible: true })).toHaveText(['Scheme Name', 'Scheme Type', 'Scheme Application', 'Status', 'No Of Schemes']);
     await expect(of.newPricingBtn).toBeVisible();
@@ -55,7 +55,7 @@ test.describe('Offers', () => {
     for (const r of await of.plRows.evaluateAll((trs) => trs.map((tr) => [...tr.cells].map((c) => c.innerText.trim())))) expect(r[3]).toMatch(/Active/);
   });
 
-  test('OFR_FUNC_002 / 003 / 004 / 005 / 006 / 007 / 008 / 009 / 010 / 011 / 012 / OFR_UI_004 / 005 / 007 - Form: name, description, types, Bill To Bill, IF item / condition (between: 2 qty, minimum / each: 1) / unit, THEN item / qty / unit, scheme / Rule buttons', { tag: T }, async ({ page }) => {
+  test('TC02 - Offer form has name, description, types, Bill To Bill, IF item with condition (between: 2 qty, minimum or each: 1) and unit, THEN item with qty and unit, and scheme and Rule buttons', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_002, OFR_FUNC_003, OFR_FUNC_004, OFR_FUNC_005, OFR_FUNC_006, OFR_FUNC_007, OFR_FUNC_008, OFR_FUNC_009, OFR_FUNC_010, OFR_FUNC_011, OFR_FUNC_012, OFR_UI_004, OFR_UI_005, OFR_UI_007' } }, async ({ page }) => {
     await of.openNewList();
     expect(await of.optionsOf('scheme_type')).toEqual(expect.arrayContaining(['General', 'Profile wise', 'Category wise']));
     await expect(page.locator('.ant-select:has(#scheme_application)')).toContainText(/Bill To Bill/i);
@@ -78,7 +78,7 @@ test.describe('Offers', () => {
     await of.discardList();
   });
 
-  test('OFR_FUNC_013 / 014 / 015 / OFR_UI_006 - Rule adds an And / Or row; scheme adds Scheme 2; Delete removes it', { tag: T }, async ({ page }) => {
+  test('TC03 - On the offer form, Rule adds an And or Or row, scheme adds Scheme 2, and Delete removes it', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_013, OFR_FUNC_014, OFR_FUNC_015, OFR_UI_006' } }, async ({ page }) => {
     await of.openNewList();
     await of.addRuleBtn(0).click();
     await expect(page.locator('#items_0_applied_item_1_combine_with')).toBeAttached();
@@ -92,7 +92,7 @@ test.describe('Offers', () => {
     await of.discardList();
   });
 
-  test('OFR_NEG_001 / 002 / 003 - Empty save: name, buy item, qty, unit and free item required', { tag: T }, async () => {
+  test('TC04 - Saving an empty offer requires name, buy item, qty, unit and free item', { tag: T, annotation: { type: 'cases', description: 'OFR_NEG_001, OFR_NEG_002, OFR_NEG_003' } }, async () => {
     await of.openNewList();
     const r = await of.trySaveList();
     expect(r.saved).toBe(false);
@@ -104,7 +104,7 @@ test.describe('Offers', () => {
     await of.discardList();
   });
 
-  test('OFR_NEG_004 / 005 - Is between with min > max, and min = max, are refused', { tag: T }, async () => {
+  test('TC05 - Is between with min greater than max, and with min equal to max, are refused', { tag: T, annotation: { type: 'cases', description: 'OFR_NEG_004, OFR_NEG_005' } }, async () => {
     for (const [from, to] of [[20, 10], [10, 10]]) {
       const name = nm();
       created.push(name);
@@ -116,7 +116,7 @@ test.describe('Offers', () => {
     }
   });
 
-  test('OFR_NEG_006 / 007 / 009 / OFR_VAL_008 - Qty 0 refused ("Value cannot be 0"); "-" and decimals in qty not accepted', { tag: T }, async ({ page }) => {
+  test('TC06 - Offer qty 0 is refused ("Value cannot be 0"), and "-" and decimals are not accepted in qty', { tag: T, annotation: { type: 'cases', description: 'OFR_NEG_006, OFR_NEG_007, OFR_NEG_009, OFR_VAL_008' } }, async ({ page }) => {
     await of.openNewList();
     await of.fillOffer({ name: nm(), schemes: [{ buy: A.itemName, via: 'Is minimum', from: 0, free: [{ item: B.itemName, qty: 0 }] }] });
     const r = await of.trySaveList();
@@ -129,7 +129,7 @@ test.describe('Offers', () => {
   });
 
   // QA (BUG-PLO-01): there is no duplicate-name check for schemes (current flow).
-  test('OFR_NEG_015 / OFR_SEC_004 / OFR_NEG_008 - Script text in the name is not run; a duplicate name is accepted', { tag: T }, async ({ page }) => {
+  test('TC07 - Script text in the offer name is not run, and a duplicate name is accepted', { tag: T, annotation: { type: 'cases', description: 'OFR_NEG_015, OFR_SEC_004, OFR_NEG_008' } }, async ({ page }) => {
     const dialogs = [];
     page.on('dialog', (d) => { dialogs.push(d.message()); d.dismiss().catch(() => {}); });
     const name = await make({ name: `ZZ OF <img src=x onerror=window.__xss=1> ${uniq()}`, schemes: [minScheme(50)] });
@@ -145,7 +145,7 @@ test.describe('Offers', () => {
 
   // ── Save / view / edit / status ──────────────────────────────────────────
 
-  test('OFR_FUNC_016 / 017 / 018 / 026 / OFR_POS_001 / OFR_UI_008 - General Is minimum: listed Active, General, Bill to Bill, 1 scheme; view: Close / Active / Edit, ITEMS # / Buy Items / Free Items', { tag: T }, async () => {
+  test('TC08 - General Is minimum offer is listed as Active, General, Bill to Bill with 1 scheme, and its view shows Close, Active, Edit, ITEMS #, Buy Items and Free Items', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_016, OFR_FUNC_017, OFR_FUNC_018, OFR_FUNC_026, OFR_POS_001, OFR_UI_008' } }, async () => {
     const name = await make({ desc: 'promo', schemes: [minScheme(5, 1)] });
     const row = await of.listRowOf(name);
     expect(row).toEqual({ name, type: 'General', pricing: 'Bill to Bill', status: 'Active', items: '1' });
@@ -154,7 +154,7 @@ test.describe('Offers', () => {
     await expect(of.plSwitch()).toHaveAttribute('aria-checked', 'true');
   });
 
-  test('OFR_POS_002 / 003 / 006 / 007 / 008 - Is between 10–20, Is Each 20 (And + Or free items) and two scheme blocks save; No Of Schemes = 2', { tag: T }, async () => {
+  test('TC09 - Offers with Is between 10–20, Is Each 20 (And and Or free items) and two scheme blocks save, and No Of Schemes is 2', { tag: T, annotation: { type: 'cases', description: 'OFR_POS_002, OFR_POS_003, OFR_POS_006, OFR_POS_007, OFR_POS_008' } }, async () => {
     const between = await make({ schemes: [{ buy: A.itemName, from: 10, to: 20, free: [{ item: B.itemName, qty: 1 }] }] });
     expect(await of.openList(between)).toMatch(/between|10.*20/i);
     const each = await make({ schemes: [{ buy: A.itemName, via: 'Is Each', from: 20, free: [{ item: B.itemName, qty: 1 }, { combine: 'And', item: C.itemName, qty: 1 }] }] });
@@ -164,7 +164,7 @@ test.describe('Offers', () => {
     expect(await of.openList(two)).toMatch(/\(Or\)/);
   });
 
-  test('OFR_FUNC_019 / 020 / 021 / OFR_POS_009 / 010 - Edit: prefilled; Cancel keeps the old data; new name + description saved', { tag: T }, async ({ page }) => {
+  test('TC10 - Edit an offer: it is pre-filled, Cancel keeps the old data, and a new name and description are saved', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_019, OFR_FUNC_020, OFR_FUNC_021, OFR_POS_009, OFR_POS_010' } }, async ({ page }) => {
     const name = await make({ schemes: [minScheme(40)] });
     await of.editList(name);
     await expect(of.nameInput).toHaveValue(name);
@@ -183,7 +183,7 @@ test.describe('Offers', () => {
     expect(await of.openList(renamed)).toContain('edited description');
   });
 
-  test('OFR_FUNC_023 / 024 / OFR_UI_003 - Active switch: Not Active in the list; on again: Active', { tag: T }, async () => {
+  test('TC11 - Offer Active switch: turning it off shows Not Active in the list, and turning it on again shows Active', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_023, OFR_FUNC_024, OFR_UI_003' } }, async () => {
     const name = await make({ schemes: [minScheme(45)] });
     await of.setActive(name, false);
     expect((await of.listRowOf(name)).status).toMatch(/Not Active|Inactive/);
@@ -191,7 +191,7 @@ test.describe('Offers', () => {
     expect((await of.listRowOf(name)).status).toBe('Active');
   });
 
-  test('OFR_FUNC_022 / OFR_UI_009 / OFR_NEG_012 / OFR_E2E_009 - Delete from the ⋮ menu (with confirmation) removes the scheme', { tag: T }, async ({ page }) => {
+  test('TC12 - Delete an offer from the ⋮ menu (with confirmation) removes the scheme', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_022, OFR_UI_009, OFR_NEG_012, OFR_E2E_009' } }, async ({ page }) => {
     const name = await make({ schemes: [minScheme(55)] });
     await of.openPricingList();
     const before = await of.totalCount();
@@ -208,7 +208,7 @@ test.describe('Offers', () => {
     expect(await of.totalCount()).toBe(before - 1);
   });
 
-  test('OFR_FUNC_025 - "+ Assign" in the view opens the distributor picker', { tag: T }, async () => {
+  test('TC13 - "+ Assign" in the offer view opens the distributor picker', { tag: T, annotation: { type: 'cases', description: 'OFR_FUNC_025' } }, async () => {
     const name = await make({ schemes: [minScheme(65)] });
     await of.openList(name);
     // QA (BUG-PLO-02): the assign control is there — with no distributors it reads "No distributors assigned".
@@ -217,7 +217,7 @@ test.describe('Offers', () => {
 
   // ── On the sales invoice ─────────────────────────────────────────────────
 
-  test('OFR_POS_001 / OFR_BND_005 / 006 / OFR_NEG_014 / OFR_E2E_001 / OFR_BL_001 - Is minimum 5: 5 A on an invoice adds a free B; 4 A does not; inactive: nothing', { tag: T }, async () => {
+  test('TC14 - Offer Is minimum 5: 5 of item A on an invoice adds a free item B, 4 of A does not, and with the offer inactive nothing is added', { tag: T, annotation: { type: 'cases', description: 'OFR_POS_001, OFR_BND_005, OFR_BND_006, OFR_NEG_014, OFR_E2E_001, OFR_BL_001' } }, async () => {
     const name = await make({ schemes: [minScheme(5, 1)] });
     expect(freeOf(await of.invoiceWith(A, 5), B), 'free B at the threshold').toBeGreaterThan(0);
     expect(freeOf(await of.invoiceWith(A, 4), B), 'no free B below it').toBe(0);
@@ -225,21 +225,21 @@ test.describe('Offers', () => {
     expect(freeOf(await of.invoiceWith(A, 5), B), 'inactive scheme gives nothing').toBe(0);
   });
 
-  test('OFR_BND_007 / 008 / OFR_BL_006 / OFR_E2E_002 - Is Each 20: 40 A → 2 free, 35 A → 1 free', { tag: T }, async () => {
+  test('TC15 - Offer Is Each 20: 40 of item A gives 2 free and 35 of A gives 1 free', { tag: T, annotation: { type: 'cases', description: 'OFR_BND_007, OFR_BND_008, OFR_BL_006, OFR_E2E_002' } }, async () => {
     await make({ schemes: [{ buy: A.itemName, via: 'Is Each', from: 20, free: [{ item: B.itemName, qty: 1 }] }] });
     const freeQty = (inv) => inv.qtyOf(B) || Number((inv.offer.match(/Qty:\s*(\d+)/) || [0, 0])[1]);
     expect(freeQty(await of.invoiceWith(A, 40))).toBe(2);
     expect(freeQty(await of.invoiceWith(A, 35))).toBe(1);
   });
 
-  test('OFR_BND_001 / 002 / 003 / 004 / OFR_E2E_003 - Is between 10–20: 10 and 20 trigger; 9 and 21 do not', { tag: T }, async () => {
+  test('TC16 - Offer Is between 10–20: quantities 10 and 20 trigger the offer, and 9 and 21 do not', { tag: T, annotation: { type: 'cases', description: 'OFR_BND_001, OFR_BND_002, OFR_BND_003, OFR_BND_004, OFR_E2E_003' } }, async () => {
     await make({ schemes: [{ buy: A.itemName, from: 10, to: 20, free: [{ item: B.itemName, qty: 1 }] }] });
     for (const [q, hit] of [[10, true], [20, true], [9, false], [21, false]]) {
       expect(freeOf(await of.invoiceWith(A, q), B) > 0, `${q} A`).toBe(hit);
     }
   });
 
-  test('OFR_POS_006 / OFR_BL_004 / OFR_E2E_005 - And rule: both free items on the invoice', { tag: T }, async () => {
+  test('TC17 - Offer with an And rule adds both free items on the invoice', { tag: T, annotation: { type: 'cases', description: 'OFR_POS_006, OFR_BL_004, OFR_E2E_005' } }, async () => {
     await make({ schemes: [{ buy: A.itemName, via: 'Is minimum', from: 6, free: [{ item: B.itemName, qty: 1 }, { combine: 'And', item: C.itemName, qty: 1 }] }] });
     const inv = await of.invoiceWith(A, 6);
     expect(freeOf(inv, B)).toBeGreaterThan(0);
@@ -248,7 +248,7 @@ test.describe('Offers', () => {
 
   // ── Search ───────────────────────────────────────────────────────────────
 
-  test('OFR_SF_001 / 002 / 003 / 004 / 005 - Search: exact, case, partial, no match; clearing restores', { tag: T }, async () => {
+  test('TC18 - Offer search works for exact, case variations, partial and no match, and clearing restores the list', { tag: T, annotation: { type: 'cases', description: 'OFR_SF_001, OFR_SF_002, OFR_SF_003, OFR_SF_004, OFR_SF_005' } }, async () => {
     const name = await make({ schemes: [minScheme(70)] });
     const total = (await of.searchLists(''), await of.totalCount());
     expect((await of.searchLists(name)).map((r) => r[0])).toContain(name);
@@ -259,7 +259,7 @@ test.describe('Offers', () => {
     expect(await of.totalCount()).toBe(total);
   });
 
-  test('OFR_SEC_001 - Without a session the offers page redirects to login', { tag: T }, async ({ browser, page }) => {
+  test('TC19 - Without a session the offers page redirects to the login page', { tag: T, annotation: { type: 'cases', description: 'OFR_SEC_001' } }, async ({ browser, page }) => {
     await of.openPricingList();
     const ctx = await browser.newContext();
     const anon = await ctx.newPage();
@@ -271,20 +271,20 @@ test.describe('Offers', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['OFR_POS_004 / 005 / OFR_BL_002 / 003 / OFR_E2E_004', 'Profile / category-wise schemes on invoices', 'Needs customers with controlled profiles / business categories; price-list scoping is covered in the PriceList sheet.'],
-    ['OFR_POS_007 / OFR_BL_005 / OFR_E2E_006', 'Or rule: customer chooses the free item on the invoice', 'The invoice-side choice prompt is not identified yet; the Or rule is saved and shown (OFR_POS_008).'],
-    ['OFR_NEG_010', 'Deleting the only scheme block', 'Covered by the empty save (no buy item → refused).'],
-    ['OFR_NEG_013 / OFR_BL_007 / OFR_VAL_005', 'UOM mismatch / UOM list per item', 'Needs an item with alternate UOMs in a scheme.'],
-    ['OFR_BL_008 / 009 / 010 / 011 / 012 / OFR_E2E_008 / 010', 'Several active schemes / blocks / edits across invoices', 'Combinations of the invoice cases above — 11+ other schemes are active in this org.'],
-    ['OFR_VAL_001 / 007 / OFR_BND_009 / 010 / 011 / 012', 'Name / description length, 99999 qty, block limit', 'Field-length checks — same inputs as the price list form.'],
-    ['OFR_SF_006', 'Search by scheme type', 'Search is by name only.'],
-    ['OFR_PAG_001…005', 'Pagination with 20 / 21+ schemes', 'The org has ~11 schemes.'],
-    ['OFR_UI_010', 'Responsive layout 1366×768', 'Visual design check.'],
-    ['OFR_SEC_002 / 005 / 006 / 007 / 008 / 009', 'Roles / CSRF / cross-org / session', 'No such users or second org; API-level checks.'],
-    ['OFR_PERF_001…005', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
-    ['OFR_ACC_001…004 / 006 / 007', 'Labels, keyboard, screen reader, contrast', 'Needs an accessibility audit tool (axe) / screen reader.'],
+  for (const [tc, id, title, why] of [
+    ['TC20', 'OFR_POS_004 / 005 / OFR_BL_002 / 003 / OFR_E2E_004', 'Profile / category-wise schemes on invoices', 'Needs customers with controlled profiles / business categories; price-list scoping is covered in the PriceList sheet.'],
+    ['TC21', 'OFR_POS_007 / OFR_BL_005 / OFR_E2E_006', 'Or rule: customer chooses the free item on the invoice', 'The invoice-side choice prompt is not identified yet; the Or rule is saved and shown (OFR_POS_008).'],
+    ['TC22', 'OFR_NEG_010', 'Deleting the only scheme block', 'Covered by the empty save (no buy item → refused).'],
+    ['TC23', 'OFR_NEG_013 / OFR_BL_007 / OFR_VAL_005', 'UOM mismatch / UOM list per item', 'Needs an item with alternate UOMs in a scheme.'],
+    ['TC24', 'OFR_BL_008 / 009 / 010 / 011 / 012 / OFR_E2E_008 / 010', 'Several active schemes / blocks / edits across invoices', 'Combinations of the invoice cases above — 11+ other schemes are active in this org.'],
+    ['TC25', 'OFR_VAL_001 / 007 / OFR_BND_009 / 010 / 011 / 012', 'Name / description length, 99999 qty, block limit', 'Field-length checks — same inputs as the price list form.'],
+    ['TC26', 'OFR_SF_006', 'Search by scheme type', 'Search is by name only.'],
+    ['TC27', 'OFR_PAG_001…005', 'Pagination with 20 / 21+ schemes', 'The org has ~11 schemes.'],
+    ['TC28', 'OFR_UI_010', 'Responsive layout 1366×768', 'Visual design check.'],
+    ['TC29', 'OFR_SEC_002 / 005 / 006 / 007 / 008 / 009', 'Roles / CSRF / cross-org / session', 'No such users or second org; API-level checks.'],
+    ['TC30', 'OFR_PERF_001…005', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
+    ['TC31', 'OFR_ACC_001…004 / 006 / 007', 'Labels, keyboard, screen reader, contrast', 'Needs an accessibility audit tool (axe) / screen reader.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

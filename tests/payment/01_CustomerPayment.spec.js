@@ -24,12 +24,12 @@ test.describe.serial('Customer Payment Flow', () => {
     await context.close();
   });
 
-  test('TC01 - Creating a bulk payment against a customers due invoices and ', { tag: ['@smoke', '@payment'] }, runSafely(async () => {
+  test('TC01 - Create a bulk payment against a customer\'s due invoices', { tag: ['@smoke', '@payment'], annotation: { type: 'cases', description: 'TC01' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new CustomerPaymentPage(page).createEditDeleteBulkPaymentAndVerifyBalances(paymentData);
   }));
 
-  test('TC02 - Creating payment against sales invoice via receive payment', { tag: ['@payment'] }, runSafely(async () => {
+  test('TC02 - Create a payment against a sales invoice using receive payment', { tag: ['@payment'], annotation: { type: 'cases', description: 'TC02' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new CustomerPaymentPage(page).receivePaymentAgainstSalesInvoiceAndVerify(paymentData);
   }));

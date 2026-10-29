@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "amissio",
-    "productDescription": "Contego decerno appello suffoco cado argumentum complectus aqua dedico.",
-    "salePricePerPcs": "763",
-    "updatedAt": "2026-10-29T13:32:06.397Z",
-    "productName2": "temeritas",
-    "productDescription2": "Nulla impedit coniecto.",
-    "salePricePerUnit": "129",
-    "quantity": "9"
+    "productName": "commemoro",
+    "productDescription": "Voluptatum cernuus ipsum adiuvo cubicularis congregatio.",
+    "salePricePerPcs": "294",
+    "updatedAt": "2026-10-29T13:55:43.123Z",
+    "productName2": "vinitor",
+    "productDescription2": "Sustineo triumphus aestas acervus expedita accendo soluta acsi officia animus.",
+    "salePricePerUnit": "005",
+    "quantity": "8"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {

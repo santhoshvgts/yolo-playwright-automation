@@ -36,7 +36,7 @@ test.describe.serial('Sales Module Flow', () => {
   });
 
   // ── Item creation ──
-  test('TC01 - Creating an Item with Open Stock in Invoice Module', { tag: ['@smoke', '@sales'] }, runSafely(async () => {
+  test('TC01 - Create an item with Open Stock in the Invoice module', { tag: ['@smoke', '@sales'], annotation: { type: 'cases', description: 'TC01' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new ItemPage(page).createItemWithOpeningStock(itemData);
     // New item has no stock — the app blocks a Sales Invoice that exceeds it, so stock up first
@@ -46,91 +46,91 @@ test.describe.serial('Sales Module Flow', () => {
   }));
 
   // ── Sales Invoice create ──
-  test('TC02 - Check the opening stock/current inventory of the created item, then create a sales invoice for it, and verify the updated stock in the Inventory section of the Invoice module', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC02 - Check the opening stock and current inventory of the created item, create a sales invoice for it, and verify the updated stock in the Inventory section of the Invoice module', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC02' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesInvoicePage(page).createSalesInvoiceAndVerifyStock(salesInvoiceData);
   }));
 
-  test('TC03 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC03 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC03' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'newtotalqty' });
   }));
 
-  test('TC04 - Verify that the updated stock displayed in the Sales Invoice quantity alert of the Invoice module matches the Inventory stock', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC04 - Verify that the updated stock displayed in the sales invoice quantity alert of the Invoice module matches the Inventory stock', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC04' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'newtotalqty' });
   }));
 
-  test('TC05 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs in the Inventory module matches the Item Inventory stock', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC05 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs in the Inventory module matches the item Inventory stock', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC05' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'newtotalqty' });
   }));
 
   // ── Sales Invoice edit ──
-  test('TC06 - Edit the created Sales Invoice for the selected item, and verify that the updated stock is accurately reflected in the Inventory section of the Invoice module', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC06 - Edit the created sales invoice for the selected item and verify that the updated stock is accurately reflected in the Inventory section of the Invoice module', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC06' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesInvoicePage(page).editSalesInvoiceAndVerifyStock(salesInvoiceData);
   }));
 
-  test('TC07 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock after editing the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC07 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock after editing the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC07' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'updatedTotalqty' });
   }));
 
-  test('TC08 - Verify that the updated stock shown in the Sales Invoice quantity alert of the Invoice module matches the Inventory stock after editing the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC08 - Verify that the updated stock shown in the sales invoice quantity alert of the Invoice module matches the Inventory stock after editing the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC08' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'updatedTotalqty' });
   }));
 
-  test('TC09 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs of the Inventory module matches the Item Inventory stock after editing the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC09 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs of the Inventory module matches the item Inventory stock after editing the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC09' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'updatedTotalqty' });
   }));
 
   // ── Sales Invoice cancel ──
-  test('TC10 - Cancel the created Sales Invoice for the selected item, and verify that the updated stock is accurately reflected in the Inventory section of the Invoice module', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC10 - Cancel the created sales invoice for the selected item and verify that the updated stock is accurately reflected in the Inventory section of the Invoice module', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC10' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesInvoicePage(page).cancelSalesInvoiceAndVerifyStock(salesInvoiceData);
   }));
 
-  test('TC11 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock after deleting the Purchase Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC11 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock after deleting the Purchase Invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC11' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'finalTotalqty', allowZero: true });
   }));
 
-  test('TC12 - Verify that the updated stock shown in the Sales Invoice quantity alert of the Invoice module matches the Inventory stock after cancelling the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC12 - Verify that the updated stock shown in the sales invoice quantity alert of the Invoice module matches the Inventory stock after cancelling the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC12' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'finalTotalqty' });
   }));
 
-  test('TC13 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs of the Inventory module matches the Item Inventory stock after cancelling the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC13 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs of the Inventory module matches the item Inventory stock after cancelling the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC13' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'finalTotalqty' });
   }));
 
   // ── Sales Invoice delete ──
-  test('TC14 - Delete the created Sales Invoice for the selected item, and verify that the updated stock is accurately reflected in the Inventory section of the Invoice module', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC14 - Delete the created sales invoice for the selected item and verify that the updated stock is accurately reflected in the Inventory section of the Invoice module', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC14' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesInvoicePage(page).deleteSalesInvoiceAndVerifyStock(salesInvoiceData);
   }));
 
-  test('TC15 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock after deleting the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC15 - Verify that the updated stock in the Stock Statement of the Fieldforce module matches the Inventory stock after deleting the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC15' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'endTotalqty', allowZero: true });
   }));
 
-  test('TC16 - Verify that the updated stock shown in the Sales Invoice quantity alert of the Invoice module matches the Inventory stock after deleting the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC16 - Verify that the updated stock shown in the sales invoice quantity alert of the Invoice module matches the Inventory stock after deleting the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC16' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'endTotalqty' });
   }));
 
-  test('TC17 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs of the Inventory module matches the Item Inventory stock after deleting the Sales Invoice', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC17 - Verify that the updated stock in the Stock Adjustment quantities against the respective UOMs of the Inventory module matches the item Inventory stock after deleting the sales invoice', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC17' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'endTotalqty' });
   }));
 
   // ── Sales Invoice amount flow ──
-  test('TC18 - Create, edit, and delete the Sales Invoice for the same item, and verify that the invoice amount is accurately reflected in the Customer Due, Closing Balance, and Transaction Statement', { tag: ['@sales'] }, runSafely(async () => {
+  test('TC18 - Create, edit and delete the sales invoice for the same item, and verify that the invoice amount is accurately reflected in the Customer Due, Closing Balance and Transaction Statement', { tag: ['@sales'], annotation: { type: 'cases', description: 'TC18' } }, runSafely(async () => {
     test.setTimeout(600000);
     await new SalesInvoicePage(page).createEditCancelDeleteAndVerifyCustomerBalances(salesInvoiceData);
   }));

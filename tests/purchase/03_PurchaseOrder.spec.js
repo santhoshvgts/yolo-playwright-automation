@@ -59,7 +59,7 @@ test.describe('Purchase Order', () => {
   // ── List / form ──────────────────────────────────────────────────────────
 
   // QA (BUG-PO-01): there is no separate "Store Status" column (current flow).
-  test('PO_FUNC_001 / PO_UI_001 / 002 / 004 / 005 - List: Order Date, Order No, Vendor Name, Status, Bill Amount (no Store Status); primary New button; search placeholder', { tag: T }, async ({ page }) => {
+  test('TC01 - Purchase order list shows Order Date, Order No, Vendor Name, Status and Bill Amount (no Store Status), a primary New button and the search placeholder', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_001, PO_UI_001, PO_UI_002, PO_UI_004, PO_UI_005' } }, async ({ page }) => {
     await po._searchList('');
     const th = (await page.locator('table thead th').filter({ visible: true }).allInnerTexts()).map((t) => t.trim()).filter(Boolean);
     expect(th).toEqual(expect.arrayContaining(['Order Date', 'Order No', 'Vendor Name', 'Status', 'Bill Amount']));
@@ -68,7 +68,7 @@ test.describe('Purchase Order', () => {
     expect(th, 'no separate "Store Status" column').not.toContain('Store Status');
   });
 
-  test('PO_FUNC_002 / PO_NEG_001 / PO_VAL_001 - Vendor step; Next without a vendor does not open the form', { tag: T }, async () => {
+  test('TC02 - New purchase order vendor step is shown, and Next without a vendor does not open the form', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_002, PO_NEG_001, PO_VAL_001' } }, async () => {
     await po.purchaseTab.click();
     await po.purchaseOrderTab.click();
     await po.newOrderBtn.click();
@@ -82,7 +82,7 @@ test.describe('Purchase Order', () => {
     await expect(po.billNoInput).toHaveCount(0);
   });
 
-  test('PO_FUNC_003 / PO_POS_002 / 003 / PO_UI_006 / 007 / 008 / 012 / PO_VAL_015(no) - Form: auto PO-AUTO/NNNN (+1 each), transports Road / Rail / Air / Ship, PO Date + Delivery Date (no Due Date), only Cancel + Save and Send', { tag: T }, async ({ page }) => {
+  test('TC03 - Purchase order form has an auto PO-AUTO/NNNN number (+1 each time), transports Road, Rail, Air and Ship, PO Date and Delivery Date (no Due Date), and only Cancel and Save and Send', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_003, PO_POS_002, PO_POS_003, PO_UI_006, PO_UI_007, PO_UI_008, PO_UI_012, PO_VAL_015(no)' } }, async ({ page }) => {
     const first = await order([L(A, 1)]);
     const no = await po.startInvoice({ vendorName: VENDOR });
     expect(no).toMatch(/^PO-AUTO\/\d{4}$/);
@@ -100,7 +100,7 @@ test.describe('Purchase Order', () => {
     await po.discardForm();
   });
 
-  test('PO_UI_009 / 010 / 011 / PO_POS_017 - Item columns, tax-mode toggle, pricing summary and the unpaid-bills warning', { tag: T }, async ({ page }) => {
+  test('TC04 - Purchase order form shows item columns, tax-mode toggle, pricing summary and the unpaid-bills warning', { tag: T, annotation: { type: 'cases', description: 'PO_UI_009, PO_UI_010, PO_UI_011, PO_POS_017' } }, async ({ page }) => {
     await po.startInvoice({ vendorName: VENDOR });
     const th = (await page.locator('table thead th').filter({ visible: true }).allInnerTexts()).map((t) => t.trim().toUpperCase());
     expect(th).toEqual(expect.arrayContaining(['ITEM NAME', 'RATE', 'QUANTITY', 'DISCOUNT', 'GST', 'CESS', 'AMOUNT']));
@@ -115,7 +115,7 @@ test.describe('Purchase Order', () => {
 
   // ── Create / view / edit / delete ────────────────────────────────────────
 
-  test('PO_FUNC_004 / 005 / 006 / PO_POS_001 / 004 / 012 / PO_UI_003 / 014 / 015 / 016 / 017 - Order with Rail + delivery date: listed Pending; view shows #number, PO / Delivery Date, Mode of Transport, vendor and Ship To, Close / Print / Edit / Delete', { tag: T }, async () => {
+  test('TC05 - Save an order with Rail and a delivery date: it is listed as Pending, and the view shows #number, PO and Delivery Date, Mode of Transport, vendor and Ship To, and Close, Print, Edit and Delete', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_004, PO_FUNC_005, PO_FUNC_006, PO_POS_001, PO_POS_004, PO_POS_012, PO_UI_003, PO_UI_014, PO_UI_015, PO_UI_016, PO_UI_017' } }, async () => {
     const delivery = addDays(new Date(), 9);
     const m = model([L(C, 100, { rate: 65 })]);
     await po.startInvoice({ vendorName: VENDOR, transport: 'Rail', deliveryDate: pickerDate(delivery) });
@@ -134,7 +134,7 @@ test.describe('Purchase Order', () => {
     expect(text).toMatch(/SHIP TO|Ship To/);
   });
 
-  test('PO_FUNC_009 / 010 / PO_POS_019 / 020 - Edit: pre-filled; qty, transport and delivery date changes saved', { tag: T }, async () => {
+  test('TC06 - Edit a purchase order: fields are pre-filled and new qty, transport and delivery date are saved', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_009, PO_FUNC_010, PO_POS_019, PO_POS_020' } }, async () => {
     const o = await order([L(C, 2)]);
     await po.editInvoice(o.no);
     expect((await po.readLine(0)).qty).toBe(2);
@@ -148,14 +148,14 @@ test.describe('Purchase Order', () => {
     await po.discardForm();
   });
 
-  test('PO_FUNC_011 / PO_BL_017 / PO_E2E_006 - Delete: order gone; stock unchanged', { tag: T }, async () => {
+  test('TC07 - Delete a purchase order: the order is gone and stock is unchanged', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_011, PO_BL_017, PO_E2E_006' } }, async () => {
     const s0 = await po.readStock(C);
     const o = await order([L(C, 3)]);
     expect(await po.deleteOrder(o.no), 'order deleted').toBe(true);
     expect(await po.readStock(C)).toBe(s0);
   });
 
-  test('PO_FUNC_013 - Cancel on a new order creates no record', { tag: T }, async () => {
+  test('TC08 - Cancel on a new purchase order creates no record', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_013' } }, async () => {
     const no = await po.startInvoice({ vendorName: VENDOR });
     await po.addLine(A, 1);
     await po.discardForm();
@@ -163,7 +163,7 @@ test.describe('Purchase Order', () => {
     await expect(po.invoiceRow(no)).toHaveCount(0);
   });
 
-  test('PO_FUNC_014 / 015 - Add Row adds a row; removing a line recalculates the summary', { tag: T }, async ({ page }) => {
+  test('TC09 - On a purchase order, Add Row adds a row, and removing a line recalculates the summary', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_014, PO_FUNC_015' } }, async ({ page }) => {
     const m = model([L(A, 1), L(C, 2)]);
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(m);
@@ -174,7 +174,7 @@ test.describe('Purchase Order', () => {
     await po.discardForm();
   });
 
-  test('PO_POS_011 / PO_NEG_017 / PO_SEC_004 / 005 - Reference Bill No and notes saved; script text not executed', { tag: T }, async ({ page }) => {
+  test('TC10 - Purchase order Reference Bill No and notes are saved, and script text is not executed', { tag: T, annotation: { type: 'cases', description: 'PO_POS_011, PO_NEG_017, PO_SEC_004, PO_SEC_005' } }, async ({ page }) => {
     let dialog = false;
     page.on('dialog', async (d) => { dialog = true; await d.dismiss(); });
     const m = model([L(A, 1)]);
@@ -192,7 +192,7 @@ test.describe('Purchase Order', () => {
     expect(dialog, 'no script executed').toBe(false);
   });
 
-  test('PO_UI_018 - "Show Tax & Total" toggles the tax breakdown in the view', { tag: T }, async ({ page }) => {
+  test('TC11 - "Show Tax & Total" toggles the tax breakdown in the purchase order view', { tag: T, annotation: { type: 'cases', description: 'PO_UI_018' } }, async ({ page }) => {
     const o = await order([L(A, 1)]);
     await po.openInvoice(o.no);
     const toggle = po.previewDrawer.getByText('Show Tax & Total');
@@ -205,22 +205,22 @@ test.describe('Purchase Order', () => {
 
   // ── Totals ───────────────────────────────────────────────────────────────
 
-  for (const [id, title, lines, extra, tds] of [
-    ['PO_POS_005 / PO_BND_001', 'GST 18% (qty 100 × ₹65)', () => [L(C, 100, { rate: 65 })], {}],
-    ['PO_POS_006 / PO_BL_010', 'GST 28% + CESS on the base', () => [L(A, 1, { gst: 28, cess: 1 })], {}],
-    ['PO_POS_007', 'overall % discount', () => [L(B, 10)], { summaryDiscount: { type: 'Percentage', value: 12 } }],
-    ['PO_POS_008', 'shipping ₹4,500', () => [L(B, 2)], { shipping: 4500 }],
-    ['PO_POS_009', 'adjustment + ₹3,400', () => [L(B, 2)], { adjustment: { type: 'Addition', value: 3400 } }],
-    ['PO_POS_016 / PO_BL_009 / 015', 'Including Tax', () => [L(A, 1)], { taxMode: 'Including Tax' }],
+  for (const [tc, id, title, lines, extra, tds] of [
+    ['TC12', 'PO_POS_005 / PO_BND_001', 'GST 18% (qty 100 × ₹65)', () => [L(C, 100, { rate: 65 })], {}],
+    ['TC13', 'PO_POS_006 / PO_BL_010', 'GST 28% + CESS on the base', () => [L(A, 1, { gst: 28, cess: 1 })], {}],
+    ['TC14', 'PO_POS_007', 'overall % discount', () => [L(B, 10)], { summaryDiscount: { type: 'Percentage', value: 12 } }],
+    ['TC15', 'PO_POS_008', 'shipping ₹4,500', () => [L(B, 2)], { shipping: 4500 }],
+    ['TC16', 'PO_POS_009', 'adjustment + ₹3,400', () => [L(B, 2)], { adjustment: { type: 'Addition', value: 3400 } }],
+    ['TC17', 'PO_POS_016 / PO_BL_009 / 015', 'Including Tax', () => [L(A, 1)], { taxMode: 'Including Tax' }],
     // PO_BL_011 (totals with TDS) dropped — QA (BUG-PO-02): TDS / TCS are not required on a purchase order.
-    ['PO_BL_016', 'two slabs 5% / 18%', () => [L(A, 1, { gst: 5 }), L(A, 1)], {}],
-    ['PO_BL_020', '10% line discount before tax', () => [L(A, 1, { discount: 10 })], {}],
-    ['PO_BND_002 / 003', 'very large qty and rate', () => [L(A, 999999), L(B, 1, { rate: 9999999 })], {}],
-    ['PO_BND_004 / 013', '0% discount and no shipping', () => [L(A, 2)], { shipping: 0 }],
-    ['PO_BND_005', '100% line discount', () => [L(A, 2, { discount: 100 })], {}],
-    ['PO_BND_012', 'decimal qty 0.5', () => [L(A, 0.5)], {}],
+    ['TC18', 'PO_BL_016', 'two slabs 5% / 18%', () => [L(A, 1, { gst: 5 }), L(A, 1)], {}],
+    ['TC19', 'PO_BL_020', '10% line discount before tax', () => [L(A, 1, { discount: 10 })], {}],
+    ['TC20', 'PO_BND_002 / 003', 'very large qty and rate', () => [L(A, 999999), L(B, 1, { rate: 9999999 })], {}],
+    ['TC21', 'PO_BND_004 / 013', '0% discount and no shipping', () => [L(A, 2)], { shipping: 0 }],
+    ['TC22', 'PO_BND_005', '100% line discount', () => [L(A, 2, { discount: 100 })], {}],
+    ['TC23', 'PO_BND_012', 'decimal qty 0.5', () => [L(A, 0.5)], {}],
   ]) {
-    test(`${id} - Order totals with ${title} match the model and the saved Bill Amount`, { tag: T }, async () => {
+    test(`${tc} - Order totals with ${title} match the model and the saved Bill Amount`, { tag: T, annotation: { type: 'cases', description: id } }, async () => {
       const m = model(lines(), extra);
       const { billNo } = await po.createPricedInvoice(m, { vendorName: VENDOR, tds });
       expectClose((await po.listRow(billNo)).bill, po.computeTotals(m).total, 0.05, 'Bill Amount');
@@ -228,7 +228,7 @@ test.describe('Purchase Order', () => {
   }
 
   // QA (BUG-PO-03): Round Off shows only when it is enabled in Settings → Bill Prefix.
-  test('PO_POS_010 - Round off makes the grand total a whole rupee', { tag: T }, async () => {
+  test('TC24 - Round off makes the purchase order grand total a whole rupee', { tag: T, annotation: { type: 'cases', description: 'PO_POS_010' } }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1, { rate: 99.37 })]));
     const on = await po.roundOff.first().waitFor({ timeout: 5000 }).then(() => true, () => false);
@@ -239,7 +239,7 @@ test.describe('Purchase Order', () => {
     await po.discardForm();
   });
 
-  test('PO_BND_006 / 015 / PO_PERF_008 - 50 item rows save; converting that order loads all 50 lines', { tag: T }, async () => {
+  test('TC25 - A purchase order with 50 item rows saves, and converting that order loads all 50 lines', { tag: T, annotation: { type: 'cases', description: 'PO_BND_006, PO_BND_015, PO_PERF_008' } }, async () => {
     test.setTimeout(1_800_000);
     const lines = Array.from({ length: 50 }, (_, i) => L([A, B, C][i % 3], i + 1));
     const o = await order(lines);
@@ -248,7 +248,7 @@ test.describe('Purchase Order', () => {
     await po.discardForm().catch(() => {});
   });
 
-  test('PO_BND_007 / 008 - PO dated 2000-01-01 with delivery 2099-12-31 saves', { tag: T }, async () => {
+  test('TC26 - A purchase order dated 2000-01-01 with delivery date 2099-12-31 saves', { tag: T, annotation: { type: 'cases', description: 'PO_BND_007, PO_BND_008' } }, async () => {
     const m = model([L(A, 1)]);
     await po.startInvoice({ vendorName: VENDOR, billDate: pickerDate(new Date(2000, 0, 1)), deliveryDate: pickerDate(new Date(2099, 11, 31)) });
     const no0 = await po.billNoInput.inputValue();
@@ -259,7 +259,7 @@ test.describe('Purchase Order', () => {
   });
 
   // QA (BUG-PO-02): no TDS on a purchase order, so only the discount part of PO_BND_014 is checked.
-  test('PO_BND_014 / PO_NEG_007 - Discount above the total: total never negative', { tag: T }, async () => {
+  test('TC27 - A purchase order discount above the total keeps the total from going negative', { tag: T, annotation: { type: 'cases', description: 'PO_BND_014, PO_NEG_007' } }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1, { discount: 100 })]));
     const s = await po.readSummary();
@@ -269,7 +269,7 @@ test.describe('Purchase Order', () => {
 
   // ── Business rules ───────────────────────────────────────────────────────
 
-  test('PO_BL_001 / 002 / 003 / 013 / PO_E2E_002 - Saving and editing an order moves no stock, posts no journal, leaves the vendor due', { tag: T }, async () => {
+  test('TC28 - Saving and editing a purchase order moves no stock, posts no journal and leaves the vendor due unchanged', { tag: T, annotation: { type: 'cases', description: 'PO_BL_001, PO_BL_002, PO_BL_003, PO_BL_013, PO_E2E_002' } }, async () => {
     const s0 = await po.readStock(C);
     const h0 = await po.vendorHeader(VENDOR);
     const o = await order([L(C, 25)]);
@@ -283,7 +283,7 @@ test.describe('Purchase Order', () => {
     expect(await po.readStock(C), 'no stock on edit').toBe(s0);
   });
 
-  test('PO_FUNC_008 / 016 / 018 / PO_POS_013 / 014 / 015 / PO_UI_019 / PO_BL_006 / 007 / 008 / 014 / PO_E2E_004 / 007 - Convert To Invoice: vendor, items, place of supply and Ref = PO no carried; Save and Send posts stock, vendor due and journal', { tag: T }, async ({ page }) => {
+  test('TC29 - Convert a purchase order To Invoice: vendor, items, place of supply and Ref (equal to the PO number) are carried over, and Save and Send posts stock, vendor due and journal', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_008, PO_FUNC_016, PO_FUNC_018, PO_POS_013, PO_POS_014, PO_POS_015, PO_UI_019, PO_BL_006, PO_BL_007, PO_BL_008, PO_BL_014, PO_E2E_004, PO_E2E_007' } }, async ({ page }) => {
     const s0 = await po.readStock(C);
     const h0 = await po.vendorHeader(VENDOR);
     const o = await order([L(C, 25)]);
@@ -300,7 +300,7 @@ test.describe('Purchase Order', () => {
     if (inv) expect(inv.status).toMatch(/days? due/i);
   });
 
-  test('PO_FUNC_017 / PO_E2E_003 - Converted invoice saved as Draft: listed Draft, no stock yet', { tag: T }, async () => {
+  test('TC30 - A purchase order converted to an invoice and saved as Draft is listed as Draft with no stock yet', { tag: T, annotation: { type: 'cases', description: 'PO_FUNC_017, PO_E2E_003' } }, async () => {
     const s0 = await po.readStock(C);
     const o = await order([L(C, 6)]);
     const billNo = await po.convertToInvoice(o.no);
@@ -310,7 +310,7 @@ test.describe('Purchase Order', () => {
   });
 
   // QA (BUG-PO-05): the "Converted" status is not developed yet.
-  test.fixme('PO_BL_018 / PO_NEG_010 - A converted order cannot be converted again or deleted (Converted status not developed yet)', { tag: T }, async () => {
+  test.fixme('TC31 - A converted purchase order cannot be converted again or deleted (Converted status not developed yet)', { tag: T, annotation: { type: 'cases', description: 'PO_BL_018, PO_NEG_010' } }, async () => {
     const o = await order([L(C, 1)]);
     await po.convertToInvoice(o.no);
     await po.saveConvertedInvoice();
@@ -321,7 +321,7 @@ test.describe('Purchase Order', () => {
     expect(await po.deleteOrder(o.no), 'converted order deleted').toBe(false);
   });
 
-  test('PO_E2E_005 - Two orders converted separately: two invoices, vendor due up by both', { tag: T }, async () => {
+  test('TC32 - Convert two purchase orders separately: two purchase invoices are created and the vendor due rises by both', { tag: T, annotation: { type: 'cases', description: 'PO_E2E_005' } }, async () => {
     const h0 = await po.vendorHeader(VENDOR);
     const o1 = await order([L(A, 1)]);
     const o2 = await order([L(A, 2)]);
@@ -331,17 +331,17 @@ test.describe('Purchase Order', () => {
 
   // ── Validation ───────────────────────────────────────────────────────────
 
-  test('PO_NEG_002 / PO_VAL_003 - Without items Save and Send is disabled', { tag: T }, async () => {
+  test('TC33 - A purchase order without items has the "Save and Send" button disabled', { tag: T, annotation: { type: 'cases', description: 'PO_NEG_002, PO_VAL_003' } }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await expect(po.saveBtn).toBeDisabled();
     await po.discardForm();
   });
 
-  for (const [id, field, value] of [
-    ['PO_NEG_003', 'qty', '0'], ['PO_NEG_004', 'qty', '-5'], ['PO_NEG_011', 'qty', 'abc'],
-    ['PO_NEG_005', 'rate', '-100'], ['PO_NEG_012 / PO_VAL_005', 'rate', 'abc'],
+  for (const [tc, id, field, value] of [
+    ['TC34', 'PO_NEG_003', 'qty', '0'], ['TC35', 'PO_NEG_004', 'qty', '-5'], ['TC36', 'PO_NEG_011', 'qty', 'abc'],
+    ['TC37', 'PO_NEG_005', 'rate', '-100'], ['TC38', 'PO_NEG_012 / PO_VAL_005', 'rate', 'abc'],
   ]) {
-    test(`${id} - ${field} "${value}" is refused`, { tag: T }, async () => {
+    test(`${tc} - ${field} "${value}" is refused`, { tag: T, annotation: { type: 'cases', description: id } }, async () => {
       await po.startInvoice({ vendorName: VENDOR });
       await po.fillInvoice(model([L(A, 1)]));
       const row = po.lineRows.nth(0);
@@ -350,7 +350,7 @@ test.describe('Purchase Order', () => {
     });
   }
 
-  test('PO_NEG_013 / PO_VAL_006 - Line discount 110% is refused or capped', { tag: T }, async () => {
+  test('TC39 - A line discount of 110% on a purchase order is refused or capped', { tag: T, annotation: { type: 'cases', description: 'PO_NEG_013, PO_VAL_006' } }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1)]));
     const shown = await po.typeValue(po.lineDiscount(po.lineRows.nth(0)), '110');
@@ -358,7 +358,7 @@ test.describe('Purchase Order', () => {
     if (/purchase-order-bill\/add/.test(po.page.url())) await po.discardForm();
   });
 
-  test('PO_VAL_010 / 011 - Shipping and adjustment reject letters', { tag: T }, async () => {
+  test('TC40 - The shipping and adjustment fields of a purchase order reject letters', { tag: T, annotation: { type: 'cases', description: 'PO_VAL_010, PO_VAL_011' } }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1)]));
     await blocked(po.shippingInput, 'abc', 'shipping');
@@ -366,7 +366,7 @@ test.describe('Purchase Order', () => {
     if (/purchase-order-bill\/add/.test(po.page.url())) await po.discardForm();
   });
 
-  test('PO_VAL_009 - A delivery date before the PO date is refused', { tag: T }, async () => {
+  test('TC41 - A purchase order with a delivery date before the PO date is refused', { tag: T, annotation: { type: 'cases', description: 'PO_VAL_009' } }, async () => {
     const typed = pickerDate(addDays(new Date(), -3));
     await po.startInvoice({ vendorName: VENDOR, deliveryDate: typed });
     await po.fillInvoice(model([L(A, 1)]));
@@ -375,7 +375,7 @@ test.describe('Purchase Order', () => {
     await po.discardForm();
   });
 
-  test('PO_NEG_006 / PO_VAL_007 - No Place of Supply: save refused', { tag: T }, async () => {
+  test('TC42 - Saving a purchase order without a Place of Supply is refused', { tag: T, annotation: { type: 'cases', description: 'PO_NEG_006, PO_VAL_007' } }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1)]));
     await po.placeOfSupplySelect.hover();
@@ -386,7 +386,7 @@ test.describe('Purchase Order', () => {
     await po.discardForm();
   });
 
-  test('PO_NEG_015 / PO_VAL_002 / 008 - Empty PO Date is refused', { tag: T }, async () => {
+  test('TC43 - A purchase order with an empty PO Date is refused', { tag: T, annotation: { type: 'cases', description: 'PO_NEG_015, PO_VAL_002, PO_VAL_008' } }, async () => {
     await po.startInvoice({ vendorName: VENDOR });
     await po.fillInvoice(model([L(A, 1)]));
     if (await po.clearBillDate()) { console.log('PO date cannot be emptied'); await po.discardForm(); return; }
@@ -394,7 +394,7 @@ test.describe('Purchase Order', () => {
     await po.discardForm();
   });
 
-  test('PO_NEG_016 - Converting an order whose items were all removed is blocked', { tag: T }, async () => {
+  test('TC44 - Converting a purchase order whose items were all removed is blocked', { tag: T, annotation: { type: 'cases', description: 'PO_NEG_016' } }, async () => {
     const o = await order([L(A, 1)]);
     await po.editInvoice(o.no);
     const removed = await po.tryRemoveLine(0);
@@ -402,7 +402,7 @@ test.describe('Purchase Order', () => {
     expect((await po.trySave()).saved).toBe(false);
   });
 
-  test('PO_VAL_014 / PO_NEG_008 / 014 / 018 / PO_SEC_003 / PO_UI_020 - Unknown, special, SQL and long searches: empty list, no crash', { tag: T }, async ({ page }) => {
+  test('TC45 - Searching purchase orders for unknown, special-character, SQL and very long text shows an empty list without crashing', { tag: T, annotation: { type: 'cases', description: 'PO_VAL_014, PO_NEG_008, PO_NEG_014, PO_NEG_018, PO_SEC_003, PO_UI_020' } }, async ({ page }) => {
     for (const q of ['PO-NOPE-99999', '!@#$%^&*()', "' OR 1=1 --", 'X'.repeat(500)]) {
       expect(await po.searchList(q), `search "${q.slice(0, 20)}"`).toEqual([]);
       await expect(page.locator('.ant-empty, .ant-table-placeholder').first()).toBeVisible();
@@ -411,7 +411,7 @@ test.describe('Purchase Order', () => {
 
   // ── Search / filter ──────────────────────────────────────────────────────
 
-  test('PO_SF_001 / 002 / 003 / 004 / 008 / 012 - Search by exact / partial number, vendor (any case, trimmed); clearing restores', { tag: T }, async () => {
+  test('TC46 - Search purchase orders by exact or partial number and by vendor (any case, trimmed), and clearing the search restores the list', { tag: T, annotation: { type: 'cases', description: 'PO_SF_001, PO_SF_002, PO_SF_003, PO_SF_004, PO_SF_008, PO_SF_012' } }, async () => {
     const o = await order([L(A, 1)]);
     const col = (rows) => rows.map((r) => r.find((c) => /^PO-/.test(c)));
     expect(col(await po.searchList(o.no))).toEqual([o.no]);
@@ -426,7 +426,7 @@ test.describe('Purchase Order', () => {
     expect((await po.searchList('')).length).toBeGreaterThan(0);
   });
 
-  test('PO_SF_005 / 006 / 009 / 011 / PO_NEG_009 / PO_PAG_010 - Date range filter (incl. same start and end day) limits the list; reversed range gives nothing / an error', { tag: T }, async ({ page }) => {
+  test('TC47 - The purchase order date range filter (including the same start and end day) limits the list, and a reversed range gives nothing or an error', { tag: T, annotation: { type: 'cases', description: 'PO_SF_005, PO_SF_006, PO_SF_009, PO_SF_011, PO_NEG_009, PO_PAG_010' } }, async ({ page }) => {
     await order([L(A, 1)]);
     await po._searchList('');
     await po.setListDateRange(new Date(), new Date());
@@ -440,7 +440,7 @@ test.describe('Purchase Order', () => {
 
   // ── Security / accessibility ─────────────────────────────────────────────
 
-  test('PO_SEC_001 / 011 - Without a session the page redirects to login and the API answers 401', { tag: T }, async ({ browser, page }) => {
+  test('TC48 - Without a session the purchase order page redirects to login and the API answers 401', { tag: T, annotation: { type: 'cases', description: 'PO_SEC_001, PO_SEC_011' } }, async ({ browser, page }) => {
     const ctx = await browser.newContext();
     const anon = await ctx.newPage();
     await anon.goto(page.url().replace(/\/[^/]*$/, '/purchase?purchase=3'));
@@ -452,14 +452,14 @@ test.describe('Purchase Order', () => {
     await ctx.close();
   });
 
-  test('PO_SEC_012 - No password or bearer token in the console while creating an order', { tag: T }, async ({ page }) => {
+  test('TC49 - No password or bearer token appears in the console while creating a purchase order', { tag: T, annotation: { type: 'cases', description: 'PO_SEC_012' } }, async ({ page }) => {
     const logs = [];
     page.on('console', (m) => logs.push(m.text()));
     await order([L(A, 1)]);
     expect(logs.filter((l) => /password|bearer\s+[a-z0-9._-]{20,}/i.test(l))).toEqual([]);
   });
 
-  test('PO_ACC_002 / 005 / 007 / 009 / 010 - Keyboard: Enter opens New PO, Escape closes dropdown and view, Convert reachable; status has a text label', { tag: T }, async ({ page }) => {
+  test('TC50 - Purchase order keyboard use: Enter opens New PO, Escape closes the dropdown and the view, Convert is reachable, and the status has a text label', { tag: T, annotation: { type: 'cases', description: 'PO_ACC_002, PO_ACC_005, PO_ACC_007, PO_ACC_009, PO_ACC_010' } }, async ({ page }) => {
     const o = await order([L(A, 1)]);
     expect((await po.listRow(o.no)).status).toBe('Pending');
     await po.openInvoice(o.no);
@@ -474,22 +474,22 @@ test.describe('Purchase Order', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['PO_FUNC_012 / PO_EXP_001…010 / PO_E2E_009', 'Print preview and printed content', 'Browser print dialog / PDF content are not checkable in the browser.'],
-    ['PO_POS_018 / PO_VAL_012', 'Add New Vendor / vendor GSTIN from the PO', 'Vendor creation — Vendor sheet.'],
-    ['PO_VAL_013', 'Warehouse required for stock items', 'Only one warehouse ("Default").'],
-    ['PO_BL_012', 'Round off posts to the Round Off account on conversion', 'Covered by PI_BL_015 (same invoice journal).'],
-    ['PO_BL_019', 'Service item in a PO has no stock impact', 'Needs a service item — Inventory_Product sheet.'],
-    ['PO_BND_009 / 010 / PO_PAG_001…009', 'Pagination boundaries / navigation', 'Same list component as Purchase Invoice — PI_PAG_*; exact counts need a controlled org.'],
-    ['PO_BND_011', 'Notes maximum length', 'Covered by PI_BND_014 (same form).'],
-    ['PO_SEC_002', 'Session timeout', 'Needs a shortened session lifetime.'],
-    ['PO_SEC_006 / 007 / 009 / PO_E2E_010', 'Role restrictions', 'No role-restricted users in the test data.'],
-    ['PO_SEC_008', 'Another org\'s PO by URL', 'Needs a second org.'],
-    ['PO_SEC_010', 'CSRF protection', 'API-level security test.'],
-    ['PO_PERF_001…007', 'Response-time limits', 'Environment-dependent; not a functional check.'],
-    ['PO_ACC_001 / 003 / 004 / 006 / 008', 'Tab order, screen reader, contrast, keyboard date picker', 'Needs an accessibility audit tool / screen reader.'],
-    ['PO_E2E_008', 'Converted invoice inherits every pricing field', 'Covered by PO_FUNC_008 (items / ref) and the shared totals model.'],
+  for (const [tc, id, title, why] of [
+    ['TC51', 'PO_FUNC_012 / PO_EXP_001…010 / PO_E2E_009', 'Print preview and printed content', 'Browser print dialog / PDF content are not checkable in the browser.'],
+    ['TC52', 'PO_POS_018 / PO_VAL_012', 'Add New Vendor / vendor GSTIN from the PO', 'Vendor creation — Vendor sheet.'],
+    ['TC53', 'PO_VAL_013', 'Warehouse required for stock items', 'Only one warehouse ("Default").'],
+    ['TC54', 'PO_BL_012', 'Round off posts to the Round Off account on conversion', 'Covered by PI_BL_015 (same invoice journal).'],
+    ['TC55', 'PO_BL_019', 'Service item in a PO has no stock impact', 'Needs a service item — Inventory_Product sheet.'],
+    ['TC56', 'PO_BND_009 / 010 / PO_PAG_001…009', 'Pagination boundaries / navigation', 'Same list component as Purchase Invoice — PI_PAG_*; exact counts need a controlled org.'],
+    ['TC57', 'PO_BND_011', 'Notes maximum length', 'Covered by PI_BND_014 (same form).'],
+    ['TC58', 'PO_SEC_002', 'Session timeout', 'Needs a shortened session lifetime.'],
+    ['TC59', 'PO_SEC_006 / 007 / 009 / PO_E2E_010', 'Role restrictions', 'No role-restricted users in the test data.'],
+    ['TC60', 'PO_SEC_008', 'Another org\'s PO by URL', 'Needs a second org.'],
+    ['TC61', 'PO_SEC_010', 'CSRF protection', 'API-level security test.'],
+    ['TC62', 'PO_PERF_001…007', 'Response-time limits', 'Environment-dependent; not a functional check.'],
+    ['TC63', 'PO_ACC_001 / 003 / 004 / 006 / 008', 'Tab order, screen reader, contrast, keyboard date picker', 'Needs an accessibility audit tool / screen reader.'],
+    ['TC64', 'PO_E2E_008', 'Converted invoice inherits every pricing field', 'Covered by PO_FUNC_008 (items / ref) and the shared totals model.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

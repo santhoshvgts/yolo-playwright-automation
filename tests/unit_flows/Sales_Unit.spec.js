@@ -40,7 +40,7 @@ test.describe(moduleName, () => {
   test.describe.configure({ retries: 0, timeout: 600_000 });
 
   // ── Item ──
-  test('TC01 - Create an Item with Opening Stock and stock it up via a Purchase Invoice', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC01 - Create an item with Opening Stock and stock it up through a purchase invoice', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {
     await new ItemPage(page).createItemWithOpeningStock(itemData);
     // New item has no stock — the app blocks a Sales Invoice that exceeds it, so stock up first
     await new PurchaseInvoicePage(page).addStockViaPurchaseInvoice({
@@ -49,87 +49,87 @@ test.describe(moduleName, () => {
   });
 
   // ── SI create ──
-  test('TC02 - Create a Sales Invoice for the item and verify the Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC02 - Create a sales invoice for the item and verify the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC02' } }, async ({ page }) => {
     await new SalesInvoicePage(page).createSalesInvoiceAndVerifyStock(salesInvoiceData);
   });
 
-  test('TC03 - After SI create: Stock Statement (Fieldforce) matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC03 - After the sales invoice is created, the Stock Statement (Fieldforce) matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC03' } }, async ({ page }) => {
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'newtotalqty' });
   });
 
-  test('TC04 - After SI create: Sales Invoice quantity alert matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC04 - After the sales invoice is created, the sales invoice quantity alert matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC04' } }, async ({ page }) => {
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'newtotalqty' });
   });
 
-  test('TC05 - After SI create: Stock Adjustment quantities per UOM match Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC05 - After the sales invoice is created, the Stock Adjustment quantities per UOM match the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC05' } }, async ({ page }) => {
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'newtotalqty' });
   });
 
   // ── SI edit ──
-  test('TC06 - Edit the Sales Invoice and verify the Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC06 - Edit the sales invoice and verify the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC06' } }, async ({ page }) => {
     await new SalesInvoicePage(page).editSalesInvoiceAndVerifyStock(salesInvoiceData);
   });
 
-  test('TC07 - After SI edit: Stock Statement (Fieldforce) matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC07 - After the sales invoice is edited, the Stock Statement (Fieldforce) matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC07' } }, async ({ page }) => {
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'updatedTotalqty' });
   });
 
-  test('TC08 - After SI edit: Sales Invoice quantity alert matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC08 - After the sales invoice is edited, the sales invoice quantity alert matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC08' } }, async ({ page }) => {
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'updatedTotalqty' });
   });
 
-  test('TC09 - After SI edit: Stock Adjustment quantities per UOM match Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC09 - After the sales invoice is edited, the Stock Adjustment quantities per UOM match the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC09' } }, async ({ page }) => {
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'updatedTotalqty' });
   });
 
   // ── SI cancel ──
-  test('TC10 - Cancel the Sales Invoice and verify the Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC10 - Cancel the sales invoice and verify the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC10' } }, async ({ page }) => {
     await new SalesInvoicePage(page).cancelSalesInvoiceAndVerifyStock(salesInvoiceData);
   });
 
-  test('TC11 - After SI cancel: Stock Statement (Fieldforce) matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC11 - After the sales invoice is cancelled, the Stock Statement (Fieldforce) matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC11' } }, async ({ page }) => {
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'finalTotalqty', allowZero: true });
   });
 
-  test('TC12 - After SI cancel: Sales Invoice quantity alert matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC12 - After the sales invoice is cancelled, the sales invoice quantity alert matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC12' } }, async ({ page }) => {
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'finalTotalqty' });
   });
 
-  test('TC13 - After SI cancel: Stock Adjustment quantities per UOM match Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC13 - After the sales invoice is cancelled, the Stock Adjustment quantities per UOM match the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC13' } }, async ({ page }) => {
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'finalTotalqty' });
   });
 
   // ── SI delete ──
-  test('TC14 - Delete the Sales Invoice and verify the Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC14 - Delete the sales invoice and verify the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC14' } }, async ({ page }) => {
     await new SalesInvoicePage(page).deleteSalesInvoiceAndVerifyStock(salesInvoiceData);
   });
 
-  test('TC15 - After SI delete: Stock Statement (Fieldforce) matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC15 - After the sales invoice is deleted, the Stock Statement (Fieldforce) matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC15' } }, async ({ page }) => {
     await new StockStatementPage(page).verifyClosingStock({ section: SECTION, totalKey: 'endTotalqty', allowZero: true });
   });
 
-  test('TC16 - After SI delete: Sales Invoice quantity alert matches Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC16 - After the sales invoice is deleted, the sales invoice quantity alert matches the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC16' } }, async ({ page }) => {
     await new SalesStockAlertPage(page).verifyStockAlert({ section: SECTION, totalKey: 'endTotalqty' });
   });
 
-  test('TC17 - After SI delete: Stock Adjustment quantities per UOM match Inventory stock', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC17 - After the sales invoice is deleted, the Stock Adjustment quantities per UOM match the Inventory stock', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC17' } }, async ({ page }) => {
     await new StockAdjustmentPage(page).verifyAdjustmentQuantities({ section: SECTION, totalKey: 'endTotalqty' });
   });
 
   // ── SI amount → customer balances ──
-  test('TC18 - Create a Sales Invoice with discounts / shipping / TDS / adjustment and verify customer Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC18 - Create a sales invoice with discounts, shipping, TDS and adjustment and verify customer Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC18' } }, async ({ page }) => {
     await new SalesInvoicePage(page).createSalesInvoiceWithChargesAndVerifyCustomerBalances(salesInvoiceData);
   });
 
-  test('TC19 - Edit that Sales Invoice and verify customer Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC19 - Edit that sales invoice and verify customer Due, Closing Balance and Transaction Statement', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC19' } }, async ({ page }) => {
     await new SalesInvoicePage(page).editSalesInvoiceWithChargesAndVerifyCustomerBalances(salesInvoiceData);
   });
 
-  test('TC20 - Cancel that Sales Invoice and verify customer balances return to their original values', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC20 - Cancel that sales invoice and verify customer balances return to their original values', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC20' } }, async ({ page }) => {
     await new SalesInvoicePage(page).cancelSalesInvoiceAndVerifyCustomerBalances(salesInvoiceData);
   });
 
-  test('TC21 - Delete the cancelled Sales Invoice and verify customer balances are unchanged', { tag: ['@unit', '@sales'] }, async ({ page }) => {
+  test('TC21 - Delete the cancelled sales invoice and verify customer balances are unchanged', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC21' } }, async ({ page }) => {
     await new SalesInvoicePage(page).deleteCancelledSalesInvoiceAndVerifyCustomerBalances(salesInvoiceData);
   });
 });

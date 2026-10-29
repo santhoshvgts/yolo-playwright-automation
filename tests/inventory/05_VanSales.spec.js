@@ -30,7 +30,7 @@ test.describe('Van Sales', () => {
 
   const uniq = () => `${Date.now().toString(36).slice(-5)}${Math.floor(Math.random() * 90 + 10)}`;
 
-  test('VAN TC-INV-06 / 07 - Stock adjustment +20 then −10 moves the Default warehouse stock by the same amounts', { tag: T }, async () => {
+  test('TC01 - Van sales stock adjustment of +20 then −10 moves the Default warehouse stock by the same amounts', { tag: T, annotation: { type: 'cases', description: 'VAN TC-INV-06, VAN TC-INV-07' } }, async () => {
     const item = await si.setupItem({ name: `ZZ Van ${uniq()}`, price: '10', stock: 50 });
     await si.expectStock(item, 50, 'opening');
     await si.stockAdjustment.adjustStock([{ itemName: item.itemName, qty: 20 }]);
@@ -39,7 +39,7 @@ test.describe('Van Sales', () => {
     await si.expectStock(item, 60, 'after −10');
   });
 
-  test('VAN TC-INV-08 - A decrease beyond the available stock is refused (or leaves stock at a valid value)', { tag: T }, async () => {
+  test('TC02 - A van sales stock decrease beyond the available stock is refused (or leaves stock at a valid value)', { tag: T, annotation: { type: 'cases', description: 'VAN TC-INV-08' } }, async () => {
     const item = await si.setupItem({ name: `ZZ Van ${uniq()}`, price: '10', stock: 5 });
     await si.expectStock(item, 5, 'opening');
     const r = await si.stockAdjustment.adjustStock([{ itemName: item.itemName, qty: -50 }]).then(() => 'saved', (e) => `refused: ${e.message.slice(0, 80)}`);
@@ -48,17 +48,17 @@ test.describe('Van Sales', () => {
     expect(stock, `stock after a −50 adjustment on 5 (${r})`).toBeGreaterThanOrEqual(0);
   });
 
-  for (const [id, title] of [
-    ['VAN TC-LD-01…07', 'Load sheet dashboard counts (Draft / Pending / Action Required / Approved)'],
-    ['VAN TC-CL-01…32', 'Create / edit / delete load sheets, salesperson / beat route / warehouse rules, item and quantity checks'],
-    ['VAN TC-MA-01…06', 'Manager approval and correction cycle'],
-    ['VAN TC-FF-01…11', 'Field Force app check-in, load sheet, invoices and payments on mobile'],
-    ['VAN TC-LO-01…16', 'Load out, settlement and manager verification'],
-    ['VAN TC-VS-01 / 02 / 03 / 04 / 07 / 08 / 09 / 12', 'Van invoices limited to loaded van stock'],
-    ['VAN TC-INV-02 / 12…18', 'Warehouse-specific stock / stock transfer between warehouses'],
-    ['VAN TC-INV-09 / 10 / 11', 'Draft / edit / delete stock adjustments'],
-    ['VAN TC-EOD-01…05', 'End of day'],
+  for (const [tc, id, title] of [
+    ['TC03', 'VAN TC-LD-01…07', 'Load sheet dashboard counts (Draft / Pending / Action Required / Approved)'],
+    ['TC04', 'VAN TC-CL-01…32', 'Create / edit / delete load sheets, salesperson / beat route / warehouse rules, item and quantity checks'],
+    ['TC05', 'VAN TC-MA-01…06', 'Manager approval and correction cycle'],
+    ['TC06', 'VAN TC-FF-01…11', 'Field Force app check-in, load sheet, invoices and payments on mobile'],
+    ['TC07', 'VAN TC-LO-01…16', 'Load out, settlement and manager verification'],
+    ['TC08', 'VAN TC-VS-01 / 02 / 03 / 04 / 07 / 08 / 09 / 12', 'Van invoices limited to loaded van stock'],
+    ['TC09', 'VAN TC-INV-02 / 12…18', 'Warehouse-specific stock / stock transfer between warehouses'],
+    ['TC10', 'VAN TC-INV-09 / 10 / 11', 'Draft / edit / delete stock adjustments'],
+    ['TC11', 'VAN TC-EOD-01…05', 'End of day'],
   ]) {
-    test.fixme(`${id} - ${title} (Field Force van sales / multiple warehouses are not enabled for the test org; enabling them changes the shared org)`, async () => {});
+    test.fixme(`${tc} - ${title} (Field Force van sales / multiple warehouses are not enabled for the test org; enabling them changes the shared org)`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

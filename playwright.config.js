@@ -14,8 +14,9 @@ const isUI = process.env.PLAYWRIGHT_UI_MODE === 'true'
           || process.argv.includes('--ui')
           || process.argv.includes('--ui-host');
 
-// tests/*.spec.js (Product_item_Create, Vendor_Create, Pricing_general_Create) log in through the UI
-const ROOT_LOGIN_SPECS = /tests\/[^/]+\.spec\.js$/;
+// Specs that check the login screen itself: tests/*.spec.js (Product_item_Create, Vendor_Create,
+// Pricing_general_Create) and the smoke login test
+const ROOT_LOGIN_SPECS = /tests\/([^/]+|smoke\/01_login)\.spec\.js$/;
 
 // Shared Chromium settings for both projects
 const CHROMIUM = {

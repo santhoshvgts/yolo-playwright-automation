@@ -41,7 +41,7 @@ test.describe('Manual Journal', () => {
 
   // ── List / form ──────────────────────────────────────────────────────────
 
-  test('MJ TC-UI-01 / 06 / 07 / 08 / TC-CJ-01 / 02 / 09 / TC-UI-02 - List columns and Total Count; Finance tabs; New Journal: MJN-AUTO no (read-only), today, Accrual Only default, rows and totals', { tag: T }, async ({ page }) => {
+  test('TC01 - Manual journal list shows its columns, Total Count and Finance tabs; New Journal opens with read-only MJN-AUTO number, today\'s date, Accrual Only default, rows and totals', { tag: T, annotation: { type: 'cases', description: 'MJ TC-UI-01, MJ TC-UI-06, MJ TC-UI-07, MJ TC-UI-08, TC-CJ-01, TC-CJ-02, TC-CJ-09, TC-UI-02' } }, async ({ page }) => {
     await mj.openJournals();
     await expect(page.getByText('Cheque Tracker', { exact: true }).first()).toBeVisible();
     await expect(page.getByText('Manual Journal', { exact: true }).first()).toBeVisible();
@@ -58,7 +58,7 @@ test.describe('Manual Journal', () => {
     await mj.discardJournal();
   });
 
-  test('MJ TC-CJ-07 / TC-LI-03 - Notes required ("Notes is Required!"); no amounts refused', { tag: T }, async () => {
+  test('TC02 - A manual journal without notes is refused with "Notes is Required!", and a journal with no amounts is refused', { tag: T, annotation: { type: 'cases', description: 'MJ TC-CJ-07, TC-LI-03' } }, async () => {
     await mj.openNewJournal();
     const r = await mj.trySaveJournal();
     expect(r.saved).toBe(false);
@@ -71,7 +71,7 @@ test.describe('Manual Journal', () => {
 
   // ── Create / totals ──────────────────────────────────────────────────────
 
-  test('MJ TC-CJ-08 / 05 / TC-LI-01 / 04 / 05 / 10 / 16 / 17 / 18 / TC-WF-03 / TC-UI-03 / 04 / 05 / TC-DI-02 / 05 - Balanced ₹100 (no reference / description / contact): Open, amount 100, notes in list; view with Print / Edit / Delete', { tag: T }, async () => {
+  test('TC03 - Save a balanced ₹100 journal (no reference, description or contact): it is Open with amount 100 and notes in the list, and the view has Print, Edit and Delete', { tag: T, annotation: { type: 'cases', description: 'MJ TC-CJ-08, MJ TC-CJ-05, TC-LI-01, TC-LI-04, TC-LI-05, TC-LI-10, TC-LI-16, TC-LI-17, TC-LI-18, TC-WF-03, TC-UI-03, TC-UI-04, TC-UI-05, TC-DI-02, TC-DI-05' } }, async () => {
     const notes = `ZZ MJ ${uniq()}`;
     await mj.openNewJournal();
     await mj.fillJournal({ notes, lines: pair(100) });
@@ -90,7 +90,7 @@ test.describe('Manual Journal', () => {
     for (const b of [/Print/, /Edit/, /Delete/]) await expect(mj.mjDrawer.getByRole('button', { name: b }).first()).toBeVisible();
   });
 
-  test('MJ TC-CJ-03 / 04 / 06 - Past and future dates and an alphanumeric reference are accepted', { tag: T }, async () => {
+  test('TC04 - A manual journal accepts past and future dates and an alphanumeric reference', { tag: T, annotation: { type: 'cases', description: 'MJ TC-CJ-03, MJ TC-CJ-04, MJ TC-CJ-06' } }, async () => {
     const past = new Date(); past.setDate(past.getDate() - 20);
     const future = new Date(); future.setDate(future.getDate() + 20);
     for (const [d, ref] of [[past, `REF-${uniq()}`], [future, `FUT${uniq()}`]]) {
@@ -102,7 +102,7 @@ test.describe('Manual Journal', () => {
     }
   });
 
-  test('MJ TC-LI-11 / 12 / TC-WF-10 - Unbalanced (100 / 80) and debit-only journals are refused; Difference shown', { tag: T }, async () => {
+  test('TC05 - Unbalanced (100 / 80) and debit-only journals are refused and the Difference is shown', { tag: T, annotation: { type: 'cases', description: 'MJ TC-LI-11, MJ TC-LI-12, TC-WF-10' } }, async () => {
     await mj.openNewJournal();
     await mj.fillJournal({ notes: 'unbalanced', lines: [{ account: 'Petty Cash', debit: 100 }, { account: 'Undeposited Funds', credit: 80 }] });
     expect((await mj.readTotals()).diff).toBe(20);
@@ -113,7 +113,7 @@ test.describe('Manual Journal', () => {
     await mj.discardJournal();
   });
 
-  test('MJ TC-LI-06 / 07 / 08 / 09 - Debit and credit on one line refused; 0 and "-" refused; decimals 354.50 balance', { tag: T }, async ({ page }) => {
+  test('TC06 - A journal line with both debit and credit is refused, 0 and "-" are refused, and decimals such as 354.50 balance', { tag: T, annotation: { type: 'cases', description: 'MJ TC-LI-06, MJ TC-LI-07, MJ TC-LI-08, MJ TC-LI-09' } }, async ({ page }) => {
     await mj.openNewJournal();
     await mj.fillJournal({ notes: 'both sides', lines: [{ account: 'Petty Cash', debit: 50, credit: 50 }, { account: 'Undeposited Funds' }] });
     expect(await page.locator('#credit-0').inputValue() === '' || !(await mj.trySaveJournal()).saved, 'debit + credit on one line').toBe(true);
@@ -127,7 +127,7 @@ test.describe('Manual Journal', () => {
     expect((await mj.searchJournals(notes))[0].amount).toBe(354.5);
   });
 
-  test('MJ TC-LI-02 / 14 / 15 / 19 - Three debits (100 + 200 + 300) and two credits (250 + 350): sub totals 600, saved', { tag: T }, async () => {
+  test('TC07 - A journal with three debits (100 + 200 + 300) and two credits (250 + 350) shows sub totals of 600 and is saved', { tag: T, annotation: { type: 'cases', description: 'MJ TC-LI-02, MJ TC-LI-14, MJ TC-LI-15, MJ TC-LI-19' } }, async () => {
     const notes = `ZZ MJ ${uniq()}`;
     await mj.openNewJournal();
     await mj.fillJournal({ notes, lines: [
@@ -142,7 +142,7 @@ test.describe('Manual Journal', () => {
 
   // ── Journal types ────────────────────────────────────────────────────────
 
-  test('MJ TC-JT-01 / 10 / TC-CT-01 - Accrual Only with Accounts Receivable + contact saves; the customer due moves by the amount', { tag: T }, async ({ page }) => {
+  test('TC08 - An Accrual Only journal with Accounts Receivable and a contact saves, and the customer due moves by the journal amount', { tag: T, annotation: { type: 'cases', description: 'MJ TC-JT-01, MJ TC-JT-10, TC-CT-01' } }, async ({ page }) => {
     const cu = new CustomerTransactionPage(page);
     await cu.openCustomer(CUST);
     const h0 = await cu.readHeader();
@@ -154,13 +154,13 @@ test.describe('Manual Journal', () => {
     expectClose(Math.abs(h1.closing - h0.closing), 75, 0.02, 'customer balance moves by 75');
   });
 
-  test('MJ TC-JT-02 / TC-CT-02 - Accrual Only with Accounts Payable + vendor contact saves', { tag: T }, async () => {
+  test('TC09 - An Accrual Only journal with Accounts Payable and a vendor contact saves', { tag: T, annotation: { type: 'cases', description: 'MJ TC-JT-02, TC-CT-02' } }, async () => {
     const notes = `ZZ MJ ${uniq()}`;
     await journal({ notes, lines: [{ account: 'Petty Cash', debit: 40 }, { account: 'Accounts Payable', contact: masterData.vendorName, credit: 40 }] });
     expect((await mj.searchJournals(notes))[0].status).toBe('Open');
   });
 
-  test('MJ TC-JT-03 / 08 / 09 - Cash Only with Accounts Receivable is refused; switching the account to Petty Cash then saves', { tag: T }, async () => {
+  test('TC10 - A Cash Only journal with Accounts Receivable is refused, and switching the account to Petty Cash then saves', { tag: T, annotation: { type: 'cases', description: 'MJ TC-JT-03, MJ TC-JT-08, MJ TC-JT-09' } }, async () => {
     await mj.openNewJournal();
     await mj.fillJournal({ notes: `ZZ MJ ${uniq()}`, type: 'Cash Only', lines: [{ account: 'Accounts Receivable', contact: CUST, debit: 30 }, { account: 'Undeposited Funds', credit: 30 }] });
     const r = await mj.trySaveJournal();
@@ -171,7 +171,7 @@ test.describe('Manual Journal', () => {
     expect((await mj.trySaveJournal()).saved, 'corrected journal saves').toBe(true);
   });
 
-  test('MJ TC-CJ-10 / 11 / TC-JT-07 - Cash Only and Accrual and Cash journals with non-A/R accounts save', { tag: T }, async () => {
+  test('TC11 - Cash Only and Accrual and Cash journals with accounts other than A/R save', { tag: T, annotation: { type: 'cases', description: 'MJ TC-CJ-10, MJ TC-CJ-11, TC-JT-07' } }, async () => {
     for (const type of ['Cash Only', 'Accrual and Cash']) {
       const notes = `ZZ MJ ${uniq()}`;
       await journal({ notes, type });
@@ -182,13 +182,13 @@ test.describe('Manual Journal', () => {
   // ── Workflow ─────────────────────────────────────────────────────────────
 
   // QA (BUG-MJ-02): working as designed — Save as Draft stays disabled while debit ≠ credit.
-  test('MJ TC-WF-02 - An unbalanced journal cannot be saved as Draft (Save as Draft disabled)', { tag: T }, async () => {
+  test('TC12 - An unbalanced journal cannot be saved as a draft because Save as Draft is disabled', { tag: T, annotation: { type: 'cases', description: 'MJ TC-WF-02' } }, async () => {
     await mj.openNewJournal();
     await mj.fillJournal({ notes: `ZZ MJ ${uniq()}`, lines: [{ account: 'Petty Cash', debit: 100 }, { account: 'Undeposited Funds', credit: 80 }] });
     await expect(mj.mjDraft, 'Save as Draft disabled for an unbalanced journal').toBeDisabled();
   });
 
-  test('MJ TC-WF-01 / 04 / 05 / 11 - Draft: Draft status; edit the amounts and Save → Open', { tag: T }, async () => {
+  test('TC13 - Save a journal as Draft: it has Draft status, and editing the amounts and clicking Save makes it Open', { tag: T, annotation: { type: 'cases', description: 'MJ TC-WF-01, MJ TC-WF-04, MJ TC-WF-05, MJ TC-WF-11' } }, async () => {
     const notes = `ZZ MJ ${uniq()}`;
     await mj.openNewJournal();
     await mj.fillJournal({ notes, lines: pair(100) });
@@ -209,7 +209,7 @@ test.describe('Manual Journal', () => {
     });
   });
 
-  test('MJ TC-WF-07 / TC-DI-06 / TC-COA-06 - Edit an open journal: notes and amount follow in list and view', { tag: T }, async () => {
+  test('TC14 - Edit an open journal: the new notes and amount show in the list and in the view', { tag: T, annotation: { type: 'cases', description: 'MJ TC-WF-07, TC-DI-06, TC-COA-06' } }, async () => {
     const notes = `ZZ MJ ${uniq()}`;
     await journal({ notes });
     const row = (await mj.searchJournals(notes))[0];
@@ -225,7 +225,7 @@ test.describe('Manual Journal', () => {
     expect(await mj.openJournal(row.no)).toContain(edited);
   });
 
-  test('MJ TC-WF-06 / 08 / TC-PG-08 / TC-DI-01 - Delete a draft and an open journal: gone, count −1 each; numbers unique', { tag: T }, async () => {
+  test('TC15 - Delete a draft journal and an open journal: each is gone, the count drops by 1 each time, and journal numbers stay unique', { tag: T, annotation: { type: 'cases', description: 'MJ TC-WF-06, MJ TC-WF-08, TC-PG-08, TC-DI-01' } }, async () => {
     const d = `ZZ MJ ${uniq()}`;
     await journal({ notes: d }, { draft: true });
     const o = `ZZ MJ ${uniq()}`;
@@ -242,7 +242,7 @@ test.describe('Manual Journal', () => {
     expect(await mj.mjCount()).toBe(before - 2);
   });
 
-  test('MJ TC-WF-09 - Cancel on a filled form saves nothing', { tag: T }, async () => {
+  test('TC16 - Cancel on a filled journal form saves nothing', { tag: T, annotation: { type: 'cases', description: 'MJ TC-WF-09' } }, async () => {
     const notes = `ZZ MJ ${uniq()}`;
     await mj.openNewJournal();
     await mj.fillJournal({ notes, lines: pair(10) });
@@ -250,7 +250,7 @@ test.describe('Manual Journal', () => {
     expect(await mj.searchJournals(notes)).toEqual([]);
   });
 
-  test('MJ TC-WF-12 / TC-DI-07 - Print in the view opens a preview, dialog or PDF', { tag: T }, async ({ page }) => {
+  test('TC17 - Print in the journal view opens a preview, dialog or PDF', { tag: T, annotation: { type: 'cases', description: 'MJ TC-WF-12, TC-DI-07' } }, async ({ page }) => {
     const notes = `ZZ MJ ${uniq()}`;
     await journal({ notes });
     await mj.openJournal((await mj.searchJournals(notes))[0].no);
@@ -261,7 +261,7 @@ test.describe('Manual Journal', () => {
 
   // ── Search / filter / pages ──────────────────────────────────────────────
 
-  test('MJ TC-SF-01 / 02 / 03 / 04 / 05 / 10 / 11 - Search by number, reference, notes, status; no match; special characters', { tag: T }, async () => {
+  test('TC18 - Manual journal search works by number, reference, notes and status, and handles no match and special characters', { tag: T, annotation: { type: 'cases', description: 'MJ TC-SF-01, MJ TC-SF-02, MJ TC-SF-03, MJ TC-SF-04, MJ TC-SF-05, MJ TC-SF-10, MJ TC-SF-11' } }, async () => {
     const ref = `R${uniq()}`;
     const notes = `ZZ MJ ${uniq()}`;
     await journal({ notes, ref });
@@ -276,7 +276,7 @@ test.describe('Manual Journal', () => {
     }
   });
 
-  test('MJ TC-SF-06 / 07 / 08 / 09 / 12 - Date filter: today only (with notes search), empty range, reversed; reload restores', { tag: T }, async ({ page }) => {
+  test('TC19 - Manual journal date filter: today only (with notes search), empty range and reversed range are handled, and reload restores the list', { tag: T, annotation: { type: 'cases', description: 'MJ TC-SF-06, MJ TC-SF-07, MJ TC-SF-08, MJ TC-SF-09, MJ TC-SF-12' } }, async ({ page }) => {
     const notes = `ZZ MJ ${uniq()}`;
     await journal({ notes });
     await mj.openJournals();
@@ -301,7 +301,7 @@ test.describe('Manual Journal', () => {
     expect(await mj.mjCount()).toBe(all);
   });
 
-  test('MJ TC-PG-01 / 04 / 05 / 06 / 07 / 09 - 20 per page, next / previous, first page previous disabled (one page when ≤ 20)', { tag: T }, async ({ page }) => {
+  test('TC20 - Manual journal list shows 20 per page with next and previous, previous is disabled on the first page, and there is one page when there are 20 or fewer', { tag: T, annotation: { type: 'cases', description: 'MJ TC-PG-01, MJ TC-PG-04, MJ TC-PG-05, MJ TC-PG-06, MJ TC-PG-07, MJ TC-PG-09' } }, async ({ page }) => {
     await mj.openJournals();
     const total = await mj.mjCount();
     const pag = page.locator('ul.ant-pagination').filter({ visible: true }).first();
@@ -321,7 +321,7 @@ test.describe('Manual Journal', () => {
 
   // ── Integration with the cheque tracker ──────────────────────────────────
 
-  test('MJ TC-INT-01 / 02 / 03 / 04 / 05 / 06 / TC-DI-03 / 04 - Collecting a cheque late fee creates an Open journal: reference = cheque no, amount = fee, today', { tag: T }, async () => {
+  test('TC21 - Collecting a cheque late fee creates an Open journal with reference equal to the cheque number, amount equal to the fee and today\'s date', { tag: T, annotation: { type: 'cases', description: 'MJ TC-INT-01, MJ TC-INT-02, MJ TC-INT-03, MJ TC-INT-04, MJ TC-INT-05, MJ TC-INT-06, TC-DI-03, TC-DI-04' } }, async () => {
     const [A] = await mj.ensurePricedItems(E.items());
     const c = await mj.invoiceWithCheque(A);
     await mj.openTracker();
@@ -337,7 +337,7 @@ test.describe('Manual Journal', () => {
     expect(v).toMatch(/Accounts Receivable/);
   });
 
-  test('MJ TC-INT-09 - A returned cheque without a collected fee creates no journal', { tag: T }, async () => {
+  test('TC22 - A returned cheque without a collected late fee creates no journal', { tag: T, annotation: { type: 'cases', description: 'MJ TC-INT-09' } }, async () => {
     const [A] = await mj.ensurePricedItems(E.items());
     const c = await mj.invoiceWithCheque(A);
     await mj.openTracker();
@@ -347,12 +347,12 @@ test.describe('Manual Journal', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['MJ TC-PG-02 / 03 / 10', 'Page size 50 / 100', 'The journal list has fewer than 50 entries.'],
-    ['MJ TC-COA-01 … 05', 'Chart of Accounts balances', 'No Chart of Accounts screen in the Finance menu of this build.'],
-    ['MJ TC-CT-03 / 04', 'Customer statement after delete / for drafts', 'Customer balance is checked on create (MJ TC-CT-01).'],
-    ['MJ TC-INT-07 / 08 / 10 / 11 / 12 / TC-DI-08', 'Several / partial late fees, statement entry, deleting the late-fee journal', 'One late-fee journal is checked (MJ TC-INT-01); partial collection is a Cheque Tracker case.'],
+  for (const [tc, id, title, why] of [
+    ['TC23', 'MJ TC-PG-02 / 03 / 10', 'Page size 50 / 100', 'The journal list has fewer than 50 entries.'],
+    ['TC24', 'MJ TC-COA-01 … 05', 'Chart of Accounts balances', 'No Chart of Accounts screen in the Finance menu of this build.'],
+    ['TC25', 'MJ TC-CT-03 / 04', 'Customer statement after delete / for drafts', 'Customer balance is checked on create (MJ TC-CT-01).'],
+    ['TC26', 'MJ TC-INT-07 / 08 / 10 / 11 / 12 / TC-DI-08', 'Several / partial late fees, statement entry, deleting the late-fee journal', 'One late-fee journal is checked (MJ TC-INT-01); partial collection is a Cheque Tracker case.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

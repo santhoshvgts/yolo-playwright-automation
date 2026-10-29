@@ -50,7 +50,7 @@ test.describe('Inventory Product', () => {
 
   // ── Lists / tabs ─────────────────────────────────────────────────────────
 
-  test('INV_FUNC_001 / INV_UI_001 / 005 / 006 / 013 / 014 - Tabs Items / Asset / Service / Category; list columns and Total Count per tab', { tag: T }, async ({ page }) => {
+  test('TC01 - Inventory products page has Items, Asset, Service and Category tabs, with list columns and Total Count for each tab', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_001, INV_UI_001, INV_UI_005, INV_UI_006, INV_UI_013, INV_UI_014' } }, async ({ page }) => {
     await inv.openProducts('Items');
     await expect(page.getByRole('tab')).toHaveText(['Items', 'Asset', 'Service', 'Category']);
     await expect(inv.tabBtn('Items')).toHaveAttribute('aria-selected', 'true');
@@ -69,7 +69,7 @@ test.describe('Inventory Product', () => {
 
   // ── Item create ──────────────────────────────────────────────────────────
 
-  test('INV_FUNC_002 / 003 / 004 / INV_UI_003 / 012 - Item form (one drawer, adapted from 3 steps): Basic Info, Sale Details, Purchase Details fields', { tag: T }, async () => {
+  test('TC02 - The item form is one drawer (adapted from 3 steps) with Basic Info, Sale Details and Purchase Details fields', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_002, INV_FUNC_003, INV_FUNC_004, INV_UI_003, INV_UI_012' } }, async () => {
     await inv.openNew('Item');
     const text = (await inv.formDrawer.innerText()).replace(/\s+/g, ' ');
     for (const t of ['Add New Product', 'Basic Info', 'Product Name', 'HSN Code', 'Sale Details', 'Unit of Measure', 'Sale Price', 'Tax Preference', 'Gst Rate', 'Purchase Details', 'Cost per', 'Purchase Account', 'Inventory Account']) expect(text).toContain(t);
@@ -77,7 +77,7 @@ test.describe('Inventory Product', () => {
     await inv.closeForm();
   });
 
-  test('INV_NEG_001 / INV_VAL_001 / 006 / INV_UI_004 - Save empty: Name, Selling Price, Tax Preference and GST required', { tag: T }, async () => {
+  test('TC03 - Saving an empty item form requires Name, Selling Price, Tax Preference and GST', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_001, INV_VAL_001, INV_VAL_006, INV_UI_004' } }, async () => {
     await inv.openNew('Item');
     const r = await inv.trySave();
     expect(r.saved).toBe(false);
@@ -86,7 +86,7 @@ test.describe('Inventory Product', () => {
     await inv.closeForm();
   });
 
-  test('INV_FUNC_007 / INV_POS_001 / 003 / 007 / INV_BND_002 / 006 / INV_BL_002 / INV_E2E_001 / 013 / INV_UI_002 - Item with 8-digit HSN, GST12, ₹250: listed with HSN, 12%, ₹250 and Out of stocks (no stock)', { tag: T }, async () => {
+  test('TC04 - Create an item with 8-digit HSN, GST12 and ₹250: it is listed with the HSN, 12%, ₹250 and Out of stocks (no stock)', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_007, INV_POS_001, INV_POS_003, INV_POS_007, INV_BND_002, INV_BND_006, INV_BL_002, INV_E2E_001, INV_E2E_013, INV_UI_002' } }, async () => {
     const name = nm();
     await inv.createProduct('Item', { name, hsn: '01011010', price: 250, gst: 'GST12' });
     const row = await inv.rowOf('Items', name);
@@ -97,7 +97,7 @@ test.describe('Inventory Product', () => {
     expect(inv.price(row)).toBe(250);
   });
 
-  test('INV_FUNC_008 / INV_E2E_006 - Close on a filled item form creates nothing', { tag: T }, async () => {
+  test('TC05 - Close on a filled item form creates nothing', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_008, INV_E2E_006' } }, async () => {
     const name = nm();
     await inv.openNew('Item');
     await inv.fillProduct({ name, price: 10 });
@@ -107,7 +107,7 @@ test.describe('Inventory Product', () => {
   });
 
   // QA (BUG-INV-02): an HSN code of 4–8 digits is valid, so 7 digits is accepted.
-  test('INV_NEG_003 / INV_VAL_002 / 003 / INV_BND_003 / 004 - HSN: letters dropped; 7 digits (4–8 allowed) saved; more than 8 digits refused', { tag: T }, async () => {
+  test('TC06 - HSN field drops letters, saves 7 digits (4 to 8 are allowed) and refuses more than 8 digits', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_003, INV_VAL_002, INV_VAL_003, INV_BND_003, INV_BND_004' } }, async () => {
     await inv.openNew('Item');
     await inv.fillProduct({ name: nm(), price: 10, hsn: '1234567' });
     await inv.input('hsn_code').fill('');
@@ -122,7 +122,7 @@ test.describe('Inventory Product', () => {
     expect(over.saved, '11-digit HSN refused').toBe(false);
   });
 
-  test('INV_NEG_004 / 011 / INV_VAL_007 - Sale price: "-" and letters refused', { tag: T }, async () => {
+  test('TC07 - Item sale price refuses "-" and letters', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_004, INV_NEG_011, INV_VAL_007' } }, async () => {
     await inv.openNew('Item');
     for (const bad of ['-100', 'abc']) {
       await inv.input('selling_price').fill('');
@@ -132,7 +132,7 @@ test.describe('Inventory Product', () => {
     await inv.closeForm();
   });
 
-  test('INV_NEG_016 / INV_VAL_012 - Cost per pcs: "-" refused', { tag: T }, async () => {
+  test('TC08 - Item Cost per pcs refuses "-"', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_016, INV_VAL_012' } }, async () => {
     await inv.openNew('Item');
     const cost = inv.input('cost_per_piece');
     await cost.pressSequentially('-50');
@@ -140,7 +140,7 @@ test.describe('Inventory Product', () => {
     await inv.closeForm();
   });
 
-  test('INV_BND_001 / 008 / INV_VAL_013 - One-character name and ₹0.01 save; a 300-character name is limited or refused', { tag: T }, async () => {
+  test('TC09 - An item with a one-character name and ₹0.01 price saves, and a 300-character name is limited or refused', { tag: T, annotation: { type: 'cases', description: 'INV_BND_001, INV_BND_008, INV_VAL_013' } }, async () => {
     const one = String.fromCharCode(65 + Math.floor(Math.random() * 26)) ;
     await inv.openNew('Item');
     await inv.fillProduct({ name: `${one}`, price: '0.01' });
@@ -161,7 +161,7 @@ test.describe('Inventory Product', () => {
   });
 
   // QA (BUG-INV-01): there is no duplicate-name check for items (current flow).
-  test('INV_NEG_014 / INV_VAL_018 - A second item with the same name is accepted', { tag: T }, async () => {
+  test('TC10 - A second item with the same name is accepted', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_014, INV_VAL_018' } }, async () => {
     const name = nm();
     await inv.createProduct('Item', { name });
     await inv.openNew('Item');
@@ -170,7 +170,7 @@ test.describe('Inventory Product', () => {
     expect(r.saved, `duplicate "${name}" is accepted (${r.errors.join(' | ')})`).toBe(true);
   });
 
-  test('INV_NEG_018 / INV_SEC_005 - Script text in the product name is not run', { tag: T }, async ({ page }) => {
+  test('TC11 - Script text in the product name is not run', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_018, INV_SEC_005' } }, async ({ page }) => {
     const dialogs = [];
     page.on('dialog', (d) => { dialogs.push(d.message()); d.dismiss().catch(() => {}); });
     const name = `ZZ <img src=x onerror=window.__xss=1> ${uniq()}`;
@@ -183,7 +183,7 @@ test.describe('Inventory Product', () => {
     expect(dialogs).toEqual([]);
   });
 
-  test('INV_POS_014 / INV_VAL_014 - CESS rate 5 % saved and shown in Tax Preferences', { tag: T }, async () => {
+  test('TC12 - A CESS rate of 5 % is saved and shown in Tax Preferences', { tag: T, annotation: { type: 'cases', description: 'INV_POS_014, INV_VAL_014' } }, async () => {
     const name = nm();
     await inv.createProduct('Item', { name, cess: 5 });
     const d = await inv.openRow('Items', name);
@@ -192,7 +192,7 @@ test.describe('Inventory Product', () => {
 
   // ── Item detail / edit / active ──────────────────────────────────────────
 
-  test('INV_FUNC_009 / 010 / INV_UI_007 / 008 / INV_POS_002 / 017 / INV_BL_016 / INV_BND_007 - Detail: Close, Active, Edit, Stock (Default warehouse = stock), Sale Detail, Tax, Accounts; list shows "N pcs Left"', { tag: T }, async () => {
+  test('TC13 - Item detail shows Close, Active, Edit, Stock (Default warehouse equals stock), Sale Detail, Tax and Accounts, and the list shows "N pcs Left"', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_009, INV_FUNC_010, INV_UI_007, INV_UI_008, INV_POS_002, INV_POS_017, INV_BL_016, INV_BND_007' } }, async () => {
     const it = await pi.setupItem({ name: nm(), price: '40', stock: 1 });
     const row = await inv.rowOf('Items', it.itemName);
     expect(row[1]).toMatch(/^1 pcs Left/);
@@ -204,7 +204,7 @@ test.describe('Inventory Product', () => {
     await expect(inv.page.locator('.ant-drawer-content').filter({ visible: true })).toHaveCount(0);
   });
 
-  test('INV_FUNC_011 / INV_POS_008 / INV_VAL_015 / INV_BL_008 / INV_E2E_002 / INV_ACC_006 - Inactive (Space key): not offered on a purchase invoice; active again: offered', { tag: T }, async ({ page }) => {
+  test('TC14 - Make an item inactive (Space key): it is not offered on a purchase invoice, and when made active again it is offered', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_011, INV_POS_008, INV_VAL_015, INV_BL_008, INV_E2E_002, INV_ACC_006' } }, async ({ page }) => {
     const name = nm();
     await inv.createProduct('Item', { name });
     await inv.openRow('Items', name);
@@ -225,7 +225,7 @@ test.describe('Inventory Product', () => {
     await pi.discardForm();
   });
 
-  test('INV_FUNC_012 / 013 / INV_E2E_005 / 009 - Edit basic info (name) and Tax Preferences (GST12): list follows', { tag: T }, async () => {
+  test('TC15 - Edit an item\'s basic info (name) and Tax Preferences (GST12): the list follows the changes', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_012, INV_FUNC_013, INV_E2E_005, INV_E2E_009' } }, async () => {
     const name = nm();
     await inv.createProduct('Item', { name });
     await inv.openRow('Items', name);
@@ -244,7 +244,7 @@ test.describe('Inventory Product', () => {
     expect(row[3]).toBe('12%');
   });
 
-  test('INV_FUNC_014 / 015 / INV_E2E_015 - Edit Account Details: sales account changed and shown', { tag: T }, async () => {
+  test('TC16 - Edit an item\'s Account Details: the changed sales account is saved and shown', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_014, INV_FUNC_015, INV_E2E_015' } }, async () => {
     const name = nm();
     await inv.createProduct('Item', { name });
     await inv.openRow('Items', name);
@@ -258,7 +258,7 @@ test.describe('Inventory Product', () => {
 
   // ── Service ──────────────────────────────────────────────────────────────
 
-  test('INV_FUNC_016 / 017 / 018 / INV_POS_009 / INV_BND_005 / INV_E2E_004 / INV_BL_013 - Service (one drawer, Nos, no stock): with 6-digit SAC, ₹500, GST18 → listed; detail has Sale Detail / Tax / Accounts and no stock', { tag: T }, async () => {
+  test('TC17 - Create a service (one drawer, Nos, no stock) with 6-digit SAC, ₹500 and GST18: it is listed, and its detail has Sale Detail, Tax and Accounts and no stock', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_016, INV_FUNC_017, INV_FUNC_018, INV_POS_009, INV_BND_005, INV_E2E_004, INV_BL_013' } }, async () => {
     await inv.openNew('Service');
     const text = (await inv.formDrawer.innerText()).replace(/\s+/g, ' ');
     for (const t of ['Add New Service', 'Service Name', 'SAC Code', 'Sale Price Per Nos', 'Tax Preference', 'Sales Account', 'Purchase Account']) expect(text).toContain(t);
@@ -275,7 +275,7 @@ test.describe('Inventory Product', () => {
     expect(d).not.toContain('STOCK IN HAND');
   });
 
-  test('INV_NEG_006 / 007 / 017 / INV_VAL_004 / 009 / INV_POS_010 - Service: empty save refused; 4-digit SAC refused; no SAC saves with "-"', { tag: T }, async () => {
+  test('TC18 - Service form: an empty save is refused, a 4-digit SAC is refused, and no SAC saves with "-"', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_006, INV_NEG_007, INV_NEG_017, INV_VAL_004, INV_VAL_009, INV_POS_010' } }, async () => {
     await inv.openNew('Service');
     const r = await inv.trySave();
     expect(r.errors.join(' ')).toMatch(/Name is Required/i);
@@ -288,7 +288,7 @@ test.describe('Inventory Product', () => {
     expect((await inv.rowOf('Service', name))[1]).toMatch(/^-?$/);
   });
 
-  test('INV_POS_018 - Service Sale Detail edit saves a new price', { tag: T }, async () => {
+  test('TC19 - Editing a service\'s Sale Detail saves a new price', { tag: T, annotation: { type: 'cases', description: 'INV_POS_018' } }, async () => {
     const name = nm('Svc');
     await inv.createProduct('Service', { name, price: 300 });
     await inv.openRow('Service', name);
@@ -301,7 +301,7 @@ test.describe('Inventory Product', () => {
 
   // ── Category ─────────────────────────────────────────────────────────────
 
-  test('INV_FUNC_019 / 020 / 021 / INV_POS_011 / 012 / INV_BND_010 / INV_UI_010 / 011 / INV_BL_012 / INV_E2E_012 - Category with description; child with parent; list shows parent / "-"; detail', { tag: T }, async () => {
+  test('TC20 - Create a category with a description and a child category with a parent: the list shows the parent or "-", and the detail is correct', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_019, INV_FUNC_020, INV_FUNC_021, INV_POS_011, INV_POS_012, INV_BND_010, INV_UI_010, INV_UI_011, INV_BL_012, INV_E2E_012' } }, async () => {
     await inv.openNew('Category');
     const text = (await inv.formDrawer.innerText()).replace(/\s+/g, ' ');
     for (const t of ['Add New Category', 'Category Name', 'Add Description', 'Parent Category']) expect(text).toContain(t);
@@ -317,7 +317,7 @@ test.describe('Inventory Product', () => {
     expect(d).toContain(parent);
   });
 
-  test('INV_NEG_008 / 009 / INV_VAL_008 / INV_SEC_006 - Category: empty name refused; Close saves nothing; script text not run', { tag: T }, async ({ page }) => {
+  test('TC21 - Category form: an empty name is refused, Close saves nothing and script text is not run', { tag: T, annotation: { type: 'cases', description: 'INV_NEG_008, INV_NEG_009, INV_VAL_008, INV_SEC_006' } }, async ({ page }) => {
     await inv.openNew('Category');
     const r = await inv.trySave();
     expect(r.errors.join(' ')).toMatch(/Name is Required/i);
@@ -329,7 +329,7 @@ test.describe('Inventory Product', () => {
     expect(await page.evaluate(() => window.__xss)).toBeUndefined();
   });
 
-  test('INV_POS_013 / INV_E2E_007 - Edit the category name and description', { tag: T }, async () => {
+  test('TC22 - Edit a category\'s name and description', { tag: T, annotation: { type: 'cases', description: 'INV_POS_013, INV_E2E_007' } }, async () => {
     const name = await inv.createCategory({ name: nm('Cat'), desc: 'old' });
     await inv.openRow('Category', name);
     await inv.formDrawer.getByRole('button', { name: /Edit/ }).first().click();
@@ -344,7 +344,7 @@ test.describe('Inventory Product', () => {
     if (await desc.count()) expect(row[1]).toBe('new description');
   });
 
-  test('INV_FUNC_022 / INV_E2E_014 / INV_NEG_010 / INV_E2E_003 / INV_BL_011 - Delete an unused category (count −1); a category used by an item is kept', { tag: T }, async ({ page }) => {
+  test('TC23 - Delete an unused category (count drops by 1), while a category used by an item is kept', { tag: T, annotation: { type: 'cases', description: 'INV_FUNC_022, INV_E2E_014, INV_NEG_010, INV_E2E_003, INV_BL_011' } }, async ({ page }) => {
     const used = await inv.createCategory({ name: nm('Cat') });
     const item = nm();
     await inv.createProduct('Item', { name: item, category: used });
@@ -372,7 +372,7 @@ test.describe('Inventory Product', () => {
 
   // ── Stock / tax on invoices ──────────────────────────────────────────────
 
-  test('INV_BL_005 / 006 / INV_POS_005 / 006 - Item price exclusive: invoice ₹100 + 18 % = ₹118', { tag: T }, async () => {
+  test('TC24 - An item price is exclusive of tax: on an invoice ₹100 plus 18 % gives ₹118', { tag: T, annotation: { type: 'cases', description: 'INV_BL_005, INV_BL_006, INV_POS_005, INV_POS_006' } }, async () => {
     const si = new SalesInvoiceEditPage(pi.page);
     const it = await pi.setupItem({ name: nm(), price: '100', stock: 5 });
     await si.startInvoice({});
@@ -385,7 +385,7 @@ test.describe('Inventory Product', () => {
 
   // ── Search / pagination ──────────────────────────────────────────────────
 
-  test('INV_SF_001 / 002 / 003 / 004 / 005 / 010 / 012 / INV_SEC_004 / INV_SF_011 - Item search: exact, partial, case, no match, SQL; per tab; cleared on return', { tag: T }, async () => {
+  test('TC25 - Item search works for exact, partial, case variations, no match and SQL text, per tab, and is cleared on return', { tag: T, annotation: { type: 'cases', description: 'INV_SF_001, INV_SF_002, INV_SF_003, INV_SF_004, INV_SF_005, INV_SF_010, INV_SF_012, INV_SEC_004, INV_SF_011' } }, async () => {
     const name = nm();
     await inv.createProduct('Item', { name });
     const total = (await inv.openProducts('Items'), await inv.totalCount());
@@ -403,7 +403,7 @@ test.describe('Inventory Product', () => {
     expect(await inv.totalCount(), 'other users may add items meanwhile').toBeGreaterThanOrEqual(total);
   });
 
-  test('INV_SF_006 / 007 / 008 - Service and category search', { tag: T }, async () => {
+  test('TC26 - Search works on the Service and Category tabs', { tag: T, annotation: { type: 'cases', description: 'INV_SF_006, INV_SF_007, INV_SF_008' } }, async () => {
     const svc = nm('Svc');
     await inv.createProduct('Service', { name: svc });
     const cat = await inv.createCategory({ name: nm('Cat') });
@@ -412,7 +412,7 @@ test.describe('Inventory Product', () => {
     expect((await inv.searchTab('Category', cat.slice(0, 7))).map((r) => r[0])).toContain(cat);
   });
 
-  test('INV_PAG_005 / 007 / 008 / 009 - Items: 20 per page, page size selector, count across pages; a search returns to page 1', { tag: T }, async ({ page }) => {
+  test('TC27 - Items list shows 20 per page with a page size selector and a count across pages, and a search returns to page 1', { tag: T, annotation: { type: 'cases', description: 'INV_PAG_005, INV_PAG_007, INV_PAG_008, INV_PAG_009' } }, async ({ page }) => {
     await inv.openProducts('Items');
     const total = await inv.totalCount();
     test.skip(total <= 20, 'one page of items');
@@ -430,7 +430,7 @@ test.describe('Inventory Product', () => {
     });
   });
 
-  test('INV_SEC_001 / 011 - Without a session the products page redirects to login', { tag: T }, async ({ browser, page }) => {
+  test('TC28 - Without a session the products page redirects to the login page', { tag: T, annotation: { type: 'cases', description: 'INV_SEC_001, INV_SEC_011' } }, async ({ browser, page }) => {
     await inv.openProducts('Items');
     const ctx = await browser.newContext();
     const anon = await ctx.newPage();
@@ -442,29 +442,29 @@ test.describe('Inventory Product', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['INV_FUNC_005 / 006 / INV_UI_003 (steps)', 'Wizard Back / Next between steps', 'The item form is one drawer — no steps.'],
-    ['INV_NEG_002 / INV_VAL_005', 'Unit of Measure required', 'Unit of Measure defaults to pcs (Nos for services) and cannot be emptied.'],
-    ['INV_NEG_005 / 012 / INV_VAL_010 / INV_BND_009 / INV_BL_001', 'Opening stock on the item form', 'No opening-stock field — stock comes from a stock adjustment (shared setupItem).'],
-    ['INV_NEG_015 / INV_VAL_011 / INV_FUNC_015 / INV_POS_016 / INV_BL_010 / INV_BND_011', 'Minimum stock reminder', 'No minimum-stock field on the item form or detail.'],
-    ['INV_POS_004 / INV_BL_009', 'Batch tracking', 'Stock Tracking options need batch-enabled warehouses — not in this org.'],
-    ['INV_VAL_017', 'Out-of-stock item cannot be sold', 'Sales allow negative stock in this org (TC-ST checks).'],
-    ['INV_VAL_016', 'Inactive service on sales invoice', 'Same switch as items — checked for items (INV_FUNC_011).'],
-    ['INV_VAL_019', 'Circular parent category', 'Parent list only offers existing categories; a child cannot be picked for its own parent without a second edit flow.'],
-    ['INV_VAL_020 / INV_BND_012', 'Alternate UOM conversion 0 / 1', 'Alternate UOMs are covered by the Sales Invoice stock sheet.'],
-    ['INV_BL_014 / 015 / 017 / 018', 'Journal accounts / CESS on invoices', 'Covered by the Sales / Purchase invoice journal and CESS tests.'],
-    ['INV_PAG_001…004 / 006 / 010', 'Category / service pagination, exactly 20 items', 'The org has < 20 categories / services; exact counts need a controlled org.'],
-    ['INV_SF_009', 'Search by HSN code', 'Search is by name only (checked: name search).'],
-    ['INV_UPL_001…008 / INV_SEC_009 / INV_E2E_011', 'Product / service / category image upload', 'Needs image fixtures and upload checks — not set up for this suite.'],
-    ['INV_NEG_013 / INV_SEC_003 / 010 / 014', 'Role restrictions', 'No view-only / inventory-manager / accountant users in the test data.'],
-    ['INV_SEC_002', 'Another org\'s items', 'Needs a second org.'],
-    ['INV_SEC_007 / 012', 'CSRF / rate limiting', 'API-level security tests, not UI tests.'],
-    ['INV_SEC_008', 'Session timeout', 'Needs a shortened session lifetime.'],
-    ['INV_SEC_013', 'Deleted item by URL', 'Items cannot be deleted; detail is a drawer (no URL).'],
-    ['INV_SEC_015', 'Script text in SKU', 'SKU behaves like the name field (INV_NEG_018).'],
-    ['INV_PERF_001…010', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
-    ['INV_ACC_001 / 002 / 003 / 004 / 005 / 007 / 008', 'Keyboard list, screen reader, contrast, labels', 'Needs an accessibility audit tool (axe) / screen reader.'],
+  for (const [tc, id, title, why] of [
+    ['TC29', 'INV_FUNC_005 / 006 / INV_UI_003 (steps)', 'Wizard Back / Next between steps', 'The item form is one drawer — no steps.'],
+    ['TC30', 'INV_NEG_002 / INV_VAL_005', 'Unit of Measure required', 'Unit of Measure defaults to pcs (Nos for services) and cannot be emptied.'],
+    ['TC31', 'INV_NEG_005 / 012 / INV_VAL_010 / INV_BND_009 / INV_BL_001', 'Opening stock on the item form', 'No opening-stock field — stock comes from a stock adjustment (shared setupItem).'],
+    ['TC32', 'INV_NEG_015 / INV_VAL_011 / INV_FUNC_015 / INV_POS_016 / INV_BL_010 / INV_BND_011', 'Minimum stock reminder', 'No minimum-stock field on the item form or detail.'],
+    ['TC33', 'INV_POS_004 / INV_BL_009', 'Batch tracking', 'Stock Tracking options need batch-enabled warehouses — not in this org.'],
+    ['TC34', 'INV_VAL_017', 'Out-of-stock item cannot be sold', 'Sales allow negative stock in this org (TC-ST checks).'],
+    ['TC35', 'INV_VAL_016', 'Inactive service on sales invoice', 'Same switch as items — checked for items (INV_FUNC_011).'],
+    ['TC36', 'INV_VAL_019', 'Circular parent category', 'Parent list only offers existing categories; a child cannot be picked for its own parent without a second edit flow.'],
+    ['TC37', 'INV_VAL_020 / INV_BND_012', 'Alternate UOM conversion 0 / 1', 'Alternate UOMs are covered by the Sales Invoice stock sheet.'],
+    ['TC38', 'INV_BL_014 / 015 / 017 / 018', 'Journal accounts / CESS on invoices', 'Covered by the Sales / Purchase invoice journal and CESS tests.'],
+    ['TC39', 'INV_PAG_001…004 / 006 / 010', 'Category / service pagination, exactly 20 items', 'The org has < 20 categories / services; exact counts need a controlled org.'],
+    ['TC40', 'INV_SF_009', 'Search by HSN code', 'Search is by name only (checked: name search).'],
+    ['TC41', 'INV_UPL_001…008 / INV_SEC_009 / INV_E2E_011', 'Product / service / category image upload', 'Needs image fixtures and upload checks — not set up for this suite.'],
+    ['TC42', 'INV_NEG_013 / INV_SEC_003 / 010 / 014', 'Role restrictions', 'No view-only / inventory-manager / accountant users in the test data.'],
+    ['TC43', 'INV_SEC_002', 'Another org\'s items', 'Needs a second org.'],
+    ['TC44', 'INV_SEC_007 / 012', 'CSRF / rate limiting', 'API-level security tests, not UI tests.'],
+    ['TC45', 'INV_SEC_008', 'Session timeout', 'Needs a shortened session lifetime.'],
+    ['TC46', 'INV_SEC_013', 'Deleted item by URL', 'Items cannot be deleted; detail is a drawer (no URL).'],
+    ['TC47', 'INV_SEC_015', 'Script text in SKU', 'SKU behaves like the name field (INV_NEG_018).'],
+    ['TC48', 'INV_PERF_001…010', 'Response-time / concurrency limits', 'Environment-dependent; not a functional check.'],
+    ['TC49', 'INV_ACC_001 / 002 / 003 / 004 / 005 / 007 / 008', 'Keyboard list, screen reader, contrast, labels', 'Needs an accessibility audit tool (axe) / screen reader.'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });

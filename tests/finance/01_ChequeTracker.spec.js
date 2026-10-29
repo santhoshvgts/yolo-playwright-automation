@@ -48,7 +48,7 @@ test.describe('Cheque Tracker', () => {
 
   // ── Layout ───────────────────────────────────────────────────────────────
 
-  test('CT TC-UI-01 / 04 / 05 / 06 / 07 / 08 / 09 / 13 / 14 / 15 / 16 / 17 - Tabs with counts; columns per tab; Search, dates, Export, Move to (Revert on Cleared); ⋮ on rows', { tag: T }, async ({ page }) => {
+  test('TC01 - Cheque tracker screen shows tabs with counts, the right columns per tab, Search, date filters, Export, Move to (with Revert on the Cleared tab) and a ⋮ menu on each row', { tag: T, annotation: { type: 'cases', description: 'CT TC-UI-01, CT TC-UI-04, CT TC-UI-05, CT TC-UI-06, CT TC-UI-07, CT TC-UI-08, CT TC-UI-09, CT TC-UI-13, CT TC-UI-14, CT TC-UI-15, CT TC-UI-16, CT TC-UI-17' } }, async ({ page }) => {
     await cheque();
     await ct.openTracker();
     for (const t of ['Cheque In Hand', 'Deposited', 'Cleared', 'Cancelled', 'Returned']) await expect(ct.ctTab(t)).toHaveText(new RegExp(`^${t} \\(\\d+\\)$`));
@@ -76,7 +76,7 @@ test.describe('Cheque Tracker', () => {
     await expect(ct.revertBtn).toBeVisible();
   });
 
-  test('CT TC-UI-10 / 11 - Header checkbox selects every row; a row checkbox selects one', { tag: T }, async ({ page }) => {
+  test('TC02 - In the cheque tracker, the header checkbox selects every row and a row checkbox selects only that row', { tag: T, annotation: { type: 'cases', description: 'CT TC-UI-10, CT TC-UI-11' } }, async ({ page }) => {
     await cheque();
     await cheque();
     await ct.openTracker();
@@ -90,7 +90,7 @@ test.describe('Cheque Tracker', () => {
 
   // ── Cheque In Hand ───────────────────────────────────────────────────────
 
-  test('CT TC-CIH-01 / 02 / 12 / TC-INT-01 - Cheque payment lands in Cheque In Hand with its details; invoice stays due', { tag: T }, async () => {
+  test('TC03 - A cheque payment appears in the Cheque In Hand tab with its details, and the invoice stays due', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-01, CT TC-CIH-02, CT TC-CIH-12, TC-INT-01' } }, async () => {
     const c = await cheque();
     const row = await ct.chequeRow(c.chequeNo);
     expect(row, 'cheque in hand').toBeTruthy();
@@ -102,7 +102,7 @@ test.describe('Cheque Tracker', () => {
     expect(await status(c.billNo)).not.toBe('Paid');
   });
 
-  test('CT TC-CIH-03 / TC-UI-03 / TC-DEP-01 / 07 / TC-INT-02 - In Hand → Deposited: counts move by one, Deposited Date today, invoice still due', { tag: T }, async () => {
+  test('TC04 - Move a cheque from In Hand to Deposited: tab counts move by one, Deposited Date is today and the invoice is still due', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-03, TC-UI-03, TC-DEP-01, TC-DEP-07, TC-INT-02' } }, async () => {
     const c = await cheque();
     await ct.openTracker();
     const before = await ct.counts();
@@ -114,7 +114,7 @@ test.describe('Cheque Tracker', () => {
     expect(await status(c.billNo)).not.toBe('Paid');
   });
 
-  test('CT TC-DEP-02 / TC-CLR-01 / 02 / 03 / 06 / TC-INT-03 / TC-RP-24 / TC-MT-09 - Deposited → Cleared: Cleared Date today; invoice Paid', { tag: T }, async () => {
+  test('TC05 - Move a cheque from Deposited to Cleared: Cleared Date is today and the invoice becomes Paid', { tag: T, annotation: { type: 'cases', description: 'CT TC-DEP-02, TC-CLR-01, TC-CLR-02, TC-CLR-03, TC-CLR-06, TC-INT-03, TC-RP-24, TC-MT-09' } }, async () => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Deposited');
     await move(c, 'Deposited', 'Cleared');
@@ -125,7 +125,7 @@ test.describe('Cheque Tracker', () => {
   });
 
   // QA (BUG-CT-02): reverting a cleared cheque back to In Hand is not a supported flow.
-  test.fixme('CT TC-CLR-04 / TC-INT-04 / TC-EC-05 - Revert a cleared cheque: back In Hand, invoice due again (not a supported flow)', { tag: T }, async () => {
+  test.fixme('TC06 - Revert a cleared cheque: it goes back to In Hand and the invoice is due again (not a supported flow)', { tag: T, annotation: { type: 'cases', description: 'CT TC-CLR-04, TC-INT-04, TC-EC-05' } }, async () => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Cleared');
     expect(await status(c.billNo)).toBe('Paid');
@@ -135,14 +135,14 @@ test.describe('Cheque Tracker', () => {
     expect(await status(c.billNo)).not.toBe('Paid');
   });
 
-  test('CT TC-CIH-04 / TC-CAN-01 / 06 / TC-INT-05 - In Hand → Cancelled: Cancelled Date today, invoice due', { tag: T }, async () => {
+  test('TC07 - Move a cheque from In Hand to Cancelled: Cancelled Date is today and the invoice is due', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-04, TC-CAN-01, TC-CAN-06, TC-INT-05' } }, async () => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Cancelled');
     expect((await ct.chequeRow(c.chequeNo, 'Cancelled'))['Cancelled Date']).toBe(iso(new Date()));
     expect(await status(c.billNo)).not.toBe('Paid');
   });
 
-  test('CT TC-CAN-02 / 03 / 04 / 05 - Cancelled → In Hand / Deposited / Returned allowed; Cleared not offered', { tag: T }, async ({ page }) => {
+  test('TC08 - A cancelled cheque can be moved to In Hand, Deposited or Returned, and Cleared is not offered', { tag: T, annotation: { type: 'cases', description: 'CT TC-CAN-02, CT TC-CAN-03, CT TC-CAN-04, CT TC-CAN-05' } }, async ({ page }) => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Cancelled');
     await ct.openTracker('Cancelled');
@@ -158,7 +158,7 @@ test.describe('Cheque Tracker', () => {
     await move(c, 'Cancelled', target);
   });
 
-  test('CT TC-CIH-05 / TC-RET-01 / 02 / 13 / TC-INT-06 - In Hand → Returned: Returned Date, Late Fee Charge filled; invoice due', { tag: T }, async () => {
+  test('TC09 - Move a cheque from In Hand to Returned: Returned Date and Late Fee Charge are filled and the invoice is due', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-05, TC-RET-01, TC-RET-02, TC-RET-13, TC-INT-06' } }, async () => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Returned');
     const row = await ct.chequeRow(c.chequeNo, 'Returned');
@@ -167,7 +167,7 @@ test.describe('Cheque Tracker', () => {
     expect(await status(c.billNo)).not.toBe('Paid');
   });
 
-  test('CT TC-CIH-06 / TC-DEP-05 / TC-MT-03 - Bulk: three cheques In Hand → Deposited → Cleared together', { tag: T }, async () => {
+  test('TC10 - Bulk move three cheques together from In Hand to Deposited and then to Cleared', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-06, TC-DEP-05, TC-MT-03' } }, async () => {
     const cs = [await cheque(), await cheque(), await cheque()];
     await ct.openTracker();
     const before = await ct.counts();
@@ -179,7 +179,7 @@ test.describe('Cheque Tracker', () => {
     for (const c of cs) expect(await ct.chequeRow(c.chequeNo, 'Cleared'), c.chequeNo).toBeTruthy();
   });
 
-  test('CT TC-CIH-07 / TC-DEP-06 / TC-MT-05 / 07 / TC-EC-07 - A future-dated cheque cannot be moved; today\'s can (mixed bulk moves only the dated one)', { tag: T }, async () => {
+  test('TC11 - A future-dated cheque cannot be moved but today\'s cheque can (a mixed bulk move moves only the dated one)', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-07, TC-DEP-06, TC-MT-05, TC-MT-07, TC-EC-07' } }, async () => {
     const future = await cheque({ chequeDate: paymentDate(addDays(new Date(), 10)) });
     const today = await cheque();
     await ct.openTracker();
@@ -188,7 +188,7 @@ test.describe('Cheque Tracker', () => {
     expect(await ct.chequeRow(future.chequeNo), `future cheque stays in hand ("${msg}")`).toBeTruthy();
   });
 
-  test('CT TC-CIH-08 / TC-MT-06 - Move to with nothing selected does nothing (or asks to select)', { tag: T }, async ({ page }) => {
+  test('TC12 - Move to with no cheque selected does nothing (or asks to select a cheque)', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-08, TC-MT-06' } }, async ({ page }) => {
     await cheque();
     await ct.openTracker();
     const before = await ct.counts();
@@ -200,7 +200,7 @@ test.describe('Cheque Tracker', () => {
     expect(await ct.counts()).toEqual(before);
   });
 
-  test('CT TC-CIH-09 / TC-MT-04 - ⋮ → Move To → Deposited moves only that cheque', { tag: T }, async () => {
+  test('TC13 - From a cheque row, ⋮ then Move To then Deposited moves only that cheque', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-09, TC-MT-04' } }, async () => {
     const c = await cheque();
     const other = await cheque();
     await ct.openTracker();
@@ -209,7 +209,7 @@ test.describe('Cheque Tracker', () => {
     expect(await ct.chequeRow(other.chequeNo), 'other cheque untouched').toBeTruthy();
   });
 
-  test('CT TC-DEP-03 / 04 - Deposited → Returned and Deposited → Cancelled', { tag: T }, async () => {
+  test('TC14 - A deposited cheque can be moved to Returned and to Cancelled', { tag: T, annotation: { type: 'cases', description: 'CT TC-DEP-03, CT TC-DEP-04' } }, async () => {
     const r = await cheque();
     await move(r, 'Cheque In Hand', 'Deposited');
     await move(r, 'Deposited', 'Returned');
@@ -220,7 +220,7 @@ test.describe('Cheque Tracker', () => {
 
   // ── Returned / late fee ──────────────────────────────────────────────────
 
-  test('CT TC-RET-03 / 05 / 06 / 07 / 08 / TC-EC-09 - Collect Amount: popup with amount and account; no account, ₹0 and "-" refused; Cancel changes nothing', { tag: T }, async ({ page }) => {
+  test('TC15 - Collect Amount popup shows amount and account; no account, ₹0 and "-" are refused, and Cancel changes nothing', { tag: T, annotation: { type: 'cases', description: 'CT TC-RET-03, CT TC-RET-05, CT TC-RET-06, CT TC-RET-07, CT TC-RET-08, TC-EC-09' } }, async ({ page }) => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Returned');
     await ct.openTracker('Returned');
@@ -234,7 +234,7 @@ test.describe('Cheque Tracker', () => {
     await page.keyboard.press('Escape');
   });
 
-  test('CT TC-RET-04 / 09 / 10 / 15 / TC-MT-08 / TC-EC-10 / 08 - Collect the late fee: Paid Amount filled; status then locked; Collect hidden afterwards', { tag: T }, async () => {
+  test('TC16 - Collect the late fee on a returned cheque: Paid Amount is filled, the status is then locked and Collect is hidden afterwards', { tag: T, annotation: { type: 'cases', description: 'CT TC-RET-04, CT TC-RET-09, CT TC-RET-10, CT TC-RET-15, TC-MT-08, TC-EC-10, TC-EC-08' } }, async () => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Returned');
     const row = await ct.chequeRow(c.chequeNo, 'Returned');
@@ -251,7 +251,7 @@ test.describe('Cheque Tracker', () => {
 
   // ── Search / filter / export ─────────────────────────────────────────────
 
-  test('CT TC-SF-01 / 02 / 03 / 04 / 05 / 10 - Search by cheque no, customer, receipt; no match; special characters; per tab', { tag: T }, async () => {
+  test('TC17 - Cheque tracker search works by cheque number, customer and receipt, handles no match and special characters, and works per tab', { tag: T, annotation: { type: 'cases', description: 'CT TC-SF-01, CT TC-SF-02, CT TC-SF-03, CT TC-SF-04, CT TC-SF-05, CT TC-SF-10' } }, async () => {
     const c = await cheque();
     const row = await ct.chequeRow(c.chequeNo);
     expect((await ct.searchCt(row['Customer Name'])).every((r) => r['Customer Name'] === row['Customer Name'])).toBe(true);
@@ -263,7 +263,7 @@ test.describe('Cheque Tracker', () => {
     expect((await ct.searchCt(c.chequeNo)).length, 'in-hand cheque not on Deposited').toBe(0);
   });
 
-  test('CT TC-SF-06 / 07 / 08 / 09 / 11 / 12 - Date filter: today only (with search), empty range, reversed, reload restores', { tag: T }, async ({ page }) => {
+  test('TC18 - Cheque tracker date filter: today only (with search), empty range and reversed range are handled, and reload restores the list', { tag: T, annotation: { type: 'cases', description: 'CT TC-SF-06, CT TC-SF-07, CT TC-SF-08, CT TC-SF-09, CT TC-SF-11, CT TC-SF-12' } }, async ({ page }) => {
     const c = await cheque();
     await ct.openTracker();
     const all = await ct.tabCount('Cheque In Hand');
@@ -288,7 +288,7 @@ test.describe('Cheque Tracker', () => {
     expect(await ct.tabCount('Cheque In Hand')).toBe(all);
   });
 
-  test('CT TC-EXP-01 / 02 / 04 / 05 / 06 - Export downloads a spreadsheet (all, filtered, empty tab)', { tag: T }, async ({ page }) => {
+  test('TC19 - Cheque tracker Export downloads a spreadsheet for all cheques, for a filtered list and for an empty tab', { tag: T, annotation: { type: 'cases', description: 'CT TC-EXP-01, CT TC-EXP-02, CT TC-EXP-04, CT TC-EXP-05, CT TC-EXP-06' } }, async ({ page }) => {
     await cheque();
     await ct.openTracker();
     const grab = async () => {
@@ -306,7 +306,7 @@ test.describe('Cheque Tracker', () => {
 
   // ── Integration / edge ───────────────────────────────────────────────────
 
-  test('CT TC-INT-10 / TC-EC-02 - Two invoices, two cheques: clearing one pays only that invoice; a partial cheque shows its own amount', { tag: T }, async () => {
+  test('TC20 - With two invoices and two cheques, clearing one pays only that invoice, and a partial cheque shows its own amount', { tag: T, annotation: { type: 'cases', description: 'CT TC-INT-10, TC-EC-02' } }, async () => {
     const a = await cheque();
     const b = await cheque({ amount: 50 });
     expect(ct.amountOf(await ct.chequeRow(b.chequeNo))).toBe(50);
@@ -315,7 +315,7 @@ test.describe('Cheque Tracker', () => {
     expect(await status(b.billNo)).not.toBe('Paid');
   });
 
-  test('CT TC-EC-01 - The same cheque number on two payments: both listed (or the second warned about)', { tag: T }, async () => {
+  test('TC21 - The same cheque number on two payments: both are listed (or the second is warned about)', { tag: T, annotation: { type: 'cases', description: 'CT TC-EC-01' } }, async () => {
     const a = await cheque();
     await cheque({ chequeNo: a.chequeNo });
     const rows = (await ct.openTracker(), await ct.searchCt(a.chequeNo));
@@ -324,7 +324,7 @@ test.describe('Cheque Tracker', () => {
   });
 
   // QA (BUG-CT-04): a returned cheque has no Delete (current flow) — only Upload Attachment / Move To.
-  test('CT TC-RET-11 / TC-EC-04 - A returned cheque has no Delete in the ⋮ menu', { tag: T }, async ({ page }) => {
+  test('TC22 - A returned cheque has no Delete option in its ⋮ menu', { tag: T, annotation: { type: 'cases', description: 'CT TC-RET-11, TC-EC-04' } }, async ({ page }) => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Returned');
     await ct.openTracker('Returned');
@@ -337,16 +337,16 @@ test.describe('Cheque Tracker', () => {
 
   // ── Not automatable here ─────────────────────────────────────────────────
 
-  for (const [id, title, why] of [
-    ['CT TC-UI-02', 'Tab counts = records', 'Counts are checked as they change (CT TC-CIH-03); other users add cheques to the same org.'],
-    ['CT TC-UI-12', 'Responsive layout', 'Visual design check.'],
-    ['CT TC-CIH-10 / 11', 'Upload attachment (image / invalid file)', 'Needs image fixtures for the upload dialog.'],
-    ['CT TC-CLR-05', 'Bulk revert', 'Same Revert action as CT TC-CLR-04, run per cheque.'],
-    ['CT TC-CLR-07 / TC-CAN-07 / TC-RET-14', 'Future-dated cheque on later tabs', 'A future-dated cheque cannot leave In Hand (CT TC-CIH-07), so it never reaches these tabs.'],
-    ['CT TC-RET-12 / TC-INT-07 / 08 / 09', 'Customer Transaction report entries', 'Customer statement checks belong to the Customer_Transaction sheet; invoice status is checked here.'],
-    ['CT TC-EXP-03', 'Returned export columns', 'Export file content needs a spreadsheet parser.'],
-    ['CT TC-EC-06', 'Bulk with a cleared + an in-hand cheque', 'Cheques of different tabs cannot be selected together (one tab at a time).'],
+  for (const [tc, id, title, why] of [
+    ['TC23', 'CT TC-UI-02', 'Tab counts = records', 'Counts are checked as they change (CT TC-CIH-03); other users add cheques to the same org.'],
+    ['TC24', 'CT TC-UI-12', 'Responsive layout', 'Visual design check.'],
+    ['TC25', 'CT TC-CIH-10 / 11', 'Upload attachment (image / invalid file)', 'Needs image fixtures for the upload dialog.'],
+    ['TC26', 'CT TC-CLR-05', 'Bulk revert', 'Same Revert action as CT TC-CLR-04, run per cheque.'],
+    ['TC27', 'CT TC-CLR-07 / TC-CAN-07 / TC-RET-14', 'Future-dated cheque on later tabs', 'A future-dated cheque cannot leave In Hand (CT TC-CIH-07), so it never reaches these tabs.'],
+    ['TC28', 'CT TC-RET-12 / TC-INT-07 / 08 / 09', 'Customer Transaction report entries', 'Customer statement checks belong to the Customer_Transaction sheet; invoice status is checked here.'],
+    ['TC29', 'CT TC-EXP-03', 'Returned export columns', 'Export file content needs a spreadsheet parser.'],
+    ['TC30', 'CT TC-EC-06', 'Bulk with a cleared + an in-hand cheque', 'Cheques of different tabs cannot be selected together (one tab at a time).'],
   ]) {
-    test.fixme(`${id} - ${title} (${why})`, async () => {});
+    test.fixme(`${tc} - ${title} (${why})`, { annotation: { type: 'cases', description: id } }, async () => {});
   }
 });
