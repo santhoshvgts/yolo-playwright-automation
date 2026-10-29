@@ -14,6 +14,7 @@ class AppBasePage extends BasePage {
   constructor(page) {
     super(page);
     this.loginPage = new LoginPage(page);
+    trackNetwork(page);   // from the start, so settle() sees requests fired before it is called
   }
 
   /** Locator for a raw selector string. XPath (starting with "/" or "(") gets "xpath=", else CSS. */
@@ -104,13 +105,60 @@ class AppBasePage extends BasePage {
   }
 
   /**
-   * Fixed pause. The apps recalculate totals/stock asynchronously with no visible
-   * loading state, so some reads need a settle delay. Always pass the reason.
+   * Wait until the page is quiet, at most `ms`: no API request in flight, no Ant
+   * spinner / skeleton showing, and no new request for QUIET_MS (a typed search
+   * sends its request after a short debounce). Returns as soon as that holds, so
+   * a 3 s settle on a page that is ready in 0.6 s costs 0.6 s. Always pass the reason.
+   *
+   * Waits shorter than QUIET_MS, and "nothing must happen" waits (see FIXED_WAIT),
+   * stay fixed. SETTLE_MODE=fixed restores the old fixed pause everywhere.
    */
-  async settle(ms, reason) {
-    if (reason) console.log(`  ⏳ ${ms}ms — ${reason}`);
-    await this.page.waitForTimeout(ms);
+  async settle(ms, reason = '') {
+    const t0 = Date.now();
+    if (process.env.SETTLE_MODE === 'fixed' || ms <= QUIET_MS || FIXED_WAIT.test(reason)) {
+      await this.page.waitForTimeout(ms);
+    } else {
+      await this._waitQuiet(ms);
+    }
+    if (reason) console.log(`  ⏳ ${Date.now() - t0}/${ms}ms — ${reason}`);
   }
+
+  async _waitQuiet(maxMs) {
+    const net = trackNetwork(this.page);
+    const end = Date.now() + maxMs;
+    await this.page.waitForTimeout(QUIET_MS);
+    while (Date.now() < end) {
+      const spinning = await this.page.locator(SPINNERS).filter({ visible: true }).count().catch(() => 0);
+      if (!spinning && !net.busy() && Date.now() - net.last >= QUIET_MS) return;
+      await this.page.waitForTimeout(100);
+    }
+  }
+}
+
+const QUIET_MS = Number(process.env.SETTLE_QUIET_MS) || 500;
+// Waits that check that nothing happens (e.g. a refused save must not navigate) keep their full time
+const FIXED_WAIT = /give a wrong save time/i;
+const SPINNERS = '.ant-spin-spinning, .ant-skeleton-active, .ant-btn-loading';
+// Requests that never matter for page data (analytics) or never finish (long polls)
+const IGNORED_URL = /mixpanel|google-analytics|googletagmanager|sentry|hotjar|socket/i;
+const NET = Symbol('network');
+
+/** Fetch/XHR requests in flight on a page — tracked once per page, shared by every POM on it. */
+function trackNetwork(page) {
+  if (page[NET]) return page[NET];
+  const pending = new Map();   // request → start time
+  const state = {
+    last: Date.now(),
+    // A request older than 10 s is treated as a long poll, not as loading
+    busy: () => [...pending.values()].some((t) => Date.now() - t < 10_000),
+  };
+  const isApi = (r) => ['fetch', 'xhr'].includes(r.resourceType()) && !IGNORED_URL.test(r.url());
+  page.on('request', (r) => { if (isApi(r)) { pending.set(r, Date.now()); state.last = Date.now(); } });
+  const done = (r) => { if (pending.delete(r)) state.last = Date.now(); };
+  page.on('requestfinished', done);
+  page.on('requestfailed', done);
+  page[NET] = state;
+  return state;
 }
 
 module.exports = { AppBasePage };
