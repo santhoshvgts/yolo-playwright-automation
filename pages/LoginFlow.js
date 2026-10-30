@@ -1,6 +1,8 @@
 const { expect } = require('@playwright/test');
 const { SelfHealingBasePage } = require('./self-healing-base-page');
 const { TIMEOUTS } = require('../config/timeouts');
+const { masterData } = require('../test-data/UserData');
+const { exactOrgRow } = require('./common/LoginPage');
 
 const DEFAULT_BASE_URL = 'https://invoice.test.vgts.xyz/';
 
@@ -24,7 +26,8 @@ class LoginFlow extends SelfHealingBasePage {
     // Organisation selection locators
     this.orgHeading = this.page.getByRole('heading', { name: 'Select an organisation' });
     this.orgSearchField = this.page.getByRole('textbox', { name: 'Search by name or GST…' });
-    this.orgResult = this.page.getByRole('button', { name: 'Automation Testing Org PVT' });
+    // This worker's test org (one org per worker when ORG_NAMES lists several)
+    this.orgResult = exactOrgRow(this.page, masterData.organization);
     this.switchButton = this.page.getByRole('button', { name: 'Switch' });
 
     // Landing page shows this instead of "Log In" once a session is present.
@@ -47,7 +50,7 @@ class LoginFlow extends SelfHealingBasePage {
 
   /** Search for the org and switch into it. Assumes the org screen is shown. */
   async selectOrg(data) {
-    await this.orgSearchField.fill(data.searchByNameOrGST);
+    await this.orgSearchField.fill(masterData.orgSearch);
     await expect(this.orgResult).toBeVisible();
     // The account remembers its last org, and that org's row is rendered disabled —
     // clicking it just hangs. Already in it, so only wait for the screen to close.

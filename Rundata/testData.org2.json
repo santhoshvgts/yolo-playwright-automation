@@ -1,0 +1,43 @@
+{
+  "siEditFlowItems": {
+    "items": [
+      {
+        "itemName": "TCE-A lPX9qv",
+        "baseUnit": "pcs",
+        "price": 100,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-B aDFXN4",
+        "baseUnit": "pcs",
+        "price": 250,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-C rRk1cw",
+        "baseUnit": "pcs",
+        "price": 40,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-D o3AJEn",
+        "baseUnit": "pcs",
+        "price": 75,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      }
+    ],
+    "updatedAt": "2026-10-30T07:26:38.948Z"
+  }
+}

@@ -90,6 +90,8 @@ jobs:
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || vars.ADMIN_EMAIL }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           ORG_NAME: ${{ vars.ORG_NAME }}
+          # "Org A|Org B|Org C|Org D": one worker per org (overrides ORG_NAME)
+          ORG_NAMES: ${{ vars.ORG_NAMES }}
           ORG_SEARCH: ${{ vars.ORG_SEARCH }}
           CUSTOMER_NAME: ${{ vars.CUSTOMER_NAME }}
           VENDOR_NAME: ${{ vars.VENDOR_NAME }}

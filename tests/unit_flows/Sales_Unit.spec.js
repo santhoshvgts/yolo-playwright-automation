@@ -37,7 +37,8 @@ test.describe(moduleName, () => {
   // Fixed size: the top menu folds "Reports" into "…" on narrow windows.
   test.use({ viewport: { width: 1800, height: 900 } });
   // No retries: a retry would create a second item / invoice and skew the stock maths.
-  test.describe.configure({ retries: 0, timeout: 600_000 });
+  // Each step reads what the previous one saved — keep them in order on one worker
+  test.describe.configure({ mode: 'default', retries: 0, timeout: 600_000 });
 
   // ── Item ──
   test('TC01 - Create an item with Opening Stock and stock it up through a purchase invoice', { tag: ['@unit', '@sales'], annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {

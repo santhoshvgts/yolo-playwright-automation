@@ -17,9 +17,18 @@ const { ORG_FILE } = require('../../config/auth');
 
 const DEFAULT_BASE_URL = appUrls.invoice;
 
-/** Test org id saved by config/global-setup.js next to the session ('' when there is none). */
+/**
+ * Org row on the org screen with exactly this name. Rows read "<name>" then "GST · …", and test orgs
+ * share prefixes ("… PVT LTD" / "… PVT LTD 1"), so a plain text match would hit several.
+ */
+const exactOrgRow = (page, name) => {
+  const n = name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return page.getByRole('button').filter({ hasText: new RegExp(`^\\s*${n}\\s*(GST\\b|$)`) });
+};
+
+/** This worker's test org id, saved by config/global-setup.js next to the session ('' when there is none). */
 const savedOrgId = () => {
-  try { return JSON.parse(fs.readFileSync(ORG_FILE, 'utf8')).orgId || ''; } catch { return ''; }
+  try { return JSON.parse(fs.readFileSync(ORG_FILE, 'utf8')).orgIds[masterData.organization] || ''; } catch { return ''; }
 };
 
 /** Default login data: credentials from .env, org from masterData. */
@@ -57,7 +66,7 @@ class LoginPage extends BasePage {
     // Organisation selection locators
     this.orgHeading     = this.page.getByRole('heading', { name: 'Select an organisation' });
     this.orgSearchField = this.page.getByRole('textbox', { name: 'Search by name or GST…' });
-    this.orgResult      = (name) => this.page.getByRole('button', { name });
+    this.orgResult      = (name) => exactOrgRow(this.page, name);
     this.switchButton   = this.page.getByRole('button', { name: 'Switch' });
     // Header org indicator: <img alt="organisation"> + sibling with "<Org name>\n<GST>"
     this.headerOrg      = this.page.getByRole('img', { name: 'organisation' }).first().locator('xpath=../..');   // grandparent holds "<Org name>\n<GST>"
@@ -107,7 +116,7 @@ class LoginPage extends BasePage {
     }
     if (!(await this.orgHeading.isVisible().catch(() => false))) {
       const current = await this.currentOrgName();
-      if (current.toLowerCase().includes(data.organization.toLowerCase())) {
+      if (current.split('\n')[0].trim().toLowerCase() === data.organization.trim().toLowerCase()) {
         console.log(`Organisation already "${data.organization}" — no switch needed`);
         return false;
       }
@@ -216,4 +225,4 @@ class LoginPage extends BasePage {
 }
 
 // `LoginFlow` kept as an alias so code written against that name works unchanged.
-module.exports = { LoginPage, LoginFlow: LoginPage, DEFAULT_BASE_URL, defaultLoginData };
+module.exports = { LoginPage, LoginFlow: LoginPage, DEFAULT_BASE_URL, defaultLoginData, exactOrgRow };

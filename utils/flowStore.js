@@ -11,7 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const store = require('./runtimeDataStore');
 
-const DATA_FILE = path.join(__dirname, '..', 'Rundata', 'testData.json');
+// The store's own file (one per test org — see utils/runtimeDataStore.js)
+const DATA_FILE = store.dataFile || path.join(__dirname, '..', 'Rundata', 'testData.json');
 
 const saveSection = store.saveSection;
 const getSection  = store.getSection;

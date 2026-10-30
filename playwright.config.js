@@ -4,6 +4,7 @@ import { defineConfig } from '@playwright/test';
 import { TIMEOUTS } from './config/timeouts.js';
 import { URLS } from './config/urls.js';
 import { STORAGE_STATE } from './config/auth.js';
+import { ORGS } from './test-data/UserData.js';
 
 // Resolves relative to CWD — always run `npx playwright test` from the project root.
 dotenv.config({ quiet: true });
@@ -50,10 +51,11 @@ export default defineConfig({
   testMatch: '**/*.spec.{js,ts}',
 
   // ── Execution Control ────────────────────────────────────────────
-  // workers: 1 — Rundata/*.json (runtimeDataStore) is a plain file-based
-  // store with no locking; raise workers only after adding locking too.
+  // One worker per test org (ORG_NAMES in .env, "|"-separated): worker N works only in org N and
+  // writes only that org's Rundata file, so workers never touch each other's data. Two workers in
+  // one org would clash (shared stock, lists, counts) — WORKERS above the org count is capped.
   fullyParallel: true,
-  workers: 1,
+  workers: Math.min(Number(process.env.WORKERS) || ORGS.length, ORGS.length),
   maxFailures: 0,
   // A failing test costs (retries + 1) full runs — keep this low
   retries: process.env.CI ? 2 : 1,

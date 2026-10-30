@@ -14,6 +14,8 @@ const moduleName = 'Pricing_general_Create';
 const data = generatePricing_general_CreateData();
 
 test.describe(moduleName, () => {
+  // Edit / delete tests use the lists created earlier in this file — keep them in order on one worker
+  test.describe.configure({ mode: 'default' });
   test.beforeEach(async ({ page }) => {
     await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
   });

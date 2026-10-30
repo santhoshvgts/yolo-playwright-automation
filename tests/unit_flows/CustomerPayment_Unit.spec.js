@@ -20,7 +20,8 @@ test.describe(moduleName, () => {
   // Fixed size: the top menu folds "Reports" into "…" on narrow windows.
   test.use({ viewport: { width: 1800, height: 900 } });
   // No retries: a retry would record a second payment and skew the balance maths.
-  test.describe.configure({ retries: 0, timeout: 600_000 });
+  // Each step reads what the previous one saved — keep them in order on one worker
+  test.describe.configure({ mode: 'default', retries: 0, timeout: 600_000 });
 
   // ── Bulk Payment Received ──
   test('TC01 - Create a bulk customer payment against the customer\'s due invoices and verify invoice dues and customer balances', { tag: ['@unit', '@payment'], annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {

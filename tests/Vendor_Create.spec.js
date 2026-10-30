@@ -12,6 +12,8 @@ const data = generateVendor_CreateData();
 
 
 test.describe(moduleName, () => {
+  // The edit test uses the vendor created earlier in this file — keep them in order on one worker
+  test.describe.configure({ mode: 'default' });
   test.beforeEach(async ({ page }) => {
     await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
   });

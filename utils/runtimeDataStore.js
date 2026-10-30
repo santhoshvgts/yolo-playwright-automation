@@ -1,7 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
-const filePath = path.join(__dirname, '../Rundata/testData.json');
+const { masterData, ORGS } = require('../test-data/UserData');
+
+// One file per test org: saved items / lists only exist in their own org, and each worker (one per org)
+// writes only its own file. The first org keeps testData.json.
+const orgIndex = ORGS.indexOf(masterData.organization);
+const filePath = path.join(__dirname, '../Rundata', orgIndex > 0 ? `testData.org${orgIndex + 1}.json` : 'testData.json');
 const filePath1 = path.join(__dirname, '../Rundata/LLmData.json');
 /**
  * Initialize store if missing
@@ -149,5 +154,6 @@ module.exports = {
   saveSectionllm,
   getSectionllm,
   readTestData,
-  workerNamespace
+  workerNamespace,
+  dataFile: filePath,
 };
