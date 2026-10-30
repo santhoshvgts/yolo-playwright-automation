@@ -199,11 +199,13 @@ test.describe('Purchase Invoice', () => {
     const picker = page.locator('.ant-select').filter({ hasText: /Select Vendor/ }).first();
     await expect(picker).toBeVisible({ timeout: 10_000 });
     await picker.click();
-    await page.keyboard.type('Abshire');
-    await pi.settle(1500, 'vendor search');
-    await page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option').filter({ hasText: 'Abshire Group' }).first().click();
+    await pi.settle(1500, 'vendor list');
+    // Any vendor other than the current one (the named second vendor is gone from the shared test org)
+    const other = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option').filter({ hasNotText: VENDOR }).first();
+    const otherName = (await other.innerText()).split('\n')[0].trim();
+    await other.click();
     if (await pi.vendorNextBtn.isVisible().catch(() => false)) await pi.vendorNextBtn.click();
-    await expect.poll(async () => (await page.locator('body').innerText())).toContain('Abshire Group');
+    await expect.poll(async () => (await page.locator('body').innerText())).toContain(otherName);
     await pi.discardForm();
   });
 
@@ -634,7 +636,7 @@ test.describe('Purchase Invoice', () => {
 
   test('TC62 - Without a session the purchase invoice page redirects to login and the API answers 401', { tag: T, annotation: { type: 'cases', description: 'PI_SEC_001, PI_SEC_011' } }, async ({ browser, page }) => {
     const url = page.url();
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(url.replace(/\/[^/]*$/, '/purchase?purchase=1'));
     // Lands on the app's start page (Log In / Go to Dashboard) — never on the purchase list

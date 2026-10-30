@@ -432,7 +432,7 @@ test.describe('Inventory Product', () => {
 
   test('TC28 - Without a session the products page redirects to the login page', { tag: T, annotation: { type: 'cases', description: 'INV_SEC_001, INV_SEC_011' } }, async ({ browser, page }) => {
     await inv.openProducts('Items');
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(page.url());
     await expect(anon).not.toHaveURL(/inventory/, { timeout: 30_000 });

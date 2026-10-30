@@ -82,14 +82,37 @@ class SalesInvoiceEditPage extends SalesInvoiceStockPage {
     return scope.locator('.ant-select').filter({ has: this.page.locator(css) });
   }
 
+  /**
+   * Select open but its popup not rendered: walk the options with ArrowDown, reading the active one from
+   * the combobox's aria-activedescendant (its option carries the label in aria-label), and Enter on `text`.
+   */
+  async _pickByKeyboard(root, text) {
+    const input = root.locator('input[role="combobox"]').first();
+    const label = async () => {
+      const id = await input.getAttribute('aria-activedescendant');
+      return id ? ((await this.page.locator(`[id="${id}"]`).getAttribute('aria-label')) || '').trim() : '';
+    };
+    for (let k = 0; k < 80; k++) {
+      if ((await label()) === text) { await this.page.keyboard.press('Enter'); return; }
+      await this.page.keyboard.press('ArrowDown');
+    }
+    throw new Error(`Option "${text}" not found in the select (popup not rendered)`);
+  }
+
   /** Pick `text` (exact, trimmed) in the antd select `root`. */
   async pickOption(root, text) {
     // Centre the select first: near the page bottom its dropdown can open outside a small viewport
-    await root.evaluate((e) => e.scrollIntoView({ block: 'center' })).catch(() => {});
-    await root.locator('.ant-select-selector').click();
     const opt = this.page.locator(`${OPEN_DROPDOWN} .ant-select-item-option`)
       .filter({ hasText: new RegExp(`^\\s*${escapeRegex(text)}\\s*$`) }).first();
-    await opt.click({ timeout: 8000 }).catch(() => opt.dispatchEvent('click'));
+    // The popup sometimes opens without rendering its options (seen on the TDS section) — close and reopen
+    for (let attempt = 1; ; attempt++) {
+      await root.evaluate((e) => e.scrollIntoView({ block: 'center' })).catch(() => {});
+      await root.locator('.ant-select-selector').click();
+      if (await opt.click({ timeout: 6000 }).then(() => true, () => false)) break;
+      if (attempt === 3) { await this._pickByKeyboard(root, text); break; }
+      await this.page.keyboard.press('Escape');
+      await this.page.waitForTimeout(500);
+    }
     await this.settle(600, 'totals recalculate');
   }
 

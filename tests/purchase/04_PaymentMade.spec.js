@@ -557,7 +557,7 @@ test.describe('Payment Made', () => {
     const apiCall = page.waitForResponse((r) => /api/.test(r.url()) && /payment/i.test(r.url()) && r.request().method() === 'GET', { timeout: 30_000 }).catch(() => null);
     await pm._searchPayments('');
     const api = await apiCall;
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(page.url());
     await expect(anon).not.toHaveURL(/purchase/, { timeout: 30_000 });

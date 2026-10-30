@@ -69,6 +69,14 @@ class InventoryPage extends ItemPage {
     await this.formDrawer.locator(`.ant-select:has(#${id})`).first().locator('.ant-select-selector').click();
     if (type) await this.page.keyboard.type(text);
     const opt = this.page.locator(`${OPEN_DROPDOWN} .ant-select-item-option`).filter({ hasText: new RegExp(`^\\s*${esc(text)}`) }).first();
+    // Selects without search (e.g. Parent Category) render only the ~10 options in view — scroll until it shows
+    await this.page.locator(`${OPEN_DROPDOWN} .ant-select-item-option`).first().waitFor({ timeout: 10_000 }).catch(() => {});
+    const holder = this.page.locator(`${OPEN_DROPDOWN} .rc-virtual-list-holder`).last();
+    for (let i = 0; i < 300 && !(await opt.isVisible().catch(() => false)); i++) {
+      const moved = await holder.evaluate((e) => { const before = e.scrollTop; e.scrollTop += e.clientHeight * 0.8; return e.scrollTop !== before; }).catch(() => false);
+      if (!moved) break;
+      await this.page.waitForTimeout(150);
+    }
     await opt.waitFor({ timeout: 10_000 });
     await opt.click();
     await this.settle(400, `${id} = ${text}`);

@@ -42,8 +42,11 @@ class Pricing_general_Create extends SelfHealingBasePage {
     this.itemAmountField2 = this.page.locator('(//input[@class="ant-input css-mncuj7"])[2]');
     this.itemAmountField3 = this.page.locator('(//input[@class="ant-input css-mncuj7"])[3]');
     this.autoCalculateCheckbox = this.page.getByRole('checkbox', { name: 'Auto Calculate Pricing for' });
-    this.businessCategoryDropdown = this.page.locator('div:nth-child(2) > .ant-row > .ant-col.ant-form-item-control > .ant-form-item-control-input > .ant-form-item-control-input-content > .ant-select > .ant-select-selector > .ant-select-selection-wrap > .ant-select-selection-item');
-    this.businessCategoryOption = this.page.getByTitle('All').nth(2);
+    this.businessCategoryDropdown = this.page.locator('.ant-select:has(#business_category) .ant-select-selector');
+    // Business Category of a Category wise list: "All" when offered, else the first category. The
+    // Assign-to multi-select stays open too, so take the options of the last opened dropdown.
+    const openOpts = this.page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last().locator('.ant-select-item-option');
+    this.businessCategoryOption = openOpts.filter({ hasText: /^\s*All\s*$/ }).or(openOpts).first();
     this.addProfilesField = this.page.locator('div').filter({ hasText: /^\+ Add Profile$/ }).nth(3);
     this.itemSelectionField = this.page.locator('#rc_select_3');
     this.itemSelectionField1 = this.page.locator('(//input[@class="ant-select-selection-search-input"])[5]');

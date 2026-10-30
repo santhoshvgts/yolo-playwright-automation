@@ -441,7 +441,7 @@ test.describe('Purchase Order', () => {
   // ── Security / accessibility ─────────────────────────────────────────────
 
   test('TC48 - Without a session the purchase order page redirects to login and the API answers 401', { tag: T, annotation: { type: 'cases', description: 'PO_SEC_001, PO_SEC_011' } }, async ({ browser, page }) => {
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(page.url().replace(/\/[^/]*$/, '/purchase?purchase=3'));
     // Lands on the app's start page (Log In / Go to Dashboard) — never on the purchase list

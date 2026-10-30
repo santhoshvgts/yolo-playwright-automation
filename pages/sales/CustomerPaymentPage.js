@@ -30,7 +30,7 @@ class CustomerPaymentPage extends AppBasePage {
 
     // ── Navigation ─────────────────────────────────────────────────────────
     this.salesTab      = this.loc('//a[text()="Sales"]');
-    this.customerTab   = this.loc('//span[text()="Customer"]');
+    this.customerTab   = this.page.locator('#btn_customer');   // a 'Customer' button can also show on the page
     this.paymentTab    = this.loc('//div[text()="Payment Received"]');
     this.salesBillTab  = this.loc('//span[text()="Sales Bill"]');
     this.salesInvoiceTab = this.loc('//div[@id="tab_sales_invoice"]');

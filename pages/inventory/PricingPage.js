@@ -185,7 +185,9 @@ class PricingPage extends SalesInvoiceEditPage {
   /** Open list `name` → view drawer text. */
   async openList(name) {
     await this.searchLists(name);
-    await this.plRows.filter({ has: this.page.locator('td').first().filter({ hasText: name }) }).first().locator('td').first().click();
+    // Exact name: a short name like "Z" must not open "ZZ PL …"
+    const exact = new RegExp(`^\\s*${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`);
+    await this.plRows.filter({ has: this.page.locator('td').first().filter({ hasText: exact }) }).first().locator('td').first().click();
     await expect(this.plDrawer).toBeVisible();
     await this.settle(2000, 'price list view');
     return (await this.plDrawer.innerText()).replace(/\s+/g, ' ');
@@ -208,14 +210,16 @@ class PricingPage extends SalesInvoiceEditPage {
   }
 
   /** Deactivate EVERY active list whose name contains `prefix` (all pages, duplicate names included). Returns how many. */
-  async deactivateAll(prefix) {
+  /** Deactivate every active list whose name starts with `prefix` (or is exactly it with { exact: true }). */
+  async deactivateAll(prefix, { exact = false } = {}) {
+    const match = (name) => (exact ? name === prefix : name.startsWith(prefix));
     let n = 0;
     for (let round = 0; round < 40; round++) {
       await this.searchLists(prefix);
       let hit = -1;
       for (let pageNo = 0; pageNo < 30; pageNo++) {
         const rows = await this.plRows.evaluateAll((trs) => trs.map((tr) => [...tr.cells].map((c) => c.innerText.trim())));
-        hit = rows.findIndex((r) => r[3] === 'Active');
+        hit = rows.findIndex((r) => r[3] === 'Active' && match(r[0]));
         if (hit >= 0) break;
         const next = this.page.locator('li.ant-pagination-next').filter({ visible: true }).first();
         if (!(await next.count()) || (await next.getAttribute('aria-disabled')) === 'true') break;

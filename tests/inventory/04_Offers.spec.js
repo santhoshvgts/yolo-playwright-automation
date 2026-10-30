@@ -261,7 +261,7 @@ test.describe('Offers', () => {
 
   test('TC19 - Without a session the offers page redirects to the login page', { tag: T, annotation: { type: 'cases', description: 'OFR_SEC_001' } }, async ({ browser, page }) => {
     await of.openPricingList();
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(page.url());
     await expect(anon).not.toHaveURL(/inventory/, { timeout: 30_000 });

@@ -137,7 +137,9 @@ test.describe('Price List', () => {
     await pl.fillList({ name: one, rate: 1 });
     const r = await pl.trySaveList();
     console.log(`1-character name: ${r.saved ? 'saved' : r.errors.join(' | ')}`);
-    if (!r.saved) { created.pop(); await pl.discardList(); }
+    // "Z" is outside the "ZZ PL" cleanup, and an active 1 % list for All marks up every later invoice
+    if (r.saved) await pl.deactivateAll(one, { exact: true });
+    else { created.pop(); await pl.discardList(); }
   });
 
   // QA (BUG-PLO-01): there is no duplicate-name check for price lists (current flow).
@@ -335,7 +337,7 @@ test.describe('Price List', () => {
   test('TC23 - Without a session the pricing page redirects to the login page, and the URLs hold no rates', { tag: T, annotation: { type: 'cases', description: 'PL_SEC_001, PL_SEC_010' } }, async ({ browser, page }) => {
     await pl.openPricingList();
     expect(page.url()).not.toMatch(/rate|markup|%/i);
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(page.url());
     await expect(anon).not.toHaveURL(/inventory/, { timeout: 30_000 });

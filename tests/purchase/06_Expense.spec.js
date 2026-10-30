@@ -457,7 +457,7 @@ test.describe('Expense', () => {
   test('TC29 - Without a session the expense list redirects to login, and URLs hold no amounts or GST numbers', { tag: T, annotation: { type: 'cases', description: 'EXP_SEC_001, EXP_SEC_011' } }, async ({ browser, page }) => {
     await ex._searchList('');
     expect(page.url()).not.toMatch(/amount|gst|₹/i);
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(page.url());
     await expect(anon).not.toHaveURL(/purchase/, { timeout: 30_000 });

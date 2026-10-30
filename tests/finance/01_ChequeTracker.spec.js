@@ -19,6 +19,7 @@ const { ChequeTrackerPage } = require('../../pages/finance/ChequeTrackerPage');
 const { paymentDate } = require('../../pages/sales/SalesInvoicePaymentPage');
 const { addDays } = require('../../pages/sales/SalesInvoiceEditPage');
 const { SalesInvoiceEditFlowData: E } = require('../../test-data/SalesInvoiceStock_Data');
+const { money } = require('../../utils/stockMath');
 
 const T = ['@finance', '@cheque'];
 const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -158,13 +159,19 @@ test.describe('Cheque Tracker', () => {
     await move(c, 'Cancelled', target);
   });
 
-  test('TC09 - Move a cheque from In Hand to Returned: Returned Date and Late Fee Charge are filled and the invoice is due', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-05, TC-RET-01, TC-RET-02, TC-RET-13, TC-INT-06' } }, async () => {
+  // QA (BUG-CT-01): the late fee is not charged on return — it is added from the row menu ("Add Late Fee"),
+  // which then shows the "Collect Amount" button (checked live 30 Oct).
+  test('TC09 - Move a cheque from In Hand to Returned: Returned Date is filled, the invoice is due, and "Add Late Fee" fills Late Fee Charge', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-05, TC-RET-01, TC-RET-02, TC-RET-13, TC-INT-06' } }, async () => {
     const c = await cheque();
     await move(c, 'Cheque In Hand', 'Returned');
     const row = await ct.chequeRow(c.chequeNo, 'Returned');
     expect(row['Retruned Date'] || row['Returned Date']).toBe(iso(new Date()));
-    expect(row['Late Fee Charge'], 'late fee').toMatch(/\d/);
+    expect(row['Late Fee Charge'], 'no late fee until one is added').toMatch(/^-?$/);
     expect(await status(c.billNo)).not.toBe('Paid');
+    await ct.openTracker('Returned');
+    expect((await ct.addLateFee(c.chequeNo, 50)).saved, 'late fee added').toBe(true);
+    expect(money((await ct.chequeRow(c.chequeNo, 'Returned'))['Late Fee Charge']), 'late fee').toBe(50);
+    await expect(ct.rowLoc(c.chequeNo).getByRole('button', { name: /Collect/i })).toBeVisible();
   });
 
   test('TC10 - Bulk move three cheques together from In Hand to Deposited and then to Cleared', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-06, TC-DEP-05, TC-MT-03' } }, async () => {

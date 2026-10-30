@@ -15,7 +15,7 @@ class CustomerTransactionPage extends SalesInvoicePaymentPage {
 
   constructor(page) {
     super(page);
-    this.customerTab = this.loc('//span[text()="Customer"]');
+    this.customerTab = this.page.locator('#btn_customer');   // a 'Customer' button can also show on the page
     this.customerLink = (name) => this.loc(`//div[text()="${name}"]`);
     this.viewDetailsBtn = this.page.getByRole('button', { name: 'View Details' });
     this.customerTabButton = (name) => this.page.getByRole('tab', { name, exact: true });

@@ -32,12 +32,13 @@ class OffersPage extends PricingPage {
   async pickItemIn(id, name) {
     await this.page.locator(`.ant-select:has(#${id})`).first().locator('.ant-select-selector').click();
     const opt = this.page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option').filter({ hasText: name }).first();
-    // The item search can come back "No data" for the full "<prefix> <code>" name — retry with the unique last word
-    for (const q of [name, name.split(' ').pop()]) {
-      await this.page.keyboard.press('Control+A');
-      await this.page.keyboard.type(q);
-      await this.settle(1500, 'item search');
-      if (await opt.isVisible().catch(() => false)) break;
+    // The first item search can take 2+ s ("No data" until then); if it never lists the item, reopen the
+    // picker and search the unique last word
+    await this.page.keyboard.type(name);
+    if (!(await opt.waitFor({ timeout: 10_000 }).then(() => true, () => false))) {
+      await this.page.keyboard.press('Escape');
+      await this.page.locator(`.ant-select:has(#${id})`).first().locator('.ant-select-selector').click();
+      await this.page.keyboard.type(name.split(' ').pop());
     }
     await opt.click();
     await this.settle(600, `${id} = ${name}`);

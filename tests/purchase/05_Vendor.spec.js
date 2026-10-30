@@ -174,11 +174,15 @@ test.describe('Vendor', () => {
   });
 
   // QA (BUG-VN-02): there is no duplicate-name check for vendors (current flow).
+  // Duplicates its own vendor: a copy of the shared "New Vendor 1" makes every lookup of it ambiguous.
   test('TC09 - A second vendor with the same name is accepted', { tag: T, annotation: { type: 'cases', description: 'VND_NEG_018' } }, async () => {
-    await fillNew({ name: VENDOR });
-    await vp.fillAddress(ADDR);
-    const r = await vp.trySaveCustomer();
-    expect(r.saved, `duplicate "${VENDOR}" is accepted ("${r.errors.join(' | ') || r.message}")`).toBe(true);
+    const name = `ZZ Vend Dup ${uniq()}`;
+    for (const which of ['first', 'duplicate']) {
+      await fillNew({ name });
+      await vp.fillAddress(ADDR);
+      const r = await vp.trySaveCustomer();
+      expect(r.saved, `${which} "${name}" is accepted ("${r.errors.join(' | ') || r.message}")`).toBe(true);
+    }
   });
 
   // ── Vendor page ──────────────────────────────────────────────────────────
@@ -424,9 +428,13 @@ test.describe('Vendor', () => {
   });
 
   test('TC27 - Switching between vendors: each has its own balances, and going back to the first gives the same values (page 1)', { tag: T, annotation: { type: 'cases', description: 'VND_POS_016, VND_BL_014, VND_PAG_009, VND_E2E_014' } }, async ({ page }) => {
+    // A second vendor of its own (no bills, so its balances differ from the shared vendor's)
+    const other = await fillNew();
+    await vp.fillAddress(ADDR);
+    expect((await vp.trySaveCustomer()).saved, `vendor ${other.name} saved`).toBe(true);
     const h1 = await vp.vendorState(VENDOR);
     await vp._vendorList();
-    await vp.openVendor('Abshire Group');   // a second vendor of the test org
+    await vp.openVendor(other.name);
     const h2 = await vp.readHeader();
     expect(`${h2.due}|${h2.advance}`).not.toBe(`${h1.due}|${h1.advance}`);
     const h3 = await vp.vendorState(VENDOR);
@@ -439,7 +447,7 @@ test.describe('Vendor', () => {
 
   test('TC28 - Without a session the vendor page redirects to login', { tag: T, annotation: { type: 'cases', description: 'VND_SEC_001, VND_NEG_013' } }, async ({ browser, page }) => {
     await vp.openVendor(VENDOR);
-    const ctx = await browser.newContext();
+    const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } });   // no saved session
     const anon = await ctx.newPage();
     await anon.goto(page.url());
     await expect(anon).not.toHaveURL(/vendor/, { timeout: 30_000 });

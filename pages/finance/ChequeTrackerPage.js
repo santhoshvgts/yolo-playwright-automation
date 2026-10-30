@@ -127,15 +127,53 @@ class ChequeTrackerPage extends SalesInvoicePaymentPage {
     await this._confirm();
   }
 
-  /** Returned tab: Collect Amount for the cheque → { saved, message, text }. */
+  /**
+   * Returned tab: row menu → "Add Late Fee" (Amount only) → { saved, message }. The fee then shows in
+   * Late Fee Charge and the row gets a "Collect Amount" button; the menu loses "Move To".
+   */
+  async addLateFee(chequeNo, amount) {
+    await this.fillInto(this.ctSearch, String(chequeNo));
+    await this.settle(2500, 'search');
+    await this.rowLoc(chequeNo).locator('a.ant-dropdown-trigger').click();
+    await this.page.locator('.ant-dropdown:not(.ant-dropdown-hidden) li').filter({ hasText: 'Add Late Fee' }).click();
+    const m = this.page.locator('.ant-modal-content').filter({ visible: true }).last();
+    await this.typeValue(m.locator('#amount'), String(amount));
+    await m.getByRole('button', { name: 'Submit' }).click();
+    const saved = await expect(m).toBeHidden({ timeout: 10_000 }).then(() => true, () => false);
+    const message = (await this.page.locator('.ant-message-notice, .ant-form-item-explain-error').allInnerTexts().catch(() => [])).join(' | ');
+    if (!saved) await this.page.keyboard.press('Escape');
+    console.log(`Late fee ${amount} on ${chequeNo}: ${saved ? 'added' : `refused "${message}"`}`);
+    return { saved, message };
+  }
+
+  /**
+   * Returned tab: Collect Amount for the cheque → { saved, message, text }. "Collect Amount" only shows once a
+   * late fee is added, so a fee (`amount` when positive, else ₹100) is added first when the button is missing.
+   */
   async collectAmount(chequeNo, { amount, account = 'Petty Cash' } = {}) {
     await this.fillInto(this.ctSearch, String(chequeNo));
     await this.settle(2500, 'search');
-    await this.rowLoc(chequeNo).getByRole('button', { name: /Collect/i }).first().click();
+    const collect = this.rowLoc(chequeNo).getByRole('button', { name: /Collect/i }).first();
+    if (!(await collect.isVisible().catch(() => false))) {
+      const fee = Number(amount) > 0 ? Number(amount) : 100;
+      const r = await this.addLateFee(chequeNo, fee);
+      if (!r.saved) throw new Error(`Late fee ${fee} on ${chequeNo} not added: ${r.message}`);
+      await this.fillInto(this.ctSearch, String(chequeNo));
+      await this.settle(2500, 'search');
+    }
+    await collect.click();
     const m = this.page.locator('.ant-modal-content, .ant-drawer-content').filter({ visible: true }).last();
     await expect(m).toBeVisible();
     const text = (await m.innerText()).replace(/\s+/g, ' ');
-    if (amount !== undefined) await this.typeValue(m.locator('input[id*="amount" i], input[type="text"]').filter({ visible: true }).first(), String(amount));
+    if (amount !== undefined) {
+      const shown = await this.typeValue(m.locator('input[id*="amount" i], input[type="text"]').filter({ visible: true }).first(), String(amount));
+      // The amount field drops characters it does not take (e.g. "-"): that is a refusal, so do not submit
+      if (parseFloat(shown) !== parseFloat(amount)) {
+        await m.getByRole('button', { name: /cancel/i }).first().click().catch(() => this.page.keyboard.press('Escape'));
+        console.log(`Collect ${amount} on ${chequeNo}: input refused (shows "${shown}")`);
+        return { saved: false, message: `input shows "${shown}"`, text };
+      }
+    }
     if (account) {
       await m.locator('.ant-select:has(#account), .ant-select').filter({ visible: true }).first().locator('.ant-select-selector').click();
       await this.page.keyboard.type(account);

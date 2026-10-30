@@ -2632,14 +2632,16 @@ test.describe('Sales Order', () => {
   });
 
   test('TC238 - An empty rate on a sales order is refused with "Rate is required"', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-40' } }, async () => {
-    knownBug('BUG-SO-02', 'empty rate saved on a sales order without a message');
     await so.startInvoice({ customerName: CUST });
     await so.addLine(A, 1);
     await so.setLineRate(0, '');
     const rate = (await so.readLine(0)).rate;
     if (!Number.isNaN(rate)) { console.log(`Empty rate not accepted — the field shows ${rate}`); await so.discardForm(); return; }
-    expect(await so.saveExpectRefused()).toMatch(/rate/i);
-    await so.discardForm();
+    // Only the save check hits the defect: when the field itself keeps a value the case passes
+    await bugCheck('BUG-SO-02', 'empty rate saved on a sales order without a message', async () => {
+      expect(await so.saveExpectRefused()).toMatch(/rate/i);
+    });
+    await so.discardForm().catch(() => {});
   });
 
   test('TC239 - On a sales order, UOM pcs, box and bundle set the rate by conversion, and the rate can be overridden', { tag: ['@sales', '@so'], annotation: { type: 'cases', description: 'TC-SO-42, TC-SO-43, TC-SO-44, TC-SO-45' } }, async () => {
