@@ -121,7 +121,8 @@ class LoginPage extends BasePage {
         return false;
       }
       console.log(`App is in "${current.split('\n')[0] || 'unknown org'}" — opening org-select`);
-      await this.page.goto(new URL('/org-select', this.page.url()).href);
+      // The org screen keeps loading assets after it renders; the heading wait below is the real check
+      await this.page.goto(new URL('/org-select', this.page.url()).href, { waitUntil: 'domcontentloaded' });
       await expect(this.orgHeading).toBeVisible({ timeout: WAIT.org });
     }
     console.log(`Selecting organisation "${data.organization}"...`);
@@ -203,13 +204,20 @@ class LoginPage extends BasePage {
   async openSavedOrg() {
     const orgId = savedOrgId();
     if (!orgId) return false;
-    await this.page.goto(`${this.baseUrl}/${orgId}`);
-    const state = await Promise.race([
-      this.invoiceNav.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'app'),
-      this.loginButton.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'login'),
-      this.goToDashboardButton.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'dashboard'),
-      this.orgHeading.waitFor({ state: 'visible', timeout: WAIT.landing }).then(() => 'org screen'),
+    const landed = (timeout) => Promise.race([
+      this.invoiceNav.waitFor({ state: 'visible', timeout }).then(() => 'app'),
+      this.loginButton.waitFor({ state: 'visible', timeout }).then(() => 'login'),
+      this.goToDashboardButton.waitFor({ state: 'visible', timeout }).then(() => 'dashboard'),
+      this.orgHeading.waitFor({ state: 'visible', timeout }).then(() => 'org screen'),
     ]).catch(() => 'nothing shown');
+    await this.page.goto(`${this.baseUrl}/${orgId}`);
+    let state = await landed(WAIT.landing);
+    if (state === 'nothing shown') {
+      // Server slow under parallel load: one more, longer try beats a full login (whose org search is slower still)
+      console.log('Saved session: app slow to open — reloading');
+      await this.page.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
+      state = await landed(WAIT.navigation);
+    }
     if (state === 'app' && this.page.url().includes(orgId)) {
       console.log('Saved session — opened the test org directly');
       return true;

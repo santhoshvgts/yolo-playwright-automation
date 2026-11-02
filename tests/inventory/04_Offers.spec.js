@@ -33,8 +33,8 @@ test.describe('Offers', () => {
     created = [];
   });
   test.afterEach(async () => {
-    // Safety net: deactivate every active "ZZ OF" entry (duplicate names included)
-    if (created.length) await of.deactivateAll('ZZ OF').catch((e) => console.log(`cleanup failed: ${e.message.slice(0, 80)}`));
+    // Deactivate what this test made by name, then every active "ZZ OF" entry (duplicate names included)
+    if (created.length) await of.deactivateCreated(created, 'ZZ OF').catch((e) => console.log(`cleanup failed: ${e.message.slice(0, 80)}`));
   });
 
   const uniq = () => `${Date.now().toString(36).slice(-5)}${Math.floor(Math.random() * 90 + 10)}`;

@@ -37,8 +37,8 @@ test.describe('Price List', () => {
   });
   // Safety net: no list created here may stay active (it would change other suites' invoice rates)
   test.afterEach(async () => {
-    // Safety net: deactivate every active "ZZ PL" entry (duplicate names included)
-    if (created.length) await pl.deactivateAll('ZZ PL').catch((e) => console.log(`cleanup failed: ${e.message.slice(0, 80)}`));
+    // Deactivate what this test made by name, then every active "ZZ PL" entry (duplicate names included)
+    if (created.length) await pl.deactivateCreated(created, 'ZZ PL').catch((e) => console.log(`cleanup failed: ${e.message.slice(0, 80)}`));
   });
 
   const uniq = () => `${Date.now().toString(36).slice(-5)}${Math.floor(Math.random() * 90 + 10)}`;

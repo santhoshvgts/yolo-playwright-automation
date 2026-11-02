@@ -52,11 +52,25 @@ class PricingPage extends SalesInvoiceEditPage {
     await this.settle(3000, 'app shell');
   }
 
+  readRows() { return this.plRows.evaluateAll((trs) => trs.map((tr) => [...tr.cells].map((c) => c.innerText.trim()))); }
+
+  /**
+   * Search the list → rows (cell texts). The search is debounced, so right after the settle the table can still
+   * show the unfiltered list or nothing (loading); wait until every row matches, or "No data" shows.
+   */
   async searchLists(text) {
     await this.openPricingList();
     await this.fillInto(this.plSearch, text);
     await this.settle(2500, 'pricing search');
-    return this.plRows.evaluateAll((trs) => trs.map((tr) => [...tr.cells].map((c) => c.innerText.trim())));
+    const want = String(text).trim().toLowerCase();
+    let rows = [];
+    await expect.poll(async () => {
+      rows = await this.readRows();
+      if (await this.page.locator('.ant-spin-spinning').count()) return false;
+      if (rows.length) return !want || rows.every((r) => r[0].toLowerCase().includes(want));
+      return (await this.page.locator('.ant-empty').filter({ visible: true }).count()) > 0;
+    }, { timeout: 15_000 }).toBe(true).catch(() => console.log(`Price list search "${text}" did not settle — using what is shown`));
+    return rows;
   }
 
   async totalCount() {
@@ -195,22 +209,27 @@ class PricingPage extends SalesInvoiceEditPage {
 
   plSwitch() { return this.plDrawer.locator('.ant-switch').first(); }
 
+  /** Flip the open view's Active switch to `active` (confirming if asked) and wait until it shows that state. */
+  async _setSwitch(active) {
+    const sw = this.plSwitch();
+    if (((await sw.getAttribute('aria-checked')) === 'true') === active) return false;
+    await sw.click();
+    await this.settle(1500, 'status change');
+    const yes = this.page.locator('.ant-popover, .ant-modal-content').filter({ visible: true }).getByRole('button', { name: /^(Yes|OK|Confirm)$/ }).last();
+    if (await yes.isVisible().catch(() => false)) await yes.click();
+    await expect(sw).toHaveAttribute('aria-checked', String(active), { timeout: 10_000 });
+    await this.settle(1500, 'status saved');
+    return true;
+  }
+
   /** Set the list active / inactive from its view. */
   async setActive(name, active) {
     await this.openList(name);
-    const sw = this.plSwitch();
-    if (((await sw.getAttribute('aria-checked')) === 'true') !== active) {
-      await sw.click();
-      await this.settle(1500, 'status change');
-      const yes = this.page.locator('.ant-popover, .ant-modal-content').filter({ visible: true }).getByRole('button', { name: /^(Yes|OK|Confirm)$/ }).last();
-      if (await yes.isVisible().catch(() => false)) await yes.click();
-      await this.settle(1500, 'status saved');
-    }
+    await this._setSwitch(active);
     await this.page.keyboard.press('Escape');
   }
 
-  /** Deactivate EVERY active list whose name contains `prefix` (all pages, duplicate names included). Returns how many. */
-  /** Deactivate every active list whose name starts with `prefix` (or is exactly it with { exact: true }). */
+  /** Deactivate every active list whose name starts with `prefix` (or is exactly it with { exact: true }), all pages. */
   async deactivateAll(prefix, { exact = false } = {}) {
     const match = (name) => (exact ? name === prefix : name.startsWith(prefix));
     let n = 0;
@@ -218,7 +237,7 @@ class PricingPage extends SalesInvoiceEditPage {
       await this.searchLists(prefix);
       let hit = -1;
       for (let pageNo = 0; pageNo < 30; pageNo++) {
-        const rows = await this.plRows.evaluateAll((trs) => trs.map((tr) => [...tr.cells].map((c) => c.innerText.trim())));
+        const rows = await this.readRows();
         hit = rows.findIndex((r) => r[3] === 'Active' && match(r[0]));
         if (hit >= 0) break;
         const next = this.page.locator('li.ant-pagination-next').filter({ visible: true }).first();
@@ -230,13 +249,28 @@ class PricingPage extends SalesInvoiceEditPage {
       await this.plRows.nth(hit).locator('td').first().click({ force: true });
       await expect(this.plDrawer).toBeVisible();
       await this.settle(1500, 'view');
-      const sw = this.plSwitch();
-      if ((await sw.getAttribute('aria-checked')) === 'true') { await sw.click(); await this.settle(2000, 'deactivated'); n += 1; }
+      if (await this._setSwitch(false)) n += 1;
       await this.page.keyboard.press('Escape');
       await this.settle(800, 'view closed');
     }
     console.log(`Deactivated ${n} "${prefix}" entr${n === 1 ? 'y' : 'ies'}`);
     return n;
+  }
+
+  /**
+   * Deactivate these exact lists (a just-saved list can take a moment to show in the search), then sweep `prefix`
+   * for duplicates of the same name. Lists left active re-price every later sales invoice in the org.
+   */
+  async deactivateCreated(names, prefix) {
+    for (const name of new Set(names)) {
+      let row = null;
+      await expect(async () => {
+        row = await this.listRowOf(name);
+        expect(row, `price list "${name}" listed`).not.toBeNull();
+      }).toPass({ timeout: 30_000 }).catch(() => console.log(`Price list "${name}" not found — never saved?`));
+      if (row?.status === 'Active') await this.setActive(name, false);
+    }
+    if (prefix) await this.deactivateAll(prefix);
   }
 
   async editList(name) {

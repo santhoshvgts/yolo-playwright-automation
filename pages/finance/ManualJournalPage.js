@@ -35,6 +35,10 @@ class ManualJournalPage extends ChequeTrackerPage {
 
   async openJournals() {
     await this.page.goto(`${this.base()}/finance/manual-journal`);
+    // Under load the page sometimes renders without its menu and "New Journal" button; a reload brings them back
+    if (!(await this.newJournalBtn.waitFor({ timeout: 15_000 }).then(() => true, () => false))) {
+      await this.page.reload();
+    }
     await expect(this.newJournalBtn).toBeVisible();
     await this.settle(2000, 'journal list');
   }

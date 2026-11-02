@@ -224,7 +224,10 @@ class PurchaseInvoiceFlowPage extends SalesInvoiceEditPage {
     await this.settle(1500, 'vendor list');
     await this.page.getByRole('textbox', { name: 'Search' }).first().fill(vendorName);
     await this.settle(2000, 'vendor search');
+    // The header shows ₹0 until the balances API answers
+    const info = this.page.waitForResponse((r) => r.url().includes('/vendor/vendor-info/') && r.ok(), { timeout: 20_000 }).catch(() => null);
     await this.page.locator(`//div[text()="${vendorName}"]`).first().click();
+    await info;
     await this.settle(3500, 'vendor page');
     const text = (await this.page.locator('body').innerText()).replace(/\s+/g, ' ');
     const grab = (label) => { const m = text.match(new RegExp(`${label}:\\s*₹\\s*(-?[\\d,]+(?:\\.\\d+)?)`)); return m ? money(m[1]) : NaN; };

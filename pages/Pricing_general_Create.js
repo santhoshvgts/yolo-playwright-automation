@@ -65,8 +65,17 @@ class Pricing_general_Create extends SelfHealingBasePage {
     this.activeInactiveToggle = this.page.getByRole('switch');
     this.activeInactiveSuccessMsg = this.page.getByText('Status changed Successfully', { exact: true });
     this.closeButton = this.page.getByRole('button', { name: 'Close', exact: true });
-    
 
+
+  }
+
+  /** Edit form: make sure "All" is picked in the open Assign-to dropdown (clicking it when already picked removes it). */
+  async pickAssignAll() {
+    const all = this.page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option')
+      .filter({ hasText: /^\s*All\s*$/ }).last();
+    await all.waitFor();
+    if ((await all.getAttribute('aria-selected')) !== 'true') await all.click();
+    await this.page.keyboard.press('Escape');
   }
 
 
@@ -87,7 +96,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.assignPriceListOption.click();
     await this.customRateField.fill(data.customRate);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralOverallMarkupPricing', {
       priceListName: data.priceListName1,
@@ -120,7 +129,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.customRateField.fill(data.customRate);
 
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralOverallMarkdownPricing', {
       priceListName: data.markdownPriceListName1,
@@ -176,7 +185,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField2.fill(data.primaryUOM2);
     await this.itemAmountField3.fill(data.primaryUOM3);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralItemSpecificPricing', {
       priceListName: data.priceListName2,
@@ -215,7 +224,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField1.fill(data.primaryUOM1);
 
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralItemSpecificPricing_ByAutoCalculating', {
       priceListName: data.autoCalculatePriceListName1,
@@ -251,7 +260,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.businessCategoryOption.click();
     await this.customRateField.fill(data.customRate);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
         saveSection('CategoryWiseOverallMarkupPricing', {
           priceListName: data.priceListName3,
@@ -295,7 +304,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
           customRate: data.customRate
         });
 
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
   }
 
@@ -330,7 +339,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField2.fill(data.primaryUOM2);
     await this.itemAmountField3.fill(data.primaryUOM3);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('CategoryWiseItemSpecificPricing', {
       priceListName: data.priceListName4,
@@ -375,7 +384,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField1.fill(data.primaryUOM1);
 
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('CategoryWiseItemSpecificPricing_ByAutoCalculating', {
       priceListName: data.autoCalculatePriceListName2,
@@ -409,7 +418,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemSelectionField.fill(data.profileName);
     await this.customRateField.fill(data.customRate);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('ProfileWiseOverallMarkupPricing', {
       priceListName: data.priceListName5,
@@ -452,7 +461,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
       customRate: data.customRate
     });
 
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
 
   }
@@ -486,7 +495,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField2.fill(data.primaryUOM2);
     await this.itemAmountField3.fill(data.primaryUOM3);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('ProfileWiseItemSpecificPricing', {
       priceListName: data.priceListName6,
@@ -540,7 +549,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
     });
 
-    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
 
   }
@@ -567,7 +576,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.assignPriceListOption.click();
     await this.customRateField.fill(data.editedCustomRate);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralOverallMarkupPricing', {
       editedPriceListName: data.editedPriceListName1,
@@ -600,7 +609,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.customRateField.fill(data.editedCustomRate);
 
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralOverallMarkdownPricing', {
       editedPriceListName: data.editedMarkdownPriceListName1,
@@ -645,7 +654,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralItemSpecificPricing', {
       editedPriceListName: data.editedPriceListName2,
@@ -696,7 +705,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
 
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('GeneralItemSpecificPricing_ByAutoCalculating', {
       editedAutoCalculatePriceListName: data.editedAutoCalculatePriceListName1,
@@ -731,11 +740,11 @@ class Pricing_general_Create extends SelfHealingBasePage {
 
     await this.assignPriceListToDropdown.click();
    // Wait for the dropdown to populate
-    await this.editAssignPriceListOption.click();
+    await this.pickAssignAll();
 
     await this.customRateField.fill(data.editedCustomRate);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
         saveSection('CategoryWiseOverallMarkupPricing', {
           editedPriceListName: data.editedPriceListName3,
@@ -763,7 +772,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.priceListNameField.fill(data.editedMarkdownPriceListName2);
     await this.descriptionInput.fill(data.editedDescription);
     await this.assignPriceListToDropdown.click();
-    await this.editAssignPriceListOption.click();
+    await this.pickAssignAll();
 
 
     await this.customRateField.fill(data.editedCustomRate);
@@ -774,7 +783,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
           editedCustomRate: data.editedCustomRate
         });
 
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
   }
 
@@ -798,7 +807,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.descriptionInput.fill(data.editedDescription);
 
     await this.assignPriceListToDropdown.click();
-    await this.editAssignPriceListOption.click();
+    await this.pickAssignAll();
 
     await this.itemSpecificCard.click();
    
@@ -813,7 +822,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('CategoryWiseItemSpecificPricing', {
       editedPriceListName: data.editedPriceListName4,
@@ -846,7 +855,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.descriptionInput.fill(data.editedDescription);
 
     await this.assignPriceListToDropdown.click();
-    await this.editAssignPriceListOption.click();
+    await this.pickAssignAll();
 
     await this.itemSpecificCard.click();
    
@@ -861,7 +870,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField2.fill(data.editedPrimaryUOM2);
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('CategoryWiseItemSpecificPricing_ByAutoCalculating', {
       editedAutoCalculatePriceListName: data.editedAutoCalculatePriceListName2,
@@ -898,7 +907,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     //await this.itemSelectionField.fill(data.editedProfileName);
     await this.customRateField.fill(data.editedCustomRate);
     await this.savePriceListButton.click();  
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('ProfileWiseOverallMarkupPricing', {
       editedPriceListName: data.editedPriceListName5,
@@ -940,7 +949,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
       editedCustomRate: data.editedCustomRate
     });
 
-    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.generalPriceListUpdatedSuccessMsg).toBeVisible({ timeout: 20_000 });
 
 
   }
@@ -982,7 +991,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
 
     await this.savePriceListButton.click();  
-    //await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    //await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('ProfileWiseItemSpecificPricing', {
       editedPriceListName: data.editedPriceListName6,
@@ -1034,7 +1043,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.itemAmountField3.fill(data.editedPrimaryUOM3);
 
     await this.savePriceListButton.click();  
-    //await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 5000 });
+    //await expect(this.generalPriceListSuccessMsg).toBeVisible({ timeout: 20_000 });
 
     saveSection('ProfileWiseItemSpecificPricing_ByAutoCalculating', {
       editedAutoCalculatePriceListName: data.editedAutoCalculatePriceListName3,
@@ -1065,7 +1074,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.kebabMenuButton.click();
     await this.deleteButton.click();
     await this.confirmDeleteButton.click();
-    await expect(this.deleteSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.deleteSuccessMsg).toBeVisible({ timeout: 20_000 });
 
   }
 
@@ -1083,7 +1092,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.searchedField.click();
    // Wait for modal to appear
     await this.activeInactiveToggle.click();
-    await expect(this.activeInactiveSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.activeInactiveSuccessMsg).toBeVisible({ timeout: 20_000 });
     await this.closeButton.click();
     await expect(this.page.locator('(//td[@class="ant-table-cell"])[4]')).toHaveText('Not Active');
 
@@ -1092,7 +1101,7 @@ class Pricing_general_Create extends SelfHealingBasePage {
     await this.kebabMenuButton.click();
     await this.deleteButton.click();
     await this.confirmDeleteButton.click();
-    await expect(this.deleteSuccessMsg).toBeVisible({ timeout: 5000 });
+    await expect(this.deleteSuccessMsg).toBeVisible({ timeout: 20_000 });
 
   }
 

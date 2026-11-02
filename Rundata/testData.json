@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "textor",
-    "productDescription": "Nesciunt valetudo vitiosus copiose vito omnis vigor.",
-    "salePricePerPcs": "663",
-    "updatedAt": "2026-10-30T07:25:36.704Z",
-    "productName2": "torrens",
-    "productDescription2": "Delego antepono capillus adsuesco tenus.",
-    "salePricePerUnit": "243",
-    "quantity": "1"
+    "productName": "tenuis",
+    "productDescription": "Vulgo ab alioqui reiciendis canis asperiores attonbitus decimus cervus paulatim.",
+    "salePricePerPcs": "561",
+    "updatedAt": "2026-11-02T06:21:23.387Z",
+    "productName2": "maxime",
+    "productDescription2": "A impedit eaque vergo sit desidero error strues.",
+    "salePricePerUnit": "112",
+    "quantity": "2"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {

@@ -75,7 +75,10 @@ class VendorPage extends CustomerPage {
     await this._vendorList();
     await this.customerSearch.fill(name);
     await this.settle(2000, 'vendor search');
+    // The header shows ₹0 until the balances API answers (not re-requested when this vendor is already loaded)
+    const info = this.page.waitForResponse((r) => r.url().includes('/vendor/vendor-info/') && r.ok(), { timeout: 15_000 }).catch(() => null);
     await this.vendorLink(name).click();
+    await info;
     await expect(this.viewDetailsBtn).toBeVisible();
     await this.settle(3000, 'vendor page renders');
   }
