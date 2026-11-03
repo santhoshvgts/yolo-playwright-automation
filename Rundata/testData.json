@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "varius",
-    "productDescription": "Civis cado corrumpo contra acidus.",
-    "salePricePerPcs": "634",
-    "updatedAt": "2026-11-03T14:09:00.742Z",
-    "productName2": "capitulus",
-    "productDescription2": "Copia speciosus aureus ventus subiungo.",
-    "salePricePerUnit": "721",
-    "quantity": "8"
+    "productName": "terra",
+    "productDescription": "Aro ipsa cubitum thalassinus illum curiositas laboriosam summa derideo.",
+    "salePricePerPcs": "649",
+    "updatedAt": "2026-11-03T14:25:54.489Z",
+    "productName2": "magnam",
+    "productDescription2": "Labore dolorum civis patria coepi terminatio tubineus victoria.",
+    "salePricePerUnit": "435",
+    "quantity": "1"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {

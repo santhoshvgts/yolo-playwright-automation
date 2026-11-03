@@ -39,7 +39,8 @@ const CHROMIUM = {
 
 // ── Environment ─────────────────────────────────────────────────
 // TEST_ENV=uat (default, "test" works too) | prod — hosts per environment in config/environments.js
-if (!process.env.TEST_WORKER_INDEX) console.log(`[env] ${ENV_NAME}: ${Object.values(APP_URLS).join(' | ')}`);
+// Not on --list: Test Board runs `--list --reporter=json` and parses stdout as JSON
+if (!process.env.TEST_WORKER_INDEX && !process.argv.includes('--list')) console.log(`[env] ${ENV_NAME}: ${Object.values(APP_URLS).join(' | ')}`);
 
 export default defineConfig({
   // Shown in the HTML report, so a report says which environment it ran against
