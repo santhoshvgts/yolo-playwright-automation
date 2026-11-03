@@ -55,7 +55,10 @@ Set these in your shell or in a `.env` file in the project root.
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `BASE_URL` | `https://invoice.test.vgts.xyz` | Target environment |
+| `TEST_ENV` | `uat` | Environment: `uat` (or `test`) or `prod`. Hosts per environment are in `config/environments.js` |
+| `ALLOW_PROD` | off | Must be `true` for `TEST_ENV=prod`: the tests create and delete real data |
+| `PROD_INVOICE_URL` / `PROD_FIELDFORCE_URL` / `PROD_INVENTORY_URL` | — | Production hosts, until they are filled in `config/environments.js` |
+| `INVOICE_URL` / `FIELDFORCE_URL` / `INVENTORY_URL` | from `TEST_ENV` | Point one app at another host for a run (`BASE_URL` = old name for `INVOICE_URL`) |
 | `ORG_ID` | set in `config/urls.js` | Organisation the tests run against |
 | `PASSWORD` | value in `test-data/*` | Login password |
 | `TEST_TIMEOUT` | `300000` | Time allowed for each test (ms) |
@@ -71,7 +74,7 @@ Set these in your shell or in a `.env` file in the project root.
 In PowerShell, set variables like this:
 
 ```powershell
-$env:BASE_URL="https://invoice.stage.vgts.xyz"; npx playwright test
+$env:TEST_ENV="uat"; npx playwright test
 ```
 
 ## Running on GitHub Actions

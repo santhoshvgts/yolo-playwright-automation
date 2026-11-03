@@ -6,12 +6,8 @@ const adminData = () => ({
   password: process.env.ADMIN_PASSWORD,
 });
 
-// App hosts (one SSO account, three apps)
-const appUrls = {
-  invoice:    process.env.INVOICE_URL    || process.env.BASE_URL || 'https://invoice.test.vgts.xyz',
-  fieldforce: process.env.FIELDFORCE_URL || 'https://fieldforce.test.vgts.xyz',
-  inventory:  process.env.INVENTORY_URL  || 'https://inventory.test.vgts.xyz',
-};
+// App hosts (one SSO account, three apps) of the environment picked by TEST_ENV — see config/environments.js
+const { APP_URLS: appUrls } = require('../config/environments');
 
 // Test orgs. ORG_NAMES="Org A|Org B|Org C|Org D" runs one worker per org (playwright.config.js sets
 // workers to the count); each worker uses the org at its parallel index, so workers never share data.

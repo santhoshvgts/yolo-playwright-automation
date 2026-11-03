@@ -2,11 +2,14 @@ const fs = require('fs');
 const path = require('path');
 
 const { masterData, ORGS } = require('../test-data/UserData');
+const { ENV_NAME } = require('../config/environments');
 
 // One file per test org: saved items / lists only exist in their own org, and each worker (one per org)
-// writes only its own file. The first org keeps testData.json.
+// writes only its own file. The first org keeps testData.json. Environments other than UAT add their
+// name (testData.prod.json, testData.prod.org2.json): UAT items do not exist there.
 const orgIndex = ORGS.indexOf(masterData.organization);
-const filePath = path.join(__dirname, '../Rundata', orgIndex > 0 ? `testData.org${orgIndex + 1}.json` : 'testData.json');
+const envPart = ENV_NAME === 'uat' ? '' : `.${ENV_NAME}`;
+const filePath = path.join(__dirname, '../Rundata', `testData${envPart}${orgIndex > 0 ? `.org${orgIndex + 1}` : ''}.json`);
 const filePath1 = path.join(__dirname, '../Rundata/LLmData.json');
 /**
  * Initialize store if missing

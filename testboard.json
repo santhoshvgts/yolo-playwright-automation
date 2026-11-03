@@ -1,0 +1,20 @@
+{
+  "projectKey": "yolo-automation",
+  "name": "YOLO Automation",
+  "hub": "http://localhost:4520",
+  "workersEnv": "WORKERS",
+  "maxWorkers": 3,
+  "preRun": [
+    { "id": "pricing", "label": "Pricing cleanup", "path": "tests/tools/pricing-cleanup.spec.js", "default": true }
+  ],
+  "toggles": [
+    {
+      "id": "cleanFiles",
+      "label": "Clean old files",
+      "description": "Removes old test output before the tests start (config/global-setup.js)",
+      "env": { "CLEAN_BEFORE_RUN": ["true", "false"] },
+      "default": true
+    }
+  ],
+  "upload": { "enabled": true, "media": "failed", "maxMediaMB": 200 }
+}

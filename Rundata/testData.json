@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "curatio",
-    "productDescription": "Advoco uredo ullam tenuis conicio iure surculus.",
-    "salePricePerPcs": "430",
-    "updatedAt": "2026-11-03T11:44:44.839Z",
-    "productName2": "torqueo",
-    "productDescription2": "Sollicito odio audeo adfectus tot ipsum defaeco.",
-    "salePricePerUnit": "840",
-    "quantity": "0"
+    "productName": "varius",
+    "productDescription": "Civis cado corrumpo contra acidus.",
+    "salePricePerPcs": "634",
+    "updatedAt": "2026-11-03T14:09:00.742Z",
+    "productName2": "capitulus",
+    "productDescription2": "Copia speciosus aureus ventus subiungo.",
+    "salePricePerUnit": "721",
+    "quantity": "8"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -158,10 +158,10 @@
     "updatedAt": "2026-10-08T14:09:21.677Z"
   },
   "flowItemCreateData": {
-    "productName": "Refined Marble Chicken Huor",
-    "productDescription": "The Antwon Chips is the latest in a series of left products from Cruickshank - Schumm",
-    "salePricePerPcs": "80",
-    "updatedAt": "2026-11-03T11:15:22.301Z"
+    "productName": "Recycled Cotton Mouse xeCB",
+    "productDescription": "Stylish Towels designed to make you stand out with superior looks",
+    "salePricePerPcs": "95",
+    "updatedAt": "2026-11-03T13:59:52.673Z"
   },
   "customerPaymentData": {
     "paymentNumber": "RCPT-AUTO/0326",
@@ -256,24 +256,6 @@
     "dueAmtinSIpreview": 119.18,
     "amountEntered3": 119.18
   },
-  "unitPurchaseData": {
-    "itemName": "Refined Plastic Mouse zfwv",
-    "boxconversion": 7,
-    "bundleconversion": 7,
-    "updatedAt": "2026-10-09T13:09:39.445Z",
-    "newtotalqty": 1555.28,
-    "initialtotalqty": 0,
-    "updatedTotalqty": 1547.25,
-    "editTotalqty": 1547.25,
-    "finalTotalqty": 0,
-    "billNo": "PINV-AUTO/0034",
-    "vbExistingDue": 7072,
-    "vbExistingAdvance": 0,
-    "vbExistingClosing": 7072,
-    "piAmount": 4177.32,
-    "edpiAmount": 3406.91,
-    "vbUpdatedDue": 10478.91
-  },
   "siEditFlowItems": {
     "items": [
       {
@@ -342,6 +324,14 @@
     "bundleconversion": 7,
     "updatedAt": "2026-11-03T11:16:02.434Z",
     "newtotalqty": 374.77,
+    "initialtotalqty": 0
+  },
+  "unitPurchaseData": {
+    "itemName": "Recycled Cotton Mouse xeCB",
+    "boxconversion": 6,
+    "bundleconversion": 6,
+    "updatedAt": "2026-11-03T14:01:03.473Z",
+    "newtotalqty": 889.91,
     "initialtotalqty": 0
   }
 }

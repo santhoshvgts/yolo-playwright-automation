@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 import { defineConfig } from '@playwright/test';
 import { TIMEOUTS } from './config/timeouts.js';
-import { URLS } from './config/urls.js';
+import { URLS, ENV_NAME, APP_URLS } from './config/urls.js';
 import { STORAGE_STATE } from './config/auth.js';
 import { ORGS } from './test-data/UserData.js';
 
@@ -37,7 +37,14 @@ const CHROMIUM = {
   },
 };
 
+// ── Environment ─────────────────────────────────────────────────
+// TEST_ENV=uat (default, "test" works too) | prod — hosts per environment in config/environments.js
+if (!process.env.TEST_WORKER_INDEX) console.log(`[env] ${ENV_NAME}: ${Object.values(APP_URLS).join(' | ')}`);
+
 export default defineConfig({
+  // Shown in the HTML report, so a report says which environment it ran against
+  metadata: { environment: ENV_NAME, ...APP_URLS },
+
   // ── Login ───────────────────────────────────────────────────────
   // config/global-setup.js logs in once per run and saves the session + org id
   // (config/auth.js). The `chromium` project loads it, so openApp('invoice')

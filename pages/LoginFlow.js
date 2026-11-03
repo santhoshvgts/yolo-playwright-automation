@@ -1,10 +1,10 @@
 const { expect } = require('@playwright/test');
 const { SelfHealingBasePage } = require('./self-healing-base-page');
 const { TIMEOUTS } = require('../config/timeouts');
-const { masterData } = require('../test-data/UserData');
+const { masterData, appUrls } = require('../test-data/UserData');
 const { exactOrgRow } = require('./common/LoginPage');
 
-const DEFAULT_BASE_URL = 'https://invoice.test.vgts.xyz/';
+const DEFAULT_BASE_URL = `${appUrls.invoice}/`;
 
 // A cold login (esp. on CI) can sit on the spinner well past 30s before the org screen.
 const ORG_WAIT = Math.max(TIMEOUTS.expect, 60_000);

@@ -31,6 +31,14 @@ const savedOrgId = () => {
   try { return JSON.parse(fs.readFileSync(ORG_FILE, 'utf8')).orgIds[masterData.organization] || ''; } catch { return ''; }
 };
 
+/** Which app (invoice | fieldforce | inventory) a URL belongs to ('' for none). */
+const appOf = (url) => {
+  try {
+    const host = new URL(url).host;
+    return Object.keys(appUrls).find((app) => new URL(appUrls[app]).host === host) || '';
+  } catch { return ''; }
+};
+
 /** Default login data: credentials from .env, org from masterData. */
 const defaultLoginData = () => {
   const user = adminData();
@@ -114,6 +122,14 @@ class LoginPage extends BasePage {
       // Already inside the saved test org (the header check below cannot read the invoice app's header)
       return false;
     }
+    // This worker's own org: open it by id. All three apps take the same <app>/<orgId> URL, so this skips the
+    // org screen search (slow, and under parallel load it sometimes returns nothing) and the header name check
+    // (the header cuts names to "Automation Testing Org PVT LTD...", which every test org starts with).
+    const app = appOf(this.page.url());
+    if (orgId && app && data.organization === masterData.organization) {
+      this.baseUrl = appUrls[app];
+      if (await this.openSavedOrg(app)) return true;
+    }
     if (!(await this.orgHeading.isVisible().catch(() => false))) {
       const current = await this.currentOrgName();
       if (current.split('\n')[0].trim().toLowerCase() === data.organization.trim().toLowerCase()) {
@@ -190,13 +206,19 @@ class LoginPage extends BasePage {
     if (!url) throw new Error(`Unknown app "${app}" (expected invoice | fieldforce | inventory)`);
     console.log(`Opening ${app} app...`);
     this.baseUrl = url;
-    if (app === 'invoice' && await this.openSavedOrg()) return;
-    // Each login ends the account's other sessions, so take a session another test has already renewed first
-    if (app === 'invoice' && savedOrgId() && await this.adoptSavedSession() && await this.openSavedOrg()) return;
+    if (await this.openSavedOrg(app)) return;
+    // Each login ends the account's other sessions, so every other worker's running test fails. Under load the
+    // app sometimes shows the login screen for a session the server still accepts: retry the saved session
+    // (or one another test has already renewed) a couple of times before logging in.
+    for (let attempt = 1; attempt <= 2 && savedOrgId(); attempt++) {
+      await this.adoptSavedSession();
+      if (await this.openSavedOrg(app)) return;
+      await this.page.waitForTimeout(5_000 * attempt);
+    }
     await this.ensureLoggedIn(data);
     const host = new URL(url).host.replace(/\./g, '\\.');
     await expect(this.page).toHaveURL(new RegExp(host), { timeout: WAIT.navigation });
-    if (app === 'invoice' && savedOrgId()) await this.saveSession();
+    if (savedOrgId()) await this.saveSession();
   }
 
   /** Load STORAGE_STATE's cookies into this context when they differ from ours (another test logged in since). */
@@ -227,15 +249,17 @@ class LoginPage extends BasePage {
   }
 
   /**
-   * Saved session (config/global-setup.js): open <app>/<orgId> straight away —
-   * ~2 s instead of ~14 s for landing → login → org switch. Returns false when
-   * there is no saved org or the session is no longer valid (caller logs in).
+   * Saved session (config/global-setup.js): open <app>/<orgId> of this worker's org straight away —
+   * ~2 s instead of ~14 s for landing → login → org switch. The org id is the same in every app.
+   * Returns false when there is no saved org or the session is no longer valid (caller logs in).
    */
-  async openSavedOrg() {
+  async openSavedOrg(app = 'invoice') {
     const orgId = savedOrgId();
     if (!orgId) return false;
+    // Invoice: its top menu. Fieldforce / inventory: the header org name, filled once the org has loaded.
+    const ready = app === 'invoice' ? this.invoiceNav : this.headerOrg.filter({ hasText: /\S/ });
     const landed = (timeout) => Promise.race([
-      this.invoiceNav.waitFor({ state: 'visible', timeout }).then(() => 'app'),
+      ready.waitFor({ state: 'visible', timeout }).then(() => 'app'),
       this.loginButton.waitFor({ state: 'visible', timeout }).then(() => 'login'),
       this.goToDashboardButton.waitFor({ state: 'visible', timeout }).then(() => 'dashboard'),
       this.orgHeading.waitFor({ state: 'visible', timeout }).then(() => 'org screen'),
@@ -252,7 +276,7 @@ class LoginPage extends BasePage {
       console.log('Saved session — opened the test org directly');
       return true;
     }
-    console.log(`Saved session not usable (${state}) — logging in`);
+    console.log(`Saved session not usable (${state})`);
     return false;
   }
 
