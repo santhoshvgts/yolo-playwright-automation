@@ -6,6 +6,7 @@ const { ItemPage } = require('../inventory/ItemPage');
 const { StockAdjustmentPage } = require('../inventory/StockAdjustmentPage');
 const { masterData } = require('../../test-data/UserData');
 const { parseStockByUnits, money, expectClose } = require('../../utils/stockMath');
+const { textIs } = require('../../utils/testHelpers');
 
 const OPEN_DROPDOWN = '.ant-select-dropdown:not(.ant-select-dropdown-hidden)';
 const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -41,7 +42,7 @@ class SalesInvoiceStockPage extends AppBasePage {
     // New invoice — customer step
     this.newInvoiceBtn = this.loc("//span[text()='New Sales Invoice ']");
     this.customerDropdown = this.page.locator('#si_select_cus');
-    this.customerOption = (name) => this.loc(`//div[text()='${name}']`);
+    this.customerOption = (name) => this.loc(`//div[${textIs(name)}]`);
     // BRITTLE: proceed button — structural CSS, no text anchor
     this.customerProceedBtn = this.page.locator('.ant-form > .ant-btn > span');
 

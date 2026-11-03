@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "tenuis",
-    "productDescription": "Vulgo ab alioqui reiciendis canis asperiores attonbitus decimus cervus paulatim.",
-    "salePricePerPcs": "561",
-    "updatedAt": "2026-11-02T06:21:23.387Z",
-    "productName2": "maxime",
-    "productDescription2": "A impedit eaque vergo sit desidero error strues.",
-    "salePricePerUnit": "112",
-    "quantity": "2"
+    "productName": "curatio",
+    "productDescription": "Advoco uredo ullam tenuis conicio iure surculus.",
+    "salePricePerPcs": "430",
+    "updatedAt": "2026-11-03T11:44:44.839Z",
+    "productName2": "torqueo",
+    "productDescription2": "Sollicito odio audeo adfectus tot ipsum defaeco.",
+    "salePricePerUnit": "840",
+    "quantity": "0"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {
@@ -30,28 +30,28 @@
     "updatedAt": "2026-10-08T13:49:58.067Z"
   },
   "GeneralOverallMarkupPricing": {
-    "priceListName": "Price List Luxurious Gold Computer",
+    "priceListName": "Price List Luxurious Bamboo Salad",
     "customRate": "42",
-    "updatedAt": "2026-10-30T06:09:29.857Z",
-    "editedPriceListName": "Price List Gorgeous Cotton Table",
+    "updatedAt": "2026-11-03T08:38:42.593Z",
+    "editedPriceListName": "Price List Fantastic Concrete Chips",
     "editedCustomRate": "50"
   },
   "GeneralOverallMarkdownPricing": {
-    "priceListName": "Price List Recycled Metal Hat",
+    "priceListName": "Price List Oriental Bamboo Keyboard",
     "customRate": "42",
-    "updatedAt": "2026-10-30T06:09:50.765Z",
-    "editedPriceListName": "Price List Handcrafted Silk Sausages",
+    "updatedAt": "2026-11-03T08:39:08.624Z",
+    "editedPriceListName": "Price List Ergonomic Granite Chair",
     "editedCustomRate": "50"
   },
   "GeneralItemSpecificPricing": {
-    "priceListName": "Price List Elegant Ceramic Mouse",
+    "priceListName": "Price List Fresh Marble Shirt",
     "customRate": "42",
     "itemName": "vir",
     "itemAmount1": "100",
     "itemAmount2": "150",
     "itemAmount3": "200",
-    "updatedAt": "2026-10-30T06:16:38.385Z",
-    "editedPriceListName": "Price List Oriental Marble Bike",
+    "updatedAt": "2026-11-03T08:39:20.819Z",
+    "editedPriceListName": "Price List Ergonomic Marble Shoes",
     "editedCustomRate": "50",
     "editedProductName": "TestProduct",
     "editedPrimaryUOM1": "500",
@@ -59,12 +59,12 @@
     "editedPrimaryUOM3": "700"
   },
   "GeneralItemSpecificPricing_ByAutoCalculating": {
-    "priceListName": "Price List Small Bronze Shirt",
+    "priceListName": "Price List Elegant Ceramic Tuna",
     "customRate": "42",
     "itemName": "vir",
     "itemAmount": "100",
-    "updatedAt": "2026-10-30T06:10:48.227Z",
-    "editedAutoCalculatePriceListName": "Price List Small Rubber Salad",
+    "updatedAt": "2026-11-03T08:39:31.670Z",
+    "editedAutoCalculatePriceListName": "Price List Handcrafted Bamboo Mouse",
     "editedAutoCalculateCustomRate": "50",
     "editedAutoCalculateProductName": "TestProduct",
     "editedAutoCalculatePrimaryUOM1": "500",
@@ -72,64 +72,64 @@
     "editedAutoCalculatePrimaryUOM3": "700"
   },
   "CategoryWiseOverallMarkupPricing": {
-    "priceListName": "Price List Refined Cotton Chair",
+    "priceListName": "Price List Incredible Steel Sausages",
     "customRate": "42",
-    "updatedAt": "2026-10-30T06:16:50.382Z",
-    "editedPriceListName": "Price List Unbranded Silk Table",
+    "updatedAt": "2026-11-03T08:39:47.778Z",
+    "editedPriceListName": "Price List Bespoke Metal Fish",
     "editedCustomRate": "50"
   },
   "CategoryWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Luxurious Steel Computer",
+    "priceListName": "Price List Licensed Silk Sausages",
     "customRate": "42",
-    "updatedAt": "2026-10-08T13:46:19.635Z",
-    "editedPriceListName": "Price List Sleek Marble Sausages",
+    "updatedAt": "2026-11-03T08:40:06.497Z",
+    "editedPriceListName": "Price List Rustic Gold Fish",
     "editedCustomRate": "50"
   },
   "ProfileWiseOverallMarkupPricing": {
-    "priceListName": "Price List Ergonomic Steel Mouse",
+    "priceListName": "Price List Handcrafted Aluminum Car",
     "customRate": "42",
-    "updatedAt": "2026-10-30T06:13:47.774Z",
-    "editedPriceListName": "Price List Small Bronze Shirt",
+    "updatedAt": "2026-11-03T08:42:52.044Z",
+    "editedPriceListName": "Price List Licensed Concrete Pants",
     "editedCustomRate": "50"
   },
   "ProfileWiseOverallMarkdownPricing": {
-    "priceListName": "Price List Handcrafted Marble Sausages",
+    "priceListName": "Price List Fantastic Metal Computer",
     "customRate": "42",
-    "updatedAt": "2026-10-30T06:14:01.845Z",
-    "editedPriceListName": "Price List Generic Cotton Hat",
+    "updatedAt": "2026-11-03T08:43:02.192Z",
+    "editedPriceListName": "Price List Practical Metal Ball",
     "editedCustomRate": "50"
   },
   "ProfileWiseItemSpecificPricing": {
-    "priceListName": "Price List Gorgeous Wooden Cheese",
+    "priceListName": "Price List Unbranded Granite Keyboard",
     "customRate": "42",
     "itemName": "vir",
     "itemAmount1": "100",
     "itemAmount2": "150",
     "itemAmount3": "200",
-    "updatedAt": "2026-10-30T06:14:22.847Z",
-    "profileName": "Profile Refined Wooden Ball",
-    "editedPriceListName": "Price List Fantastic Cotton Shoes",
+    "updatedAt": "2026-11-03T08:43:14.188Z",
+    "profileName": "Profile Small Cotton Computer",
+    "editedPriceListName": "Price List Oriental Steel Car",
     "editedCustomRate": "50",
-    "editedProfileName": "Profile Unbranded Ceramic Chair",
+    "editedProfileName": "Profile Incredible Silk Keyboard",
     "editedProductName": "TestProduct",
     "editedPrimaryUOM1": "500",
     "editedPrimaryUOM2": "600",
     "editedPrimaryUOM3": "700"
   },
   "ProfileWiseItemSpecificPricing_ByAutoCalculating": {
-    "priceListName": "Price List Handmade Bamboo Chips",
+    "priceListName": "Price List Incredible Wooden Pizza",
     "customRate": "42",
-    "profileName": "Profile Refined Wooden Ball",
+    "profileName": "Profile Small Cotton Computer",
     "itemName": "vir",
     "itemAmount": "100",
-    "updatedAt": "2026-10-30T06:14:45.345Z",
-    "editedAutoCalculatePriceListName": "Price List Ergonomic Plastic Ball",
+    "updatedAt": "2026-11-03T08:43:29.611Z",
+    "editedAutoCalculatePriceListName": "Price List Incredible Metal Tuna",
     "editedAutoCalculateCustomRate": "50",
     "editedAutoCalculateProductName": "TestProduct",
     "editedAutoCalculatePrimaryUOM1": "500",
     "editedAutoCalculatePrimaryUOM2": "600",
     "editedAutoCalculatePrimaryUOM3": "700",
-    "editedAutoCalculateProfileName": "Profile Unbranded Ceramic Chair"
+    "editedAutoCalculateProfileName": "Profile Incredible Silk Keyboard"
   },
   "Business_Vendor_withGST": {
     "vendorOrganisationName": "Sauer Inc",
@@ -158,10 +158,10 @@
     "updatedAt": "2026-10-08T14:09:21.677Z"
   },
   "flowItemCreateData": {
-    "productName": "Incredible Cotton Chips Xszz",
-    "productDescription": "Savor the smoky essence in our Shoes, designed for scared culinary adventures",
-    "salePricePerPcs": "66",
-    "updatedAt": "2026-10-09T13:10:45.205Z"
+    "productName": "Refined Marble Chicken Huor",
+    "productDescription": "The Antwon Chips is the latest in a series of left products from Cruickshank - Schumm",
+    "salePricePerPcs": "80",
+    "updatedAt": "2026-11-03T11:15:22.301Z"
   },
   "customerPaymentData": {
     "paymentNumber": "RCPT-AUTO/0326",
@@ -187,14 +187,14 @@
     "updatedAdvance": 173326.3
   },
   "CategoryWiseItemSpecificPricing": {
-    "priceListName": "Price List Elegant Plastic Sausages",
+    "priceListName": "Price List Intelligent Steel Pizza",
     "customRate": "42",
-    "itemName": "TestProduct",
+    "itemName": "vir",
     "itemAmount1": "100",
     "itemAmount2": "150",
     "itemAmount3": "200",
-    "updatedAt": "2026-10-08T13:46:52.192Z",
-    "editedPriceListName": "Price List Small Rubber Computer",
+    "updatedAt": "2026-11-03T08:40:20.624Z",
+    "editedPriceListName": "Price List Licensed Wooden Chicken",
     "editedCustomRate": "50",
     "editedProductName": "TestProduct",
     "editedPrimaryUOM1": "500",
@@ -202,33 +202,15 @@
     "editedPrimaryUOM3": "700"
   },
   "CategoryWiseItemSpecificPricing_ByAutoCalculating": {
-    "priceListName": "Price List Sleek Rubber Car",
+    "priceListName": "Price List Practical Cotton Ball",
     "customRate": "42",
-    "itemName": "TestProduct",
+    "itemName": "vir",
     "itemAmount": "100",
-    "updatedAt": "2026-10-08T13:47:18.480Z",
-    "editedAutoCalculatePriceListName": "Price List Handmade Wooden Table",
+    "updatedAt": "2026-11-03T08:40:31.619Z",
+    "editedAutoCalculatePriceListName": "Price List Recycled Gold Sausages",
     "editedAutoCalculateCustomRate": "50",
     "editedAutoCalculateProductName": "TestProduct",
     "editedAutoCalculatePrimaryUOM": "500"
-  },
-  "purchaseFlowData": {
-    "itemName": "Modern Cotton Chair eXer",
-    "boxconversion": 12,
-    "bundleconversion": 12,
-    "updatedAt": "2026-10-09T11:20:58.196Z",
-    "newtotalqty": 1711.03,
-    "initialtotalqty": 0,
-    "updatedTotalqty": 2880,
-    "editTotalqty": 2880,
-    "finalTotalqty": 0,
-    "billNo": "PINV-AUTO/0030",
-    "vbExistingDue": 7072,
-    "vbExistingAdvance": 0,
-    "vbExistingClosing": 7072,
-    "piAmount": 4170.03,
-    "edpiAmount": 2466.2,
-    "vbUpdatedDue": 9538.2
   },
   "salesFlowData": {
     "itemName": "Rustic Wooden Car TjJo",
@@ -252,27 +234,27 @@
     "cbFinalClosing": -105474.3
   },
   "unitCustomerPaymentData": {
-    "paymentNumber": "RCPT-AUTO/0016",
-    "existingDue": 16084.51,
-    "existingAdvance": 127817.91,
-    "existingClosingBalance": -111733.4,
-    "amtReceived": 93632,
-    "amtUsedForPayment": 16084.51,
-    "excessAmt": 77547.49,
-    "updatedAt": "2026-10-09T13:01:13.591Z",
-    "updatedamtReceived": 65134,
-    "updatedamtUsedForPayment": 16084.51,
-    "updatedexcessAmt": 49049.49,
+    "paymentNumber": "RCPT-AUTO/0687",
+    "existingDue": 7825005.77,
+    "existingAdvance": 182742.4,
+    "existingClosingBalance": 7642263.37,
+    "amtReceived": 57040,
+    "amtUsedForPayment": 57040,
+    "excessAmt": 0,
+    "updatedAt": "2026-11-03T08:31:45.648Z",
+    "updatedamtReceived": 36986,
+    "updatedamtUsedForPayment": 36986,
+    "updatedexcessAmt": 0,
     "updatedDue": 0,
     "updatedAdvance": 176867.4,
     "finalDue": 16084.51,
     "finalAdvance": 127817.91,
     "finalClosingBalance": -111733.4,
     "finalTSCB": -111733.4,
-    "billNo": "SINV-AUTO/0004",
-    "invoiceStatus": "5 days due",
-    "dueAmtinSIpreview": 3129.55,
-    "amountEntered3": 3129.55
+    "billNo": "SINV-AUTO/1679",
+    "invoiceStatus": "7 days due",
+    "dueAmtinSIpreview": 119.18,
+    "amountEntered3": 119.18
   },
   "unitPurchaseData": {
     "itemName": "Refined Plastic Mouse zfwv",
@@ -292,31 +274,10 @@
     "edpiAmount": 3406.91,
     "vbUpdatedDue": 10478.91
   },
-  "unitSalesData": {
-    "itemName": "Incredible Cotton Chips Xszz",
-    "boxconversion": 15,
-    "bundleconversion": 15,
-    "updatedAt": "2026-10-09T13:22:23.813Z",
-    "newtotalqty": 1415.94,
-    "initialtotalqty": 1600,
-    "updatedTotalqty": 1417.56,
-    "editTotalqty": 182.44,
-    "finalTotalqty": 1600,
-    "billNo": "SINV-AUTO/0005",
-    "endTotalqty": 1600,
-    "cbExistingDue": 16084.51,
-    "cbExistingAdvance": 130947.46,
-    "cbExistingClosing": -114862.95000000001,
-    "siAmount": 7094.26,
-    "edsiAmount": 5501.92,
-    "cbUpdatedDue": 21586.43,
-    "cbFinalAdvance": 130947.46,
-    "cbFinalClosing": -114862.95
-  },
   "siEditFlowItems": {
     "items": [
       {
-        "itemName": "TCE-A sgxmcX",
+        "itemName": "TCE-A tGhfEx",
         "baseUnit": "pcs",
         "price": 100,
         "conversions": {
@@ -325,7 +286,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-B Fkty9q",
+        "itemName": "TCE-B gJjq9t",
         "baseUnit": "pcs",
         "price": 250,
         "conversions": {
@@ -334,7 +295,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-C AseyQE",
+        "itemName": "TCE-C nCopOu",
         "baseUnit": "pcs",
         "price": 40,
         "conversions": {
@@ -343,7 +304,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-D wcqwbN",
+        "itemName": "TCE-D UUvEjg",
         "baseUnit": "pcs",
         "price": 75,
         "conversions": {
@@ -352,6 +313,35 @@
         "openingStock": 100000
       }
     ],
-    "updatedAt": "2026-10-29T04:51:04.420Z"
+    "updatedAt": "2026-11-03T10:50:06.932Z"
+  },
+  "unitSalesData": {
+    "itemName": "Ergonomic Plastic Bacon tyqH",
+    "boxconversion": 10,
+    "bundleconversion": 10,
+    "updatedAt": "2026-11-02T10:22:04.298Z",
+    "newtotalqty": 994.79,
+    "initialtotalqty": 1100,
+    "updatedTotalqty": 997.33,
+    "editTotalqty": 102.67,
+    "finalTotalqty": 1100,
+    "billNo": "SINV-AUTO/1659",
+    "endTotalqty": 1100,
+    "cbExistingDue": 7786612.94,
+    "cbExistingAdvance": 146281.4,
+    "cbExistingClosing": 7640331.54,
+    "siAmount": 5319.01,
+    "edsiAmount": 2284.18,
+    "cbUpdatedDue": 7788897.12,
+    "cbFinalAdvance": 146281.4,
+    "cbFinalClosing": 7640331.54
+  },
+  "purchaseFlowData": {
+    "itemName": "Refined Marble Chicken Huor",
+    "boxconversion": 7,
+    "bundleconversion": 7,
+    "updatedAt": "2026-11-03T11:16:02.434Z",
+    "newtotalqty": 374.77,
+    "initialtotalqty": 0
   }
 }

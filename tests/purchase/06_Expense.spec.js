@@ -28,7 +28,9 @@ const T = ['@purchase', '@expense'];
 const REG = { gst: 'Registered Business' };   // POM fills a GSTIN
 const r2 = (n) => Math.round(n * 100) / 100;
 // The expense list shows dates as MM/DD/YYYY
-const iso = (d) => `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+// List date as MM/DD/YYYY; the list itself drops leading zeros on some days ("11/3/2026"), so compare unpadded
+const iso = (d) => `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+const unpad = (s) => String(s).replace(/\b0(\d)/g, '$1');
 const filterDate = (d) => `${String(d.getDate()).padStart(2, '0')} ${d.toLocaleDateString('en-US', { month: 'short' })}, ${d.getFullYear()}`;
 /** Expected summary of rows [{ amount, tax: 'GST18' | undefined }]. */
 const model = (rows, { inclusive = false } = {}) => {
@@ -137,7 +139,7 @@ test.describe('Expense', () => {
     expect(s.text).toMatch(/Expense Total \( ₹ \)\s*5,900\.00/);
     const no = await ex.confirmExpenseNumber(await ex.saveExpense(), exp.total);
     const row = await ex.expenseRow(no);
-    expect(row.date).toBe(iso(new Date()));
+    expect(unpad(row.date)).toBe(iso(new Date()));
     expect(row.paidThrough).toMatch(/Petty Cash/);
     expect(row.vendor).toMatch(/^-?$/);
     expectClose(row.amount, exp.total, 0.02, 'list amount');
@@ -429,7 +431,7 @@ test.describe('Expense', () => {
     await ex.setListDateRange(new Date(), new Date());
     const rows = await ex.readListRows();
     expect(rows.length).toBeGreaterThan(0);
-    for (const r of rows) { expect(r[0]).toBe(iso(new Date())); expect(r[3]).toContain(VENDOR); }
+    for (const r of rows) { expect(unpad(r[0])).toBe(iso(new Date())); expect(r[3]).toContain(VENDOR); }
     await ex.setListDateRange(new Date(), addDays(new Date(), -10)).catch(() => {});
     console.log(`reversed range rows: ${(await ex.readListRows()).length}`);
     await ex.page.reload();

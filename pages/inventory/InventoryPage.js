@@ -53,7 +53,16 @@ class InventoryPage extends ItemPage {
     await this.openProducts(tab);
     await this.fillInto(this.listSearchBox, text);
     await this.settle(2500, 'search');
-    return this.readRows();
+    // The search is debounced: right after the settle the tab can still show its unfiltered rows or a spinner
+    const want = String(text).trim().toLowerCase();
+    let rows = [];
+    await expect.poll(async () => {
+      rows = await this.readRows();
+      if (await this.page.locator('.ant-spin-spinning').count()) return false;
+      if (rows.length) return !want || rows.every((r) => r.join(' ').toLowerCase().includes(want));
+      return (await this.page.locator('.ant-empty').filter({ visible: true }).count()) > 0;
+    }, { timeout: 15_000 }).toBe(true).catch(() => console.log(`Search "${text}" did not settle — using what is shown`));
+    return rows;
   }
 
   async readRows() {
@@ -61,7 +70,14 @@ class InventoryPage extends ItemPage {
   }
 
   async totalCount() {
-    return parseInt((await this.page.getByText(/Total Count:\s*\d+/).first().innerText()).match(/\d+/)[0], 10);
+    // The footer reads "Total Count: 0" while the list is still loading — wait for rows or the empty state
+    let n = NaN;
+    await expect.poll(async () => {
+      n = parseInt(((await this.page.getByText(/Total Count:\s*\d+/).first().innerText().catch(() => '')).match(/\d+/) || ['NaN'])[0], 10);
+      if (await this.page.locator('.ant-spin-spinning').count()) return false;
+      return n > 0 || (await this.page.locator('.ant-empty').filter({ visible: true }).count()) > 0;
+    }, { timeout: 15_000 }).toBe(true).catch(() => {});
+    return n;
   }
 
   /** Select by input id inside the open form: type when `type`, pick the option starting with `text`. */

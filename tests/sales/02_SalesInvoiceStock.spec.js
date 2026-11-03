@@ -1866,7 +1866,8 @@ test.describe('Bulk Payment - New Receipt', () => {
     await expect(bp.receiptNo).not.toBeEditable();
     expect(f.date).toBe(pickerDate(new Date()));
     for (const label of [TC, 'Due amount', 'Pending Cheque', 'Receipt Account', 'Received Amount', 'Payment Mode', 'Amount Received', 'Amount used for payments', 'Excess Amount']) {
-      expect(f.text, `receipt page shows "${label}"`).toContain(label);
+      // Names are typed by hand per org ("saravana store" / "Saravana store")
+      expect(f.text.toLowerCase(), `receipt page shows "${label}"`).toContain(label.toLowerCase());
     }
     expect(Number.isFinite(f.due) && Number.isFinite(f.pendingCheque)).toBe(true);
     expect([f.received, f.used, f.excess]).toEqual([0, 0, 0]);
@@ -2983,7 +2984,7 @@ test.describe('Credit Note', () => {
   test('TC271 - Unlinked credit note with a reason and an alphanumeric Ref No: Save and Send lists it as Open with no invoice and full remaining, and the reason and ref are kept', { tag: ['@sales', '@cn'], annotation: { type: 'cases', description: 'TC-CN-11, TC-CN-13, TC-CN-15, TC-CN-57' } }, async () => {
     const c = await credit([L(C, 2)], { reason: 'Damaged goods returned', refNo: 'RET-A1b2' });
     const r = await cn.listRow(c.no);
-    expect(r).toMatchObject({ customer: CUST, status: 'Open' });
+    expect({ ...r, customer: r.customer.toLowerCase() }).toMatchObject({ customer: CUST.toLowerCase(), status: 'Open' });
     expect(r.invoice).toMatch(/^-?$/);
     expectClose(r.amount, c.total, 0.05, 'Credit Amount');
     expectClose(r.remaining, c.total, 0.05, 'Remaining Amount');

@@ -5,6 +5,7 @@ const { AppBasePage } = require('../base/app-base-page');
 const { ItemPage } = require('../inventory/ItemPage');
 const { saveSection, requireSection } = require('../../utils/flowStore');
 const { money, expectClose } = require('../../utils/stockMath');
+const { textIs } = require('../../utils/testHelpers');
 
 /**
  * Invoice app → Sales: create / edit / cancel / delete a Sales Invoice with pcs, box and
@@ -25,7 +26,7 @@ class SalesInvoicePage extends AppBasePage {
     this.salesTab    = this.loc('//a[text()="Sales"]');
     this.salesBillMenu = this.loc('//span[text()="Sales Bill"]');
     this.customerTab   = this.page.locator('#btn_customer');   // a 'Customer' button can also show on the page
-    this.customerProfile = (name) => this.loc(`//div[text()="${name}"]`);
+    this.customerProfile = (name) => this.loc(`//div[${textIs(name)}]`);
 
     // Sales invoice list
     // BRITTLE: first list row by position — assumes newest invoice is on top
@@ -39,7 +40,7 @@ class SalesInvoicePage extends AppBasePage {
     // New invoice — customer step
     this.newInvoiceBtn = this.loc("//span[text()='New Sales Invoice ']");
     this.customerDropdown = this.page.locator('#si_select_cus');
-    this.customerOption   = (name) => this.loc(`//div[text()='${name}']`);
+    this.customerOption   = (name) => this.loc(`//div[${textIs(name)}]`);
     // BRITTLE: proceed button — structural CSS, no text anchor
     this.customerProceedBtn = this.page.locator('.ant-form > .ant-btn > span');
 

@@ -1,4 +1,5 @@
-// Safety tool: deactivate every active "ZZ PL" / "Z" price list and "ZZ OF" offer left by the PriceList / Offers suites
+// Safety tool: deactivate every active "ZZ PL" / "Z" price list and "ZZ OF" offer left by the PriceList / Offers suites,
+// and every "Price List …" list left by Pricing_general_Create (General / Category / Profile wise, 42–50 %),
 // in EVERY test org (ORG_NAMES), then check a sales invoice in this worker's org shows the item's base price again.
 // One leaked active list re-prices every later sales invoice of its org (e.g. a 1 % markup: ₹100 → ₹101).
 //   npx playwright test tests/_tools/pricing-cleanup.spec.js
@@ -11,7 +12,7 @@ const { appUrls, masterData } = require('../../test-data/UserData');
 const { ORG_FILE } = require('../../config/auth');
 
 test('cleanup: no active ZZ price lists / offers', async ({ page }) => {
-  test.setTimeout(900_000);
+  test.setTimeout(10_800_000);   // first clean-up of an org with hundreds of old lists takes a while
   const pl = new PricingPage(page);
   await pl.open();
   // One session covers every org: the org id in the URL picks the org
@@ -22,6 +23,7 @@ test('cleanup: no active ZZ price lists / offers', async ({ page }) => {
     await expect(page.locator('//a[text()="Sales"]')).toBeVisible({ timeout: 60_000 });
     await pl.deactivateAll('ZZ PL');
     await pl.deactivateAll('Z', { exact: true });   // 1-character list saved by the PriceList name-boundary test
+    await pl.deactivateAll('Price List ');
     await new OffersPage(page).deactivateAll('ZZ OF');
   }
   await page.goto(`${appUrls.invoice}/${orgIds[masterData.organization]}`);

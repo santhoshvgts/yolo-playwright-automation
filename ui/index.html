@@ -1,0 +1,1812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YOLO Test Board</title>
+<script>
+  // Saved choice, else the system setting
+  try {
+    const t = localStorage.getItem('tb-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = t;
+  } catch { document.documentElement.dataset.theme = 'light'; }
+</script>
+<style>
+  :root {
+    --bg: #ffffff; --bg-sunken: #f7f8f9; --bg-hover: #f1f2f4; --bg-selected: #e9f2ff;
+    --border: #dcdfe4; --text: #172b4d; --text-subtle: #44546f; --text-subtlest: #626f86;
+    --brand: #0c66e4; --brand-hover: #0055cc; --nav: #ffffff;
+    --todo-bg: #dfe1e6; --todo-fg: #42526e;
+    --prog-bg: #cce0ff; --prog-fg: #0747a6;
+    --done-bg: #dcfff1; --done-fg: #216e4e;
+    --fail-bg: #ffeceb; --fail-fg: #ae2e24;
+    --flaky-bg: #fff7d6; --flaky-fg: #7f5f01;
+    --skip-bg: #f3f0ff; --skip-fg: #5e4db2;
+    --c-pass: #22a06b; --c-fail: #c9372c; --c-flaky: #e2b203; --c-skip: #8f7ee7; --c-run: #1d7afc; --c-queue: #dfe1e6;
+    --log-bg: #ffffff; --log-bg2: #f7f8f9; --log-line: #dcdfe4; --log-fg: #172b4d; --log-dim: #626f86; --log-faint: #8590a2;
+    --shadow: 0 1px 1px #091e4240, 0 0 1px #091e424f;
+    --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+    --surface: #ffffff; --on-brand: #ffffff; --toast-bg: #172b4d; --toast-fg: #ffffff;
+    color-scheme: light;
+  }
+  /* Dark theme: the theme switch in the top bar sets data-theme on <html> */
+  :root[data-theme="dark"] {
+    --bg: #1d2125; --bg-sunken: #161a1d; --bg-hover: #2c333a; --bg-selected: #1c2b41; --surface: #22272b;
+    --border: #38414a; --text: #dee4ea; --text-subtle: #9fadbc; --text-subtlest: #8c9bab;
+    --brand: #579dff; --brand-hover: #85b8ff; --nav: #1d2125; --on-brand: #1d2125;
+    --todo-bg: #2c333a; --todo-fg: #9fadbc;
+    --prog-bg: #09326c; --prog-fg: #85b8ff;
+    --done-bg: #164b35; --done-fg: #7ee2b8;
+    --fail-bg: #5d1f1a; --fail-fg: #fd9891;
+    --flaky-bg: #533f04; --flaky-fg: #f5cd47;
+    --skip-bg: #352c63; --skip-fg: #b8acf6;
+    --c-queue: #38414a;
+    --log-bg: #161a1d; --log-bg2: #1d2125; --log-line: #2c333a; --log-fg: #c7d1db; --log-dim: #8c9bab; --log-faint: #6b7a8a;
+    --shadow: 0 1px 1px #03040480, 0 0 1px #03040480;
+    --toast-bg: #dee4ea; --toast-fg: #1d2125;
+    color-scheme: dark;
+  }
+  :root[data-theme="dark"] .b-run, :root[data-theme="dark"] .b-cmd, :root[data-theme="dark"] .b-sys { background: #2c333a; color: #9fadbc; }
+  :root[data-theme="dark"] .b-start { background: #09326c; color: #85b8ff; }
+  :root[data-theme="dark"] .b-pass { background: #164b35; color: #7ee2b8; }
+  :root[data-theme="dark"] .b-fail, :root[data-theme="dark"] .b-err { background: #5d1f1a; color: #fd9891; }
+  :root[data-theme="dark"] .b-retry, :root[data-theme="dark"] .b-warn { background: #533f04; color: #f5cd47; }
+  :root[data-theme="dark"] .b-skip, :root[data-theme="dark"] .b-note { background: #352c63; color: #b8acf6; }
+  :root[data-theme="dark"] .b-step, :root[data-theme="dark"] .b-hook { background: #1c2b41; color: #9dd9ee; }
+  :root[data-theme="dark"] .b-action { background: #2b2c3a; color: #c0b6f2; }
+  :root[data-theme="dark"] .b-expect { background: #1f3326; color: #94c748; }
+  :root[data-theme="dark"] .b-out { background: #22272b; color: #c7d1db; box-shadow: inset 0 0 0 1px #38414a; }
+  :root[data-theme="dark"] .k-run .lx, :root[data-theme="dark"] .k-start .lx, :root[data-theme="dark"] .ln.head { color: #85b8ff; }
+  :root[data-theme="dark"] .k-cmd .lx, :root[data-theme="dark"] .ln.cmd { color: #b8acf6; }
+  :root[data-theme="dark"] .k-pass .lx, :root[data-theme="dark"] .ln.ok { color: #7ee2b8; }
+  :root[data-theme="dark"] .k-fail .lx, :root[data-theme="dark"] .k-err .lx, :root[data-theme="dark"] .ln.err { color: #fd9891; }
+  :root[data-theme="dark"] .k-retry .lx, :root[data-theme="dark"] .k-warn .lx, :root[data-theme="dark"] .ln.warn { color: #f5cd47; }
+  :root[data-theme="dark"] .k-step .lx { color: #9dd9ee; }
+  :root[data-theme="dark"] .k-action .lx { color: #b6c2cf; }
+  :root[data-theme="dark"] .k-expect .lx { color: #b3df72; }
+  :root[data-theme="dark"] .lx mark { background: #e2b203; color: #1d2125; }
+  :root[data-theme="dark"] .cbtn.hot { background: #e2b203; color: #1d2125; }
+  :root[data-theme="dark"] .proj-icon { background: #5d1f1a; }
+  .theme-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 16px; display: grid; place-items: center; flex: none; }
+  .theme-btn:hover { background: var(--bg-hover); }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font: 14px/1.43 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text); background: var(--bg); display: flex; flex-direction: column; overflow: hidden; }
+  button, input, select { font: inherit; color: inherit; }
+  a { color: var(--brand); text-decoration: none; }
+
+  /* ── Top navigation ── */
+  .topnav { height: 56px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 16px;
+    border-bottom: 1px solid var(--border); background: var(--nav); }
+  .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 16px; white-space: nowrap; }
+  .logo-mark { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, #0c66e4, #1d7afc);
+    display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 14px; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links button { background: none; border: 0; padding: 6px 10px; border-radius: 3px; cursor: pointer; color: var(--text-subtle); font-weight: 500; }
+  .nav-links button:hover { background: var(--bg-hover); }
+  .nav-links button.active { color: var(--brand); box-shadow: inset 0 -2px 0 var(--brand); border-radius: 0; }
+  .nav-badge { display: none; margin-left: 4px; font-size: 11px; background: var(--c-fail); color: #fff; border-radius: 8px; padding: 0 6px; }
+  .nav-badge.on { display: inline-block; }
+  .spacer { flex: 1; }
+  .global-search { width: 280px; max-width: 30vw; padding: 6px 10px; border: 2px solid var(--border); border-radius: 4px; background: var(--bg-sunken); }
+  .global-search:focus { outline: none; border-color: var(--brand); background: var(--surface); }
+  .run-pill { display: none; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 12px; background: var(--prog-bg); color: var(--prog-fg); font-weight: 600; font-size: 12px; cursor: pointer; }
+  .run-pill.on { display: flex; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+
+  /* ── Layout ── */
+  .layout { flex: 1; display: flex; min-height: 0; }
+  .sidebar { width: 240px; flex: none; background: var(--bg-sunken); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 8px; }
+  .proj { display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px; }
+  .proj-icon { width: 32px; height: 32px; border-radius: 4px; background: #ffd5d2; display: grid; place-items: center; font-size: 18px; }
+  .proj-name { font-weight: 600; }
+  .proj-sub { font-size: 12px; color: var(--text-subtlest); }
+  .side-h { font-size: 11px; font-weight: 700; color: var(--text-subtlest); text-transform: uppercase; letter-spacing: .04em; padding: 12px 8px 4px; }
+  .side-item { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 6px 8px; border: 0; background: none;
+    border-radius: 3px; cursor: pointer; text-align: left; color: var(--text-subtle); }
+  .side-item:hover { background: var(--bg-hover); }
+  .side-item.active { background: var(--bg-selected); color: var(--brand); font-weight: 600; }
+  .side-count { font-size: 12px; color: var(--text-subtlest); background: var(--todo-bg); border-radius: 8px; padding: 0 6px; }
+
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .main-head { padding: 16px 24px 8px; flex: none; }
+  .crumbs { font-size: 13px; color: var(--text-subtlest); }
+  .crumbs span + span::before { content: " / "; }
+  h1 { font-size: 24px; font-weight: 600; margin: 4px 0 12px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .input { padding: 6px 8px; border: 2px solid var(--border); border-radius: 4px; background: var(--surface); min-height: 34px; }
+  .input:focus { outline: none; border-color: var(--brand); }
+  body.logs-view .toolbar, body.logs-view .progress, body.logs-view .dock,
+  body.files-view .toolbar, body.files-view .progress, body.files-view .dock { display: none !important; }
+
+  /* ── Logs & Files view ── */
+  .fv { flex: 1; overflow: auto; padding: 12px 24px 24px; min-height: 0; display: none; }
+  body.files-view .fv { display: block; }
+  body.files-view .content { display: none; }
+  .fv .panel + .panel { margin-top: 12px; }
+  .clean-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .clean-big { font-size: 28px; font-weight: 700; line-height: 1; }
+  .clean-big small { font-size: 14px; color: var(--text-subtlest); font-weight: 500; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl th { text-align: left; font-size: 11px; text-transform: uppercase; color: var(--text-subtlest); font-weight: 700; padding: 6px 8px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .tbl td { padding: 7px 8px; border-bottom: 1px solid var(--bg-hover); white-space: nowrap; }
+  .tbl tr:hover td { background: var(--bg-hover); }
+  .tbl tr.cur td { background: var(--bg-selected); }
+  .tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .tbl .acts { text-align: right; }
+  .tbl .acts .btn { padding: 3px 8px; font-size: 12px; }
+  .clean-list { max-height: 220px; overflow: auto; margin-top: 10px; }
+  .live-tag { font-size: 10px; font-weight: 700; color: #fff; background: var(--c-run); border-radius: 3px; padding: 0 5px; margin-left: 6px; }
+  .pager { display: flex; gap: 6px; align-items: center; }
+  .fv .console { height: max(460px, calc(100vh - 300px)); }
+
+  .runbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 24px; border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border); background: var(--bg-sunken); flex: none; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: var(--surface); }
+  .seg button { border: 0; background: none; padding: 5px 12px; cursor: pointer; color: var(--text-subtle); }
+  .seg button.on { background: var(--brand); color: var(--on-brand); }
+  .field { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-subtle); }
+  .btn { border: 0; border-radius: 3px; padding: 6px 12px; cursor: pointer; font-weight: 500; background: var(--todo-bg); color: var(--text); white-space: nowrap; }
+  .btn:hover { filter: brightness(.95); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.primary { background: var(--brand); color: var(--on-brand); }
+  .btn.primary:hover { background: var(--brand-hover); }
+  .btn.danger { background: #c9372c; color: #fff; }
+  .btn.subtle { background: none; color: var(--text-subtle); }
+  .btn.subtle:hover { background: var(--bg-hover); }
+  /* Run buttons stay together at the right end, also when the bar wraps */
+  .run-btns { display: inline-flex; gap: 8px; margin-left: auto; }
+  .sel-count { font-weight: 600; color: var(--brand); min-width: 90px; }
+
+  .progress { display: none; padding: 8px 24px; border-bottom: 1px solid var(--border); flex: none; font-size: 13px; }
+  .progress.on { display: block; }
+  .bar { height: 8px; border-radius: 4px; background: var(--todo-bg); display: flex; overflow: hidden; margin-bottom: 6px; }
+  .bar i { display: block; height: 100%; transition: width .3s; }
+  .prog-stats { display: flex; gap: 16px; color: var(--text-subtle); flex-wrap: wrap; }
+  .prog-stats b { color: var(--text); }
+
+  .content { flex: 1; overflow: auto; padding: 8px 24px 24px; min-height: 0; }
+
+  /* ── Backlog ── */
+  .group { margin-top: 12px; border-radius: 4px; background: var(--bg-sunken); }
+  .group-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer; user-select: none; }
+  .chev { width: 16px; transition: transform .15s; color: var(--text-subtle); }
+  .group.collapsed .chev { transform: rotate(-90deg); }
+  .group.collapsed .rows { display: none; }
+  .group-title { font-weight: 600; }
+  .group-path { color: var(--text-subtlest); font-size: 12px; }
+  .group-sum { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+  .mini { min-width: 22px; text-align: center; border-radius: 3px; font-size: 12px; font-weight: 700; padding: 0 5px; }
+  .rows { background: var(--surface); border: 1px solid var(--border); border-radius: 0 0 4px 4px; }
+  .row { display: grid; grid-template-columns: 24px 20px 92px minmax(0, 1fr) auto 112px 64px 28px; align-items: center; gap: 8px;
+    padding: 6px 10px; border-top: 1px solid var(--border); cursor: pointer; }
+  .row:first-child { border-top: 0; }
+  .row:hover { background: var(--bg-hover); }
+  .row.sel { background: var(--bg-selected); }
+  .row.open { box-shadow: inset 3px 0 0 var(--brand); }
+  .row .key { color: var(--text-subtle); font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .sum { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .dur { font-size: 12px; color: var(--text-subtlest); text-align: right; }
+  .labels { display: flex; gap: 4px; overflow: hidden; max-width: 220px; }
+  .label { font-size: 11px; padding: 0 6px; border-radius: 3px; background: var(--bg); border: 1px solid var(--border); color: var(--text-subtle); white-space: nowrap; }
+  .type { width: 16px; height: 16px; border-radius: 3px; background: #4bce97; display: grid; place-items: center; flex: none; }
+  .type svg { width: 10px; height: 10px; }
+  .type.bug { background: #e2483d; }
+  .avatar { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #fff; flex: none; }
+  input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--brand); cursor: pointer; margin: 0; }
+
+  .loz { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 0 6px; border-radius: 3px; white-space: nowrap; line-height: 18px; text-align: center; }
+  .s-notrun, .s-queued { background: var(--todo-bg); color: var(--todo-fg); }
+  .s-running, .s-retrying { background: var(--prog-bg); color: var(--prog-fg); }
+  .s-passed { background: var(--done-bg); color: var(--done-fg); }
+  .s-failed, .s-interrupted { background: var(--fail-bg); color: var(--fail-fg); }
+  .s-flaky { background: var(--flaky-bg); color: var(--flaky-fg); }
+  .s-skipped { background: var(--skip-bg); color: var(--skip-fg); }
+
+  /* ── Board ── */
+  .board { display: grid; grid-template-columns: repeat(5, minmax(220px, 1fr)); gap: 8px; align-items: start; min-width: 1150px; }
+  .col { background: var(--bg-sunken); border-radius: 6px; padding: 8px; min-height: 200px; }
+  .col-h { font-size: 12px; font-weight: 600; color: var(--text-subtle); text-transform: uppercase; padding: 4px 4px 8px; display: flex; justify-content: space-between; }
+  .card { background: var(--surface); border-radius: 4px; box-shadow: var(--shadow); padding: 10px; margin-bottom: 6px; cursor: pointer; }
+  .card:hover { background: var(--bg-hover); }
+  .card .t { font-size: 13px; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card .f { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-subtle); }
+  .card .f .key { font-weight: 600; }
+  .card .f .dur { margin-left: auto; }
+  .more { font-size: 12px; color: var(--text-subtlest); text-align: center; padding: 6px; }
+  .empty { padding: 48px; text-align: center; color: var(--text-subtlest); }
+
+  /* ── Live logs view ── */
+  .lv { flex: 1; overflow: auto; padding: 12px 24px 24px; min-height: 0; display: none; }
+  body.logs-view .lv { display: block; }
+  body.logs-view .content { display: none; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
+  .panel-h { font-size: 12px; font-weight: 700; color: var(--text-subtle); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .panel-h .spacer { flex: 1; }
+  .ph-sub { font-weight: 500; text-transform: none; color: var(--text-subtlest); letter-spacing: 0; }
+
+  .head-row { display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 12px; }
+  .pct { font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+  .pct small { font-size: 18px; color: var(--text-subtlest); font-weight: 600; }
+  .run-state { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .kpis { display: flex; gap: 22px; flex-wrap: wrap; margin-left: auto; }
+  .kpi { min-width: 74px; }
+  .kpi .v { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .kpi .l { font-size: 11px; color: var(--text-subtlest); text-transform: uppercase; font-weight: 700; letter-spacing: .03em; }
+  .phases { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .phase { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: var(--bg-sunken); border: 1px solid var(--border); color: var(--text-subtle); }
+  .phase.cur { background: var(--prog-bg); color: var(--prog-fg); border-color: transparent; font-weight: 600; }
+  .phase.done { background: var(--done-bg); color: var(--done-fg); border-color: transparent; }
+  .phase.bad { background: var(--fail-bg); color: var(--fail-fg); border-color: transparent; }
+
+  .bigbar { height: 22px; border-radius: 6px; background: var(--c-queue); display: flex; overflow: hidden; position: relative; }
+  .bigbar i { display: block; height: 100%; transition: width .4s; position: relative; }
+  .bigbar i.run { background: repeating-linear-gradient(45deg, var(--c-run), var(--c-run) 8px, #4c9aff 8px, #4c9aff 16px); background-size: 22px 22px; animation: stripes 1s linear infinite; }
+  @keyframes stripes { to { background-position: 22px 0; } }
+  .bigbar span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--text); text-shadow: 0 0 3px var(--surface), 0 0 3px var(--surface); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 13px; color: var(--text-subtle); }
+  .legend b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+  .lv-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; }
+  .lanes { display: grid; gap: 8px; }
+  .lane { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 4px 10px; align-items: start; }
+  .lane .avatar { width: 30px; height: 30px; font-size: 12px; grid-row: span 3; }
+  .lane-org { font-size: 12px; color: var(--text-subtlest); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lane-test { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .lane-test:hover { color: var(--brand); }
+  .lane-now { font: 12px/1.5 var(--mono); color: var(--text-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lane-side { text-align: right; font-size: 12px; color: var(--text-subtle); white-space: nowrap; grid-row: span 3; }
+  .lane-side .el { font-size: 16px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .lane.idle { opacity: .65; }
+  .lane-bar { grid-column: 2 / 4; height: 4px; background: var(--c-queue); border-radius: 2px; overflow: hidden; display: flex; margin-top: 4px; }
+  .lane-bar i { height: 100%; display: block; }
+
+  .files { max-height: 330px; overflow: auto; }
+  .frow { display: grid; grid-template-columns: minmax(0, 1fr) 120px 64px 34px; gap: 10px; align-items: center; padding: 5px 0; border-top: 1px solid var(--bg-hover); font-size: 13px; }
+  .frow:first-child { border-top: 0; }
+  .frow .fn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .frow .fn.live::before { content: "● "; color: var(--c-run); }
+  .frow .fc { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-subtle); }
+  .frow .ff { text-align: right; color: var(--c-fail); font-weight: 700; }
+  .fbar { height: 6px; border-radius: 3px; background: var(--c-queue); display: flex; overflow: hidden; }
+  .fbar i { height: 100%; display: block; }
+
+  .lv-body { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 12px; margin-top: 12px; }
+  .console { background: var(--log-bg); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; height: max(480px, calc(100vh - 230px)); overflow: hidden; }
+  .con-bar { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; padding: 8px 10px; background: var(--log-bg2); border-bottom: 1px solid var(--log-line); color: var(--text-subtle); font-size: 12px; }
+  .con-bar input[type=search], .con-bar select { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 3px; padding: 3px 6px; font-size: 12px; }
+  .con-bar input[type=search]:focus, .con-bar select:focus { outline: none; border-color: var(--brand); }
+  .con-bar input[type=search] { width: 200px; }
+  .con-bar select { max-width: 220px; }
+  .con-bar label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+  .chip { border: 1px solid var(--border); background: var(--surface); color: var(--text-subtle); border-radius: 10px; padding: 1px 9px; font-size: 12px; cursor: pointer; }
+  .chip:hover { background: var(--bg-hover); }
+  .chip.on { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
+  .chip.warnchip.on { background: var(--c-fail); border-color: var(--c-fail); }
+  .cbtn { background: var(--todo-bg); color: var(--text); border: 0; border-radius: 3px; padding: 3px 9px; font-size: 12px; cursor: pointer; }
+  .cbtn:hover { background: var(--border); }
+  .cbtn:disabled { opacity: .45; cursor: not-allowed; }
+  .cbtn.hot { background: #f8e6a0; color: #533f04; font-weight: 700; }
+  /* contain + content-visibility: new lines only lay out what is on screen, not thousands of rows */
+  .con-out { flex: 1; overflow: auto; font: 12px/1.55 var(--mono); color: var(--log-fg); padding: 4px 0; position: relative; contain: strict; }
+  .con-out.nowrap .lx { white-space: pre; }
+  .lr { display: flex; gap: 8px; padding: 0 10px; align-items: baseline; content-visibility: auto; contain-intrinsic-size: auto 19px; }
+  .lr:hover { background: var(--bg-hover); }
+  .lt { color: var(--log-faint); flex: none; }
+  .lb { flex: none; width: 52px; text-align: center; font-size: 10px; font-weight: 700; border-radius: 3px; line-height: 16px; letter-spacing: .02em; }
+  .lw { flex: none; width: 26px; text-align: center; font-size: 10px; font-weight: 700; border-radius: 3px; line-height: 16px; color: #fff; background: var(--c, #8590a2); }
+  .lw.none { background: none; }
+  .lk { flex: none; width: 74px; color: var(--brand); font-weight: 600; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lk:hover { text-decoration: underline; }
+  .lk.none { cursor: default; }
+  .lx { flex: 1; min-width: 0; white-space: pre-wrap; word-break: break-word; }
+  .ld { flex: none; color: var(--log-faint); padding-left: 8px; }
+  .lx mark { background: #f8e6a0; color: #172b4d; border-radius: 2px; }
+  .b-run, .b-cmd, .b-sys { background: #f1f2f4; color: #44546f; }
+  .b-start { background: #e9f2ff; color: #0055cc; }
+  .b-pass { background: #dcfff1; color: #216e4e; }
+  .b-fail, .b-err { background: #ffeceb; color: #ae2e24; }
+  .b-retry, .b-warn { background: #fff7d6; color: #7f5f01; }
+  .b-skip, .b-note { background: #f3f0ff; color: #5e4db2; }
+  .b-step, .b-hook { background: #e7f9ff; color: #206a83; }
+  .b-action { background: #f1f2f4; color: #2c3e5d; }
+  .b-expect { background: #efffd6; color: #4c6b1f; }
+  .b-out { background: #fff; color: #44546f; box-shadow: inset 0 0 0 1px #dcdfe4; }
+  .k-run .lx, .k-start .lx { color: #0055cc; font-weight: 700; }
+  .k-cmd .lx { color: #5e4db2; }
+  .k-sys .lx, .k-hook .lx { color: var(--log-dim); }
+  .k-pass .lx { color: #216e4e; font-weight: 700; }
+  .k-fail .lx, .k-err .lx { color: #ae2e24; }
+  .k-retry .lx, .k-warn .lx { color: #7f5f01; }
+  .k-step .lx { color: #206a83; }
+  .k-action .lx { color: #172b4d; }
+  .k-expect .lx { color: #4c6b1f; }
+  .con-foot { display: flex; gap: 12px; align-items: center; padding: 4px 10px; background: var(--log-bg2); border-top: 1px solid var(--log-line); color: var(--text-subtlest); font-size: 12px; }
+  .jump { position: absolute; right: 16px; bottom: 12px; display: none; }
+  .jump.on { display: block; }
+  details.tg { border-bottom: 1px solid var(--log-line); }
+  details.tg > summary { list-style: none; cursor: pointer; display: flex; gap: 8px; align-items: center; padding: 5px 10px; background: var(--log-bg2); font-family: -apple-system, "Segoe UI", sans-serif; font-size: 13px; color: var(--text); }
+  details.tg > summary:hover { background: var(--bg-hover); }
+  details.tg > summary::-webkit-details-marker { display: none; }
+  details.tg > summary::before { content: "▸"; color: var(--text-subtlest); }
+  details.tg[open] > summary::before { content: "▾"; }
+  details.tg .tg-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  details.tg .tg-m { color: var(--text-subtlest); font-size: 12px; white-space: nowrap; }
+  .hidden-note { color: var(--log-faint); padding: 2px 10px; font-style: italic; }
+
+  .fails { display: flex; flex-direction: column; gap: 8px; max-height: max(480px, calc(100vh - 230px)); overflow: auto; }
+  .fail { border: 1px solid var(--border); border-left: 3px solid var(--c-fail); border-radius: 4px; padding: 8px 10px; cursor: pointer; }
+  .fail:hover { background: var(--bg-hover); }
+  .fail.retry { border-left-color: var(--c-flaky); }
+  .fail-h { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--text-subtle); }
+  .fail-h b { color: var(--text); }
+  .fail-t { font-size: 13px; margin: 2px 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .fail-e { font: 11px/1.45 var(--mono); color: var(--fail-fg); background: var(--fail-bg); border-radius: 3px; padding: 4px 6px; white-space: pre-wrap; word-break: break-word; max-height: 64px; overflow: hidden; }
+  .shots { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .shots img { width: 96px; height: 54px; object-fit: cover; border: 1px solid var(--border); border-radius: 3px; }
+  .att { font-size: 12px; }
+
+  /* ── Logs dock (Backlog / Board) ── */
+  .dock { flex: none; display: flex; flex-direction: column; border-top: 1px solid var(--border); background: var(--log-bg); height: 34px; box-shadow: 0 -1px 3px #091e4214; }
+  .dock.open { height: var(--dock-h, 300px); }
+  .dock-head { height: 34px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 12px; background: var(--log-bg2); border-bottom: 1px solid var(--log-line); color: var(--text); cursor: row-resize; user-select: none; }
+  .dock-head b { font-size: 13px; }
+  .dock-head .btn { padding: 2px 8px; font-size: 12px; background: var(--todo-bg); color: var(--text); cursor: pointer; }
+  .dock-head #logFilter { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 3px; padding: 2px 6px; font-size: 12px; width: 180px; }
+  .dock-head #logFilter:focus { outline: none; border-color: var(--brand); }
+  .dock-head label { font-size: 12px; display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--text-subtle); }
+  .logs { flex: 1; overflow: auto; padding: 6px 12px; font: 12px/1.5 var(--mono); color: var(--log-fg); white-space: pre-wrap; word-break: break-word; }
+  .dock:not(.open) .logs { display: none; }
+  .ln.err { color: #ae2e24; }
+  .ln.ok { color: #216e4e; font-weight: 600; }
+  .ln.warn { color: #7f5f01; }
+  .ln.head { color: #0055cc; font-weight: 700; }
+  .ln.dim { color: var(--log-dim); }
+  .ln.cmd { color: #5e4db2; }
+
+  /* ── Issue detail ── */
+  .detail { width: 0; flex: none; border-left: 1px solid var(--border); background: var(--surface); overflow: hidden; display: flex; flex-direction: column; transition: width .15s; }
+  .detail.open { width: min(480px, 45vw); }
+  .detail-head { padding: 16px 20px 8px; display: flex; align-items: center; gap: 8px; }
+  .detail-head .key { font-size: 13px; color: var(--text-subtle); }
+  .detail-body { flex: 1; overflow: auto; padding: 0 20px 20px; }
+  .detail h2 { font-size: 20px; font-weight: 600; margin: 4px 0 12px; line-height: 1.3; }
+  .meta { display: grid; grid-template-columns: 100px 1fr; gap: 8px 12px; font-size: 13px; margin: 12px 0; }
+  .meta dt { color: var(--text-subtlest); font-weight: 600; }
+  .meta dd { margin: 0; word-break: break-all; }
+  .sec-h { font-size: 12px; font-weight: 700; color: var(--text-subtle); margin: 16px 0 6px; text-transform: uppercase; }
+  .errbox { background: var(--fail-bg); color: var(--fail-fg); border-radius: 4px; padding: 10px; font: 12px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; max-height: 260px; overflow: auto; }
+  .tlog { background: var(--log-bg2); color: var(--log-fg); border: 1px solid var(--border); border-radius: 4px; padding: 10px; font: 12px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; max-height: 360px; overflow: auto; }
+  .x { margin-left: auto; background: none; border: 0; font-size: 20px; cursor: pointer; color: var(--text-subtle); border-radius: 3px; width: 32px; height: 32px; }
+  .x:hover { background: var(--bg-hover); }
+
+  .toast { position: fixed; right: 16px; bottom: 50px; background: var(--toast-bg); color: var(--toast-fg); padding: 10px 16px; border-radius: 4px; box-shadow: 0 8px 12px #091e4226; display: none; z-index: 10; max-width: 420px; }
+  .toast.on { display: block; }
+
+  @media (max-width: 1200px) {
+    .lv-grid, .lv-body { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .row { grid-template-columns: 24px 20px 72px minmax(0, 1fr) 100px; }
+    .row .labels, .row .dur, .row .avatar { display: none; }
+    .global-search { display: none; }
+    .detail.open { position: fixed; top: 56px; right: 0; bottom: 0; left: 0; width: auto; z-index: 5; }
+    .lt, .lk { display: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="topnav">
+    <div class="logo"><div class="logo-mark">Y</div>YOLO Test Board</div>
+    <nav class="nav-links">
+      <button data-view="backlog" class="active">Backlog</button>
+      <button data-view="board">Board</button>
+      <button data-view="logs">Live Logs<span class="nav-badge" id="failBadge"></span></button>
+      <button data-view="files">Logs &amp; Files</button>
+    </nav>
+    <div class="spacer"></div>
+    <div class="run-pill" id="runPill" title="Open the live logs"><span class="dot"></span><span id="runPillText">Running</span></div>
+    <input class="global-search" id="search" placeholder="Search tests, keys, labels…" autocomplete="off">
+    <a class="btn subtle" href="/report/" target="_blank" title="Playwright HTML report of the last run">HTML report ↗</a>
+    <button class="theme-btn" id="themeBtn" title="Switch light / dark theme"></button>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="proj">
+        <div class="proj-icon">🧪</div>
+        <div><div class="proj-name">YOLO Automation</div><div class="proj-sub">Playwright tests</div></div>
+      </div>
+      <div class="side-h">Modules</div>
+      <div id="modules"></div>
+      <div class="side-h">Status</div>
+      <div id="statusNav"></div>
+    </aside>
+
+    <section class="main">
+      <div class="main-head">
+        <div class="crumbs"><span>Projects</span><span>YOLO Automation</span><span id="crumbModule">All modules</span></div>
+        <h1 id="viewTitle">Backlog</h1>
+        <div class="toolbar">
+          <select class="input" id="labelFilter"><option value="">All labels</option></select>
+          <select class="input" id="statusFilter">
+            <option value="">All statuses</option>
+            <option value="notrun">Not run</option>
+            <option value="passed">Passed</option>
+            <option value="failed">Failed</option>
+            <option value="flaky">Flaky</option>
+            <option value="skipped">Skipped</option>
+          </select>
+          <button class="btn subtle" id="expandAll">Expand all</button>
+          <button class="btn subtle" id="collapseAll">Collapse all</button>
+          <button class="btn subtle" id="refresh" title="Reload the test files">⟳ Reload tests</button>
+          <span id="shownCount" style="color:var(--text-subtlest);font-size:13px"></span>
+        </div>
+      </div>
+
+      <div class="runbar">
+        <label class="field"><input type="checkbox" id="selectAll"> Select all</label>
+        <span class="sel-count" id="selCount">0 selected</span>
+        <button class="btn subtle" id="clearSel">Clear</button>
+        <button class="btn subtle" id="selFailed" title="Select the tests that failed last time">Select failed</button>
+        <span class="field">Mode
+          <span class="seg" id="mode"><button data-v="headless" class="on">Headless</button><button data-v="headed">Headed</button></span>
+        </span>
+        <label class="field">Workers
+          <select class="input" id="workers" style="min-height:30px;padding:3px 6px"><option value="">Auto (1 per org)</option></select>
+        </label>
+        <label class="field">Retries
+          <select class="input" id="retries" style="min-height:30px;padding:3px 6px">
+            <option value="">Config</option><option>0</option><option>1</option><option>2</option>
+          </select>
+        </label>
+        <label class="field" title="Runs tests/tools/pricing-cleanup.spec.js first, so no left-over price list changes invoice rates">
+          <input type="checkbox" id="cleanup"> Pricing cleanup
+        </label>
+        <label class="field" title="Removes old test output (debug folders, run logs beyond the newest 20) before the tests start — see Logs &amp; Files">
+          <input type="checkbox" id="cleanFiles" checked> Clean old files
+        </label>
+        <span class="run-btns">
+        <button class="btn primary" id="runSel" disabled>▶ Run selected</button>
+        <button class="btn" id="runAll">Run all</button>
+        <button class="btn danger" id="stop" style="display:none">■ Stop</button>
+        </span>
+      </div>
+
+      <div class="progress" id="progress">
+        <div class="bar"><i id="bPass" style="background:var(--c-pass)"></i><i id="bFlaky" style="background:var(--c-flaky)"></i><i id="bFail" style="background:var(--c-fail)"></i><i id="bSkip" style="background:var(--c-skip)"></i></div>
+        <div class="prog-stats">
+          <span>Done <b id="pDone">0</b> / <b id="pTotal">0</b></span>
+          <span>Passed <b id="pPass">0</b></span>
+          <span>Failed <b id="pFail">0</b></span>
+          <span>Flaky <b id="pFlaky">0</b></span>
+          <span>Skipped <b id="pSkip">0</b></span>
+          <span>Running <b id="pRun">0</b></span>
+          <span>Elapsed <b id="pTime">0s</b></span>
+          <span id="pResult"></span>
+        </div>
+      </div>
+
+      <div class="content" id="content"><div class="empty">Loading the test files…</div></div>
+
+      <!-- Live Logs view -->
+      <div class="lv" id="lv">
+        <div class="panel">
+          <div class="head-row">
+            <div class="pct" id="lvPct">0<small>%</small></div>
+            <div>
+              <div class="run-state" id="lvState">No run yet</div>
+              <div style="font-size:13px;color:var(--text-subtle)" id="lvSub">Select tests in the Backlog and run them.</div>
+            </div>
+            <div class="kpis">
+              <div class="kpi"><div class="v" id="kDone">0/0</div><div class="l">Done</div></div>
+              <div class="kpi"><div class="v" id="kElapsed">–</div><div class="l">Elapsed</div></div>
+              <div class="kpi"><div class="v" id="kEta">–</div><div class="l">ETA</div></div>
+              <div class="kpi"><div class="v" id="kRate">–</div><div class="l">Tests / min</div></div>
+              <div class="kpi"><div class="v" id="kAvg">–</div><div class="l">Avg test</div></div>
+              <div class="kpi"><div class="v" id="kPassRate">–</div><div class="l">Pass rate</div></div>
+            </div>
+          </div>
+          <div class="phases" id="lvPhases"></div>
+          <div class="bigbar" id="lvBar"></div>
+          <div class="legend" id="lvLegend"></div>
+        </div>
+
+        <div class="lv-grid">
+          <div class="panel">
+            <div class="panel-h">Workers <span class="ph-sub">one per test org</span></div>
+            <div class="lanes" id="lvLanes"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h">Spec files <span class="ph-sub" id="lvFilesSub"></span></div>
+            <div class="files" id="lvFiles"></div>
+          </div>
+        </div>
+
+        <div class="lv-body">
+          <div class="console">
+            <div class="con-bar">
+              <span id="lvChips"></span>
+              <button class="chip warnchip" id="lvProblems" title="Only errors, failures, retries and warnings">Problems only</button>
+              <span class="spacer"></span>
+              <select id="lvWorker"><option value="">All workers</option></select>
+              <select id="lvTest"><option value="">All tests</option></select>
+              <input type="search" id="lvSearch" placeholder="Search logs…">
+            </div>
+            <div class="con-bar">
+              <label><input type="checkbox" id="lvGroup"> Group by test</label>
+              <label><input type="checkbox" id="lvTs" checked> Timestamps</label>
+              <label><input type="checkbox" id="lvWrap" checked> Wrap lines</label>
+              <span class="spacer"></span>
+              <button class="cbtn" id="lvPause">⏸ Pause</button>
+              <button class="cbtn" id="lvClear">Clear</button>
+              <a class="cbtn" href="/api/runlog" title="Full log of the current or last run (test-results/ui-logs)">⬇ Download full log</a>
+            </div>
+            <div class="con-out" id="lvOut"></div>
+            <div class="con-foot"><span id="lvCount">0 lines</span><span id="lvShown"></span><span class="spacer"></span><button class="cbtn jump" id="lvJump">↓ Jump to latest</button></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h">Failures <span class="ph-sub" id="lvFailSub"></span></div>
+            <div class="fails" id="lvFails"><div class="empty" style="padding:24px">No failures.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs & Files view -->
+      <div class="fv" id="fv">
+        <div class="panel">
+          <div class="panel-h">Clean up old files <span class="ph-sub">test-results/, old run logs, default report folders — Rundata/ is never touched</span><span class="spacer"></span>
+            <label class="field">Keep newest
+              <select class="input" id="fvKeep" style="min-height:28px;padding:2px 6px"><option>5</option><option>10</option><option selected>20</option><option>50</option></select> run logs</label>
+          </div>
+          <div class="clean-row">
+            <div class="clean-big" id="fvCleanSize">–</div>
+            <div style="color:var(--text-subtle)" id="fvCleanText">Checking…</div>
+            <span class="spacer"></span>
+            <button class="btn subtle" id="fvCleanShow">Show items</button>
+            <button class="btn primary" id="fvCleanNow">🧹 Clean now</button>
+          </div>
+          <div class="clean-list" id="fvCleanList" style="display:none"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">Run logs <span class="ph-sub" id="fvLogsSub"></span><span class="spacer"></span>
+            <button class="btn subtle" id="fvRefresh">⟳ Refresh</button>
+            <button class="btn danger" id="fvDelete" disabled>🗑 Delete selected</button>
+          </div>
+          <div style="overflow:auto"><table class="tbl" id="fvTable"></table></div>
+        </div>
+
+        <div class="panel" id="fvViewer" style="display:none">
+          <div class="panel-h"><span id="fvTitle">Log</span><span class="ph-sub" id="fvMeta"></span><span class="spacer"></span>
+            <a class="btn subtle" id="fvDownload" href="#">⬇ Download</a>
+            <button class="btn subtle" id="fvClose">Close</button>
+          </div>
+          <div class="console">
+            <div class="con-bar">
+              <span id="fvChips"></span>
+              <button class="chip warnchip" id="fvProblems">Problems only</button>
+              <span class="spacer"></span>
+              <select id="fvWorker"><option value="">All workers</option></select>
+              <input type="search" id="fvSearch" placeholder="Search this log…">
+            </div>
+            <div class="con-out" id="fvOut"></div>
+            <div class="con-foot">
+              <span id="fvCount"></span><span class="spacer"></span>
+              <span class="pager">
+                <button class="cbtn" id="fvFirst" title="First lines">⏮</button>
+                <button class="cbtn" id="fvPrev">◀ Earlier</button>
+                <button class="cbtn" id="fvNext">Later ▶</button>
+                <button class="cbtn" id="fvLast" title="Last lines">⏭</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dock open" id="dock">
+        <div class="dock-head" id="dockHead">
+          <b>▾ Live logs</b>
+          <input id="logFilter" placeholder="Filter logs…">
+          <label><input type="checkbox" id="onlyErr"> Errors only</label>
+          <label><input type="checkbox" id="autoScroll" checked> Auto-scroll</label>
+          <div class="spacer"></div>
+          <button class="btn" id="openLv">Open Live Logs ↗</button>
+          <button class="btn" id="clearLogs">Clear</button>
+          <button class="btn" id="toggleDock">Hide</button>
+        </div>
+        <div class="logs" id="logs"></div>
+      </div>
+    </section>
+
+    <aside class="detail" id="detail">
+      <div class="detail-head"><span id="dType"></span><span class="key" id="dKey"></span><button class="x" id="dClose" title="Close">×</button></div>
+      <div class="detail-body" id="dBody"></div>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtDur = (ms) => ms == null || isNaN(ms) ? '' : ms < 1000 ? `${Math.round(ms)}ms` : ms < 60000 ? `${(ms / 1000).toFixed(1)}s`
+  : ms < 3600000 ? `${Math.floor(ms / 60000)}m ${Math.round(ms % 60000 / 1000)}s` : `${Math.floor(ms / 3600000)}h ${Math.round(ms % 3600000 / 60000)}m`;
+const STATUS_TEXT = { notrun: 'To do', queued: 'Queued', running: 'In progress', retrying: 'Retrying', passed: 'Done', failed: 'Failed', interrupted: 'Stopped', flaky: 'Flaky', skipped: 'Skipped' };
+const WORKER_COLORS = ['#0c66e4', '#6e5dc6', '#22a06b', '#d97008', '#c9372c', '#1d7afc', '#943d73', '#2898bd'];
+const wc = (w) => WORKER_COLORS[w % WORKER_COLORS.length];
+const CHECK = '<svg viewBox="0 0 10 10"><path d="M1.5 5.2l2.2 2.2L8.5 2.6" fill="none" stroke="#fff" stroke-width="1.8"/></svg>';
+const BUG = '<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.6" fill="#fff"/></svg>';
+const artifactUrl = (p) => `/artifact?p=${encodeURIComponent(p)}`;
+
+const state = {
+  tests: [], byKey: new Map(), statuses: {}, selected: new Set(), orgs: [],
+  view: 'backlog', module: '', statusNav: '', collapsed: new Set(), openKey: null,
+  running: false, runKeys: [], runStart: 0, runEnd: 0, runResult: null, testLogs: new Map(), headed: false,
+  runWorkers: 1, lanes: {}, durations: [], phases: [], phaseIdx: -1, phaseCodes: [],
+};
+const prefs = (() => { try { return JSON.parse(localStorage.getItem('tb-prefs') || '{}'); } catch { return {}; } })();
+state.headed = !!prefs.headed;
+state.collapsed = new Set(prefs.collapsed || []);
+const savePrefs = () => {
+  try {
+    localStorage.setItem('tb-prefs', JSON.stringify({ headed: state.headed, collapsed: [...state.collapsed], view: state.view, cleanup: $('#cleanup').checked, cleanFiles: $('#cleanFiles').checked,
+      lv: { groups: [...LV.groups], ts: LV.ts, wrap: LV.wrap, group: LV.group } }));
+  } catch {}
+};
+
+// ── Keys like CT-11 (from "TC11 - …" in 01_ChequeTracker.spec.js) ──
+function abbr(file) {
+  const stem = file.split('/').pop().replace(/\.spec\.[jt]s$/, '').replace(/^\d+_/, '');
+  const words = stem.split(/[_\-\s]+/).filter(Boolean);
+  let a = words.length > 1 ? words.map((w) => w[0]).join('') : (stem.match(/[A-Z]/g) || []).join('');
+  if (a.length < 2) a = stem.slice(0, 5);
+  return a.toUpperCase();
+}
+function decorate(tests) {
+  const perFile = {};
+  for (const t of tests) {
+    perFile[t.file] = (perFile[t.file] || 0) + 1;
+    const m = t.title.match(/\bTC[-_ ]?(\d+[a-z]?)/i);
+    t.short = `${abbr(t.file)}-${m ? m[1] : perFile[t.file]}`;
+    t.module = t.file.includes('/') ? t.file.split('/')[0] : 'root';
+    t.search = `${t.short} ${t.title} ${t.describe} ${t.file} ${t.tags.join(' ')}`.toLowerCase();
+  }
+}
+const statusOf = (key) => (state.statuses[key] && state.statuses[key].status) || 'notrun';
+const bucket = (s) => ({ queued: 'notrun', interrupted: 'notrun', retrying: 'running' }[s] || s);
+const shortOf = (key) => state.byKey.get(key)?.short || (key || '').split(' › ').pop();
+const titleOf = (key) => state.byKey.get(key)?.title || (key || '').split(' › ').pop();
+const fileOf = (key) => state.byKey.get(key)?.file || (key || '').split(' › ')[1];
+
+// ── Filtering ──
+function filtered() {
+  const q = $('#search').value.trim().toLowerCase();
+  const label = $('#labelFilter').value;
+  const st = $('#statusFilter').value || state.statusNav;
+  return state.tests.filter((t) =>
+    (!state.module || t.module === state.module) &&
+    (!label || t.tags.includes(label)) &&
+    (!st || bucket(statusOf(t.key)) === st) &&
+    (!q || q.split(/\s+/).every((w) => t.search.includes(w))));
+}
+
+// ── Sidebar ──
+function renderSidebar() {
+  const mods = {};
+  for (const t of state.tests) mods[t.module] = (mods[t.module] || 0) + 1;
+  const items = [['', 'All modules', state.tests.length], ...Object.keys(mods).sort((a, b) => (a === 'root') - (b === 'root') || a.localeCompare(b)).map((m) => [m, m === 'root' ? 'Root specs' : m[0].toUpperCase() + m.slice(1), mods[m]])];
+  $('#modules').innerHTML = items.map(([v, label, n]) =>
+    `<button class="side-item ${state.module === v ? 'active' : ''}" data-mod="${esc(v)}"><span>${esc(label)}</span><span class="side-count">${n}</span></button>`).join('');
+  const counts = {};
+  for (const t of state.tests) { const b = bucket(statusOf(t.key)); counts[b] = (counts[b] || 0) + 1; }
+  const sts = [['', 'Any status'], ['notrun', 'Not run'], ['running', 'In progress'], ['passed', 'Passed'], ['failed', 'Failed'], ['flaky', 'Flaky'], ['skipped', 'Skipped']];
+  $('#statusNav').innerHTML = sts.map(([v, label]) =>
+    `<button class="side-item ${state.statusNav === v ? 'active' : ''}" data-st="${v}"><span>${label}</span>${v ? `<span class="side-count">${counts[v] || 0}</span>` : ''}</button>`).join('');
+  $('#crumbModule').textContent = items.find(([v]) => v === state.module)?.[1] || 'All modules';
+}
+$('#modules').addEventListener('click', (e) => { const b = e.target.closest('[data-mod]'); if (!b) return; state.module = b.dataset.mod; if (state.view === 'logs' || state.view === 'files') setView('backlog'); render(); });
+$('#statusNav').addEventListener('click', (e) => { const b = e.target.closest('[data-st]'); if (!b) return; state.statusNav = b.dataset.st; $('#statusFilter').value = ''; if (state.view === 'logs' || state.view === 'files') setView('backlog'); render(); });
+
+// ── Backlog ──
+function lozenge(s) { return `<span class="loz s-${s}">${STATUS_TEXT[s] || s}</span>`; }
+function avatar(key) {
+  const w = state.statuses[key]?.worker;
+  return w == null ? '<span></span>' : `<span class="avatar" title="Worker ${w}${state.orgs[w] ? ` · ${esc(state.orgs[w])}` : ''}" style="background:${wc(w)}">W${w}</span>`;
+}
+function typeIcon(s) { return s === 'failed' || s === 'interrupted' ? `<span class="type bug" title="Failing">${BUG}</span>` : `<span class="type" title="Test">${CHECK}</span>`; }
+function rowHtml(t) {
+  const s = statusOf(t.key);
+  const st = state.statuses[t.key] || {};
+  return `<div class="row ${state.selected.has(t.key) ? 'sel' : ''} ${state.openKey === t.key ? 'open' : ''}" data-key="${esc(t.key)}">
+    <input type="checkbox" class="rowcb" ${state.selected.has(t.key) ? 'checked' : ''}>
+    ${typeIcon(s)}
+    <span class="key">${esc(t.short)}</span>
+    <span class="sum" title="${esc(t.title)}">${esc(t.title)}</span>
+    <span class="labels">${t.tags.map((g) => `<span class="label">${esc(g.replace(/^@/, ''))}</span>`).join('')}</span>
+    <span>${lozenge(s)}</span>
+    <span class="dur">${fmtDur(st.duration)}</span>
+    ${avatar(t.key)}
+  </div>`;
+}
+function groupSummary(list) {
+  const c = {};
+  for (const t of list) { const b = bucket(statusOf(t.key)); c[b] = (c[b] || 0) + 1; }
+  return ['passed', 'failed', 'flaky', 'running', 'notrun'].filter((k) => c[k]).map((k) =>
+    `<span class="mini s-${k}" title="${STATUS_TEXT[k]}">${c[k]}</span>`).join('')
+    + '<button class="btn subtle runfile" title="Run every test in this file">▶ Run</button>';
+}
+// Rows and groups on screen, so a status change patches one row instead of redrawing the list
+const rowEls = new Map();
+const groupItems = new Map();
+function patchRows(keys) {
+  if (!keys.size) return;
+  if ($('#statusFilter').value || state.statusNav) return renderBacklog(filtered()); // rows move between filters
+  const files = new Set();
+  const tmp = document.createElement('div');
+  for (const k of keys) {
+    const t = state.byKey.get(k);
+    const el = rowEls.get(k);
+    if (!t || !el || !el.isConnected) continue;
+    files.add(t.file);
+    tmp.innerHTML = rowHtml(t);
+    const row = tmp.firstElementChild;
+    el.replaceWith(row);
+    rowEls.set(k, row);
+  }
+  for (const f of files) {
+    const sum = $('#content').querySelector(`.group[data-file="${CSS.escape(f)}"] .group-sum`);
+    if (sum && groupItems.has(f)) sum.innerHTML = groupSummary(groupItems.get(f));
+  }
+}
+function renderBacklog(list) {
+  if (!list.length) { $('#content').innerHTML = '<div class="empty">No tests match the filters.</div>'; return; }
+  const groups = new Map();
+  for (const t of list) { if (!groups.has(t.file)) groups.set(t.file, []); groups.get(t.file).push(t); }
+  let html = '';
+  for (const [file, items] of groups) {
+    const allSel = items.every((t) => state.selected.has(t.key));
+    const someSel = !allSel && items.some((t) => state.selected.has(t.key));
+    const name = file.split('/').pop().replace(/\.spec\.[jt]s$/, '');
+    html += `<div class="group ${state.collapsed.has(file) ? 'collapsed' : ''}" data-file="${esc(file)}">
+      <div class="group-head">
+        <svg class="chev" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        <input type="checkbox" class="groupcb" ${allSel ? 'checked' : ''} data-indet="${someSel ? 1 : 0}">
+        <span class="group-title">${esc(name)}</span>
+        <span class="group-path">${esc(file)} · ${items.length} test${items.length > 1 ? 's' : ''}</span>
+        <span class="group-sum">${groupSummary(items)}</span>
+      </div>
+      <div class="rows">${state.collapsed.has(file) ? '' : items.map(rowHtml).join('')}</div>
+    </div>`;
+  }
+  $('#content').innerHTML = html;
+  document.querySelectorAll('.groupcb').forEach((cb) => { cb.indeterminate = cb.dataset.indet === '1'; });
+  rowEls.clear();
+  for (const el of $('#content').querySelectorAll('.row')) rowEls.set(el.dataset.key, el);
+  groupItems.clear();
+  for (const [file, items] of groups) groupItems.set(file, items);
+}
+
+$('#content').addEventListener('click', (e) => {
+  const group = e.target.closest('.group');
+  if (e.target.closest('.runfile')) {
+    e.stopPropagation();
+    const items = filtered().filter((t) => t.file === group.dataset.file);
+    return runKeys(items.map((t) => t.key));
+  }
+  if (e.target.classList.contains('groupcb')) {
+    const items = filtered().filter((t) => t.file === group.dataset.file);
+    items.forEach((t) => e.target.checked ? state.selected.add(t.key) : state.selected.delete(t.key));
+    return render();
+  }
+  if (e.target.closest('.group-head')) {
+    const f = group.dataset.file;
+    state.collapsed.has(f) ? state.collapsed.delete(f) : state.collapsed.add(f);
+    savePrefs();
+    return render();
+  }
+  const row = e.target.closest('.row, .card');
+  if (!row) return;
+  const key = row.dataset.key;
+  if (e.target.classList.contains('rowcb')) {
+    e.target.checked ? state.selected.add(key) : state.selected.delete(key);
+    row.classList.toggle('sel', e.target.checked);
+    return updateSelection();
+  }
+  openDetail(key);
+});
+
+// ── Board ──
+function renderBoard(list) {
+  const scope = new Set(state.runKeys);
+  const items = scope.size ? list.filter((t) => scope.has(t.key)) : list.filter((t) => statusOf(t.key) !== 'notrun');
+  if (!items.length) { $('#content').innerHTML = '<div class="empty">Nothing on the board yet. Select tests in the Backlog and run them.</div>'; return; }
+  const cols = [['notrun', 'To do'], ['running', 'In progress'], ['passed', 'Done'], ['failed', 'Failed'], ['other', 'Flaky / skipped']];
+  const by = { notrun: [], running: [], passed: [], failed: [], other: [] };
+  for (const t of items) { const b = bucket(statusOf(t.key)); (by[b] || by.other).push(t); }
+  const LIMIT = 150;
+  $('#content').innerHTML = `<div class="board">${cols.map(([k, label]) => `
+    <div class="col"><div class="col-h"><span>${label}</span><span>${by[k].length}</span></div>
+      ${by[k].slice(0, LIMIT).map((t) => {
+        const st = state.statuses[t.key] || {};
+        return `<div class="card" data-key="${esc(t.key)}"><div class="t">${esc(t.title)}</div>
+          <div class="f">${typeIcon(statusOf(t.key))}<span class="key">${esc(t.short)}</span>${lozenge(statusOf(t.key))}<span class="dur">${fmtDur(st.duration)}</span>${avatar(t.key)}</div></div>`;
+      }).join('')}
+      ${by[k].length > LIMIT ? `<div class="more">+ ${by[k].length - LIMIT} more</div>` : ''}
+    </div>`).join('')}</div>`;
+}
+
+// ── Render ──
+let renderQueued = false;
+function render() {
+  const list = filtered();
+  renderSidebar();
+  document.body.classList.toggle('logs-view', state.view === 'logs');
+  document.body.classList.toggle('files-view', state.view === 'files');
+  $('#viewTitle').textContent = state.view === 'logs' ? 'Live Logs' : state.view === 'files' ? 'Logs & Files' : state.view === 'board' ? (state.running ? 'Active run' : 'Board — last run') : 'Backlog';
+  if (state.view === 'files') { /* loaded on open and by its own buttons */ }
+  else if (state.view === 'logs') renderLvProgress();
+  else if (state.view === 'board') renderBoard(list);
+  else renderBacklog(list);
+  $('#shownCount').textContent = `${list.length} of ${state.tests.length} tests`;
+  updateSelection(list);
+  updateFailBadge();
+  if (state.openKey) renderDetail();
+}
+function scheduleRender() {
+  if (renderQueued) return;
+  renderQueued = true;
+  setTimeout(() => { renderQueued = false; render(); }, 250);
+}
+
+// Live updates during a run: at most every 500 ms, and only what changed on the current view
+const dirty = { keys: new Set(), full: false };
+let tickTimer = null;
+function scheduleTick() { if (!tickTimer && !state.replaying) tickTimer = setTimeout(tick, 500); }
+function tick() {
+  tickTimer = null;
+  const keys = dirty.keys;
+  const full = dirty.full;
+  dirty.keys = new Set();
+  dirty.full = false;
+  updateProgress();
+  if (full) return render();
+  if (state.view === 'backlog') patchRows(keys);
+  else if (state.view === 'board') renderBoard(filtered());
+  else if (state.view === 'logs') renderLvProgress();
+  renderSidebar();
+  updateSelection();
+  updateFailBadge();
+  if (state.openKey && keys.has(state.openKey)) renderDetail();
+}
+function updateSelection(list = filtered()) {
+  const n = state.selected.size;
+  $('#selCount').textContent = `${n} selected`;
+  $('#runSel').disabled = !n || state.running;
+  $('#runAll').disabled = state.running;
+  const shownSel = list.filter((t) => state.selected.has(t.key)).length;
+  $('#selectAll').checked = list.length > 0 && shownSel === list.length;
+  $('#selectAll').indeterminate = shownSel > 0 && shownSel < list.length;
+}
+function setView(v) {
+  state.view = v;
+  document.querySelectorAll('.nav-links button').forEach((x) => x.classList.toggle('active', x.dataset.view === v));
+  savePrefs();
+  render();
+  if (v === 'logs') lvRerender();
+  if (v === 'files') loadFiles();
+}
+
+$('#selectAll').addEventListener('change', (e) => {
+  for (const t of filtered()) e.target.checked ? state.selected.add(t.key) : state.selected.delete(t.key);
+  render();
+});
+$('#clearSel').addEventListener('click', () => { state.selected.clear(); render(); });
+$('#selFailed').addEventListener('click', () => {
+  state.selected = new Set(state.tests.filter((t) => ['failed'].includes(statusOf(t.key))).map((t) => t.key));
+  toast(`${state.selected.size} failed test(s) selected`);
+  render();
+});
+let searchTimer;
+$('#search').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { if (state.view === 'logs' || state.view === 'files') setView('backlog'); else render(); }, 150); });
+$('#labelFilter').addEventListener('change', render);
+$('#statusFilter').addEventListener('change', () => { state.statusNav = ''; render(); });
+$('#expandAll').addEventListener('click', () => { state.collapsed.clear(); savePrefs(); render(); });
+$('#collapseAll').addEventListener('click', () => { state.collapsed = new Set(state.tests.map((t) => t.file)); savePrefs(); render(); });
+document.querySelectorAll('.nav-links button').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));
+$('#runPill').addEventListener('click', () => setView('logs'));
+$('#openLv').addEventListener('click', (e) => { e.stopPropagation(); setView('logs'); });
+$('#mode').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.headed = b.dataset.v === 'headed'; savePrefs(); paintMode();
+});
+function paintMode() { document.querySelectorAll('#mode button').forEach((b) => b.classList.toggle('on', (b.dataset.v === 'headed') === state.headed)); }
+paintMode();
+
+// ── Detail panel ──
+function openDetail(key) { state.openKey = key; $('#detail').classList.add('open'); render(); }
+$('#dClose').addEventListener('click', () => { state.openKey = null; $('#detail').classList.remove('open'); render(); });
+function attachmentsHtml(atts) {
+  if (!atts || !atts.length) return '';
+  const imgs = atts.filter((a) => /^image\//.test(a.contentType));
+  const rest = atts.filter((a) => !/^image\//.test(a.contentType));
+  return `<div class="shots">${imgs.map((a) => `<a href="${artifactUrl(a.path)}" target="_blank" title="${esc(a.name)}"><img loading="lazy" src="${artifactUrl(a.path)}" alt="${esc(a.name)}"></a>`).join('')}</div>
+    ${rest.length ? `<div class="att">${rest.map((a) => `<a href="${artifactUrl(a.path)}" target="_blank">${esc(a.name)}</a>`).join(' · ')}</div>` : ''}`;
+}
+function renderDetail() {
+  const t = state.byKey.get(state.openKey);
+  if (!t) return;
+  const s = statusOf(t.key);
+  const st = state.statuses[t.key] || {};
+  $('#dType').innerHTML = typeIcon(s);
+  $('#dKey').textContent = `YOLO / ${t.short}`;
+  const logs = state.testLogs.get(t.key) || [];
+  const body = $('#dBody');
+  const old = body.querySelector('.tlog.live');
+  const atBottom = old && old.scrollTop + old.clientHeight >= old.scrollHeight - 10;
+  body.innerHTML = `
+    <h2>${esc(t.title)}</h2>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      ${lozenge(s)}
+      <button class="btn primary" id="dRun" ${state.running ? 'disabled' : ''}>▶ Run this test (${state.headed ? 'headed' : 'headless'})</button>
+      <button class="btn" id="dSel">${state.selected.has(t.key) ? 'Unselect' : 'Select'}</button>
+      <button class="btn" id="dLogs">Show in Live Logs</button>
+    </div>
+    <dl class="meta">
+      <dt>File</dt><dd>tests/${esc(t.file)}:${t.line}</dd>
+      <dt>Suite</dt><dd>${esc(t.describe || '—')}</dd>
+      <dt>Project</dt><dd>${esc(t.project)}</dd>
+      <dt>Labels</dt><dd>${t.tags.map((g) => `<span class="label">${esc(g.replace(/^@/, ''))}</span>`).join(' ') || '—'}</dd>
+      <dt>Duration</dt><dd>${fmtDur(st.duration) || '—'}</dd>
+      <dt>Worker</dt><dd>${st.worker != null ? `W${st.worker}${state.orgs[st.worker] ? ` · ${esc(state.orgs[st.worker])}` : ''}` : '—'}${st.retry ? ` · retry #${st.retry}` : ''}</dd>
+      <dt>Last run</dt><dd>${st.at ? new Date(st.at).toLocaleString() : '—'}</dd>
+      ${(st.annotations || []).length ? `<dt>Notes</dt><dd>${st.annotations.map((a) => `@${esc(a.type)}${a.description ? `: ${esc(a.description)}` : ''}`).join('<br>')}</dd>` : ''}
+    </dl>
+    <div class="sec-h">Run only this test</div>
+    <div class="tlog">npx playwright test "tests/${esc(t.file)}:${t.line}"${state.headed ? ' --headed' : ''}</div>
+    ${st.error ? `<div class="sec-h">Error</div><div class="errbox">${esc(st.error)}</div>` : ''}
+    ${(st.attachments || []).length ? `<div class="sec-h">Attachments</div>${attachmentsHtml(st.attachments)}` : ''}
+    <div class="sec-h">Test log ${logs.length ? `(${logs.length} lines)` : ''}</div>
+    <div class="tlog live">${logs.length > 400 ? `<div class="ln dim">… ${logs.length - 400} earlier line(s) — see Live Logs for all</div>` : ''}${logs.length ? logs.slice(-400).map((l) => `<div class="ln ${l.cls || ''}">${esc(l.text)}</div>`).join('') : '<span class="ln dim">No output yet in this session.</span>'}</div>`;
+  const tl = body.querySelector('.tlog.live');
+  if (atBottom || !old) tl.scrollTop = tl.scrollHeight;
+  $('#dRun').onclick = () => runKeys([t.key]);
+  $('#dSel').onclick = () => { state.selected.has(t.key) ? state.selected.delete(t.key) : state.selected.add(t.key); render(); };
+  $('#dLogs').onclick = () => { lvFocusTest(t.key); };
+}
+
+// ── Running ──
+async function post(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+function runOptions() {
+  return { headed: state.headed, workers: $('#workers').value, retries: $('#retries').value, cleanupFirst: $('#cleanup').checked, cleanFiles: $('#cleanFiles').checked };
+}
+async function runKeys(keys) {
+  if (!keys.length) return;
+  try { await post('/api/run', { keys, ...runOptions() }); toast(`Running ${keys.length} test(s) ${state.headed ? 'headed' : 'headless'}`); }
+  catch (e) { toast(e.message); }
+}
+$('#runSel').addEventListener('click', () => runKeys(state.tests.filter((t) => state.selected.has(t.key)).map((t) => t.key)));
+$('#runAll').addEventListener('click', async () => {
+  if (!confirm(`Run all ${state.tests.length} tests? This takes several hours.`)) return;
+  try { await post('/api/run', { all: true, ...runOptions() }); toast('Running all tests'); } catch (e) { toast(e.message); }
+});
+$('#stop').addEventListener('click', async () => { try { await post('/api/stop'); } catch (e) { toast(e.message); } });
+$('#refresh').addEventListener('click', () => load(true));
+
+function setRunning(on) {
+  state.running = on;
+  $('#stop').style.display = on ? '' : 'none';
+  $('#runPill').classList.toggle('on', on);
+  if (on) $('#progress').classList.add('on');
+  updateSelection();
+}
+function runCounts() {
+  const c = { passed: 0, failed: 0, flaky: 0, skipped: 0, running: 0, queued: 0 };
+  for (const k of state.runKeys) {
+    const b = bucket(statusOf(k));
+    if (b === 'notrun') c.queued++; else if (b in c) c[b]++;
+  }
+  c.total = state.runKeys.length;
+  c.done = c.passed + c.failed + c.flaky + c.skipped;
+  return c;
+}
+function updateProgress(result) {
+  if (!state.runKeys.length) return;
+  const c = runCounts();
+  const pct = (n) => `${(n / c.total) * 100}%`;
+  $('#bPass').style.width = pct(c.passed); $('#bFail').style.width = pct(c.failed);
+  $('#bFlaky').style.width = pct(c.flaky); $('#bSkip').style.width = pct(c.skipped);
+  $('#pDone').textContent = c.done; $('#pTotal').textContent = c.total;
+  $('#pPass').textContent = c.passed; $('#pFail').textContent = c.failed; $('#pFlaky').textContent = c.flaky;
+  $('#pSkip').textContent = c.skipped; $('#pRun').textContent = c.running;
+  if (result) $('#pResult').innerHTML = lozenge(result === 'passed' ? 'passed' : result === 'stopped' ? 'interrupted' : 'failed');
+  $('#runPillText').textContent = `Running ${c.done}/${c.total} · ${Math.floor((c.done / c.total) * 100)}%`;
+}
+function updateFailBadge() {
+  const n = state.runKeys.filter((k) => ['failed'].includes(statusOf(k))).length;
+  $('#failBadge').textContent = n;
+  $('#failBadge').classList.toggle('on', n > 0);
+}
+setInterval(() => {
+  if (!state.running) return;
+  $('#pTime').textContent = fmtDur(Date.now() - state.runStart);
+  if (state.view === 'logs') {
+    $('#kElapsed').textContent = fmtDur(Date.now() - state.runStart);
+    document.querySelectorAll('[data-since]').forEach((el) => { el.textContent = fmtDur(Date.now() - Number(el.dataset.since)); });
+  }
+}, 1000);
+
+// ── Live Logs: progress panels ──
+function eta(c) {
+  const d = state.durations;
+  if (!state.running || !d.length) return null;
+  const avg = d.reduce((a, b) => a + b, 0) / d.length;
+  const parallel = Math.max(1, Math.min(state.runWorkers, c.total - c.done));
+  // A running test still needs the average minus the time it has had, but at least a few seconds
+  const runningLeft = Object.values(state.lanes).filter((l) => l.key)
+    .reduce((a, l) => a + Math.max(avg * 0.1, 3000, avg - (Date.now() - l.since)), 0);
+  return (c.queued * avg + runningLeft) / parallel;
+}
+function renderLvProgress() {
+  const c = runCounts();
+  const has = c.total > 0;
+  const now = state.running ? Date.now() : state.runEnd || Date.now();
+  const elapsed = has && state.runStart ? now - state.runStart : 0;
+  const pct = has ? Math.floor((c.done / c.total) * 100) : 0;
+  $('#lvPct').innerHTML = `${pct}<small>%</small>`;
+  const resText = { passed: ['passed', 'Run passed'], failed: ['failed', 'Run finished with failures'], stopped: ['interrupted', 'Run stopped'] }[state.runResult];
+  $('#lvState').innerHTML = !has ? 'No run yet' : state.running ? `${lozenge('running')} Running` : resText ? `${lozenge(resText[0])} ${resText[1]}` : 'Last run';
+  $('#lvSub').textContent = !has ? 'Select tests in the Backlog and run them.'
+    : `${c.total} test(s) · ${c.running} running · ${c.queued} waiting${state.runStart ? ` · started ${new Date(state.runStart).toLocaleTimeString()}` : ''}`;
+  $('#kDone').textContent = `${c.done}/${c.total}`;
+  $('#kElapsed').textContent = elapsed ? fmtDur(elapsed) : '–';
+  const e = eta(c);
+  $('#kEta').textContent = e == null ? '–' : `~${fmtDur(e)}`;
+  $('#kRate').textContent = c.done && elapsed > 5000 ? (c.done / (elapsed / 60000)).toFixed(1) : '–';
+  const avg = state.durations.length ? state.durations.reduce((a, b) => a + b, 0) / state.durations.length : null;
+  $('#kAvg').textContent = avg == null ? '–' : fmtDur(avg);
+  $('#kPassRate').textContent = c.done ? `${Math.round(((c.passed + c.flaky) / c.done) * 100)}%` : '–';
+
+  $('#lvPhases').innerHTML = state.phases.map((p, i) => {
+    const code = state.phaseCodes[i];
+    const cls = code != null ? (code === 0 ? 'done' : 'bad') : i === state.phaseIdx && state.running ? 'cur' : '';
+    return `<span class="phase ${cls}">${i + 1}. ${esc(p)}${code != null ? (code === 0 ? ' ✓' : ' ✘') : ''}</span>`;
+  }).join('');
+
+  const segs = [['passed', 'var(--c-pass)', 'Passed'], ['flaky', 'var(--c-flaky)', 'Flaky'], ['failed', 'var(--c-fail)', 'Failed'], ['skipped', 'var(--c-skip)', 'Skipped'], ['running', 'var(--c-run)', 'Running']];
+  $('#lvBar').innerHTML = has ? segs.map(([k, col, label]) => `<i class="${k === 'running' ? 'run' : ''}" title="${label}: ${c[k]}" style="width:${(c[k] / c.total) * 100}%;background:${k === 'running' ? '' : col}"></i>`).join('')
+    + `<span>${c.done} / ${c.total} · ${pct}%</span>` : '<span>No run yet</span>';
+  $('#lvLegend').innerHTML = [...segs, ['queued', 'var(--c-queue)', 'Waiting']].map(([k, col, label]) =>
+    `<span><i class="sw" style="background:${col}"></i>${label} <b>${c[k]}</b>${has && c[k] ? ` <span style="color:var(--text-subtlest)">(${Math.round((c[k] / c.total) * 100)}%)</span>` : ''}</span>`).join('');
+
+  renderLanes();
+  renderFiles();
+  renderFails();
+}
+function renderLanes() {
+  const n = Math.max(state.runWorkers || 0, ...Object.keys(state.lanes).map((k) => Number(k) + 1), state.orgs.length ? 1 : 0);
+  if (!n) { $('#lvLanes').innerHTML = '<div class="empty" style="padding:16px">No workers yet.</div>'; return; }
+  let html = '';
+  for (let i = 0; i < n; i++) {
+    const l = state.lanes[i] || { done: 0, passed: 0, failed: 0, total: 0 };
+    const busy = !!l.key;
+    const done = l.passed + l.failed + (l.flaky || 0) + (l.skipped || 0);
+    html += `<div class="lane ${busy ? '' : 'idle'}">
+      <span class="avatar" style="background:${wc(i)}">W${i}</span>
+      <div class="lane-org">${esc(state.orgs[i] || `Worker ${i}`)}</div>
+      <div class="lane-side">${busy ? `<div class="el" data-since="${l.since}">${fmtDur(Date.now() - l.since)}</div>` : '<div class="el">idle</div>'}
+        <div>${done} done · <span style="color:var(--c-pass)">✓ ${l.passed}</span> · <span style="color:var(--c-fail)">✘ ${l.failed}</span></div>
+        <div>${l.time ? `busy ${fmtDur(l.time)}` : ''}</div></div>
+      <div class="lane-test" data-key="${esc(l.key || l.lastKey || '')}" title="${esc(l.key ? titleOf(l.key) : '')}">${busy ? `${esc(shortOf(l.key))} · ${esc(titleOf(l.key))}${l.retry ? ` <span class="loz s-retrying">retry #${l.retry}</span>` : ''}` : l.lastKey ? `<span style="color:var(--text-subtlest)">Last: ${esc(shortOf(l.lastKey))} ${lozenge(statusOf(l.lastKey))}</span>` : '<span style="color:var(--text-subtlest)">Waiting for a test</span>'}</div>
+      <div class="lane-now">${busy ? `${l.step ? `▸ ${esc(l.step)}` : ''}${l.action ? `${l.step ? '  ·  ' : ''}${esc(l.action)}` : ''}${!l.step && !l.action ? 'starting…' : ''}` : ''}</div>
+      <div class="lane-bar">${done ? `<i style="width:${(l.passed / done) * 100}%;background:var(--c-pass)"></i><i style="width:${((l.flaky || 0) / done) * 100}%;background:var(--c-flaky)"></i><i style="width:${(l.failed / done) * 100}%;background:var(--c-fail)"></i>` : ''}</div>
+    </div>`;
+  }
+  $('#lvLanes').innerHTML = html;
+}
+function renderFiles() {
+  const files = new Map();
+  for (const k of state.runKeys) {
+    const f = fileOf(k);
+    if (!files.has(f)) files.set(f, { f, total: 0, passed: 0, failed: 0, flaky: 0, skipped: 0, running: 0, dur: 0 });
+    const r = files.get(f);
+    r.total++;
+    const b = bucket(statusOf(k));
+    if (b in r) r[b]++;
+    r.dur += state.statuses[k]?.duration || 0;
+  }
+  const rows = [...files.values()];
+  const doneOf = (r) => r.passed + r.failed + r.flaky + r.skipped;
+  rows.sort((a, b) => (b.running > 0) - (a.running > 0) || (doneOf(a) === a.total) - (doneOf(b) === b.total));
+  $('#lvFilesSub').textContent = rows.length ? `${rows.filter((r) => doneOf(r) === r.total).length} of ${rows.length} finished` : '';
+  $('#lvFiles').innerHTML = rows.length ? rows.map((r) => {
+    const w = (n) => `${(n / r.total) * 100}%`;
+    return `<div class="frow" title="${esc(r.f)} · ${fmtDur(r.dur)}">
+      <span class="fn ${r.running ? 'live' : ''}">${esc(r.f.split('/').pop().replace(/\.spec\.[jt]s$/, ''))} <span style="color:var(--text-subtlest);font-size:12px">${esc(r.f.includes('/') ? r.f.split('/')[0] : '')}</span></span>
+      <span class="fbar"><i style="width:${w(r.passed)};background:var(--c-pass)"></i><i style="width:${w(r.flaky)};background:var(--c-flaky)"></i><i style="width:${w(r.failed)};background:var(--c-fail)"></i><i style="width:${w(r.skipped)};background:var(--c-skip)"></i><i style="width:${w(r.running)};background:var(--c-run)"></i></span>
+      <span class="fc">${doneOf(r)}/${r.total}</span>
+      <span class="ff">${r.failed ? `✘${r.failed}` : ''}</span>
+    </div>`;
+  }).join('') : '<div class="empty" style="padding:16px">No run yet.</div>';
+}
+let failsSig = '';
+function renderFails() {
+  const keys = state.runKeys.filter((k) => ['failed', 'retrying'].includes(statusOf(k)));
+  // Redraw only when the list changes: redrawing reloads every screenshot
+  const sig = keys.map((k) => `${k}|${statusOf(k)}|${(state.statuses[k]?.attachments || []).length}`).join('\n');
+  if (sig === failsSig) return;
+  failsSig = sig;
+  $('#lvFailSub').textContent = keys.length ? `${keys.length}` : '';
+  if (!keys.length) { $('#lvFails').innerHTML = '<div class="empty" style="padding:24px">No failures.</div>'; return; }
+  $('#lvFails').innerHTML = keys.map((k) => {
+    const st = state.statuses[k] || {};
+    const firstErr = (st.error || '').split('\n').filter(Boolean).slice(0, 3).join('\n');
+    return `<div class="fail ${st.status === 'retrying' ? 'retry' : ''}" data-key="${esc(k)}">
+      <div class="fail-h">${typeIcon('failed')}<b>${esc(shortOf(k))}</b>${lozenge(st.status)}<span style="margin-left:auto">${fmtDur(st.duration)}${st.worker != null ? ` · W${st.worker}` : ''}</span></div>
+      <div class="fail-t">${esc(titleOf(k))}</div>
+      ${firstErr ? `<div class="fail-e">${esc(firstErr)}</div>` : ''}
+      ${attachmentsHtml(st.attachments)}
+    </div>`;
+  }).join('');
+}
+$('#lvFails').addEventListener('click', (e) => {
+  if (e.target.closest('a')) return;
+  const f = e.target.closest('.fail'); if (!f) return;
+  lvFocusTest(f.dataset.key);
+  openDetail(f.dataset.key);
+});
+$('#lvLanes').addEventListener('click', (e) => { const t = e.target.closest('.lane-test'); if (t && t.dataset.key) lvFocusTest(t.dataset.key); });
+$('#lvFiles').addEventListener('click', () => {});
+
+// ── Log entries ──
+// kind → badge, filter group, colour class for the dock and the test log
+const KINDS = {
+  run: ['RUN', 'run', 'head'], cmd: ['CMD', 'run', 'cmd'], sys: ['SYS', 'run', 'dim'],
+  start: ['START', 'tests', 'head'], pass: ['PASS', 'tests', 'ok'], fail: ['FAIL', 'tests', 'err'], retry: ['RETRY', 'tests', 'warn'],
+  skip: ['SKIP', 'tests', 'dim'], note: ['NOTE', 'tests', 'warn'],
+  step: ['STEP', 'steps', 'dim'], hook: ['HOOK', 'steps', 'dim'], action: ['ACTION', 'actions', 'dim'], expect: ['EXPECT', 'expect', 'dim'],
+  out: ['LOG', 'output', ''], warn: ['WARN', 'output', 'warn'], err: ['ERROR', 'errors', 'err'],
+};
+const GROUPS = [['run', 'Run'], ['tests', 'Tests'], ['steps', 'Steps'], ['actions', 'Actions'], ['expect', 'Expect'], ['output', 'Output'], ['errors', 'Errors']];
+const PROBLEM_KINDS = new Set(['err', 'fail', 'retry', 'warn']);
+const LV = {
+  entries: [], seq: 0, groups: new Set(GROUPS.map((g) => g[0])), problems: false, worker: '', test: '', q: '',
+  group: false, ts: true, wrap: true, paused: false, pending: 0, stick: true, queue: [], open: new Set(), closed: new Set(), dirty: true,
+};
+if (prefs.lv) {
+  if (prefs.lv.groups) LV.groups = new Set(prefs.lv.groups);
+  LV.ts = prefs.lv.ts !== false; LV.wrap = prefs.lv.wrap !== false; LV.group = !!prefs.lv.group;
+}
+const MAX_ENTRIES = 80000;
+const MAX_DOM = 1500;
+
+function emit(e) {
+  e.id = ++LV.seq;
+  LV.entries.push(e);
+  if (LV.entries.length > MAX_ENTRIES) LV.entries.splice(0, 10000);
+  const cls = KINDS[e.kind][2];
+  const dockText = e.dock === undefined ? e.text : e.dock;
+  if (e.key) {
+    if (!state.testLogs.has(e.key)) state.testLogs.set(e.key, []);
+    const arr = state.testLogs.get(e.key);
+    arr.push({ text: `${'  '.repeat(e.depth || 0)}${e.dock || `${KINDS[e.kind][0].padEnd(6)} ${e.text}`}${e.dur != null ? `  (${fmtDur(e.dur)})` : ''}`, cls });
+    if (arr.length > 4000) arr.shift();
+  }
+  e.dk = dockText;
+  if (state.replaying) return; // drawn in one go at replayEnd
+  if (dockText !== null) addDock(dockText, cls);
+  lvAppend(e);
+}
+
+// ── Dock (compact log under Backlog / Board) ──
+const logsEl = $('#logs');
+const DOCK_MAX = 1500;
+let dockPending = [];
+function dockMatches(div) {
+  const f = $('#logFilter').value.toLowerCase();
+  return (!f || div.textContent.toLowerCase().includes(f)) && (!$('#onlyErr').checked || div.classList.contains('err'));
+}
+// Lines are collected and added in one batch per slice of events (flushDock)
+function addDock(text, cls) {
+  dockPending.push([text, cls]);
+  if (dockPending.length > DOCK_MAX) dockPending = dockPending.slice(-DOCK_MAX);
+}
+function flushDock() {
+  if (!dockPending.length) return;
+  const frag = document.createDocumentFragment();
+  for (const [text, cls] of dockPending) {
+    const div = document.createElement('div');
+    div.className = `ln ${cls}`;
+    div.textContent = text;
+    if (!dockMatches(div)) div.style.display = 'none';
+    frag.appendChild(div);
+  }
+  dockPending = [];
+  logsEl.appendChild(frag);
+  let extra = logsEl.childElementCount - DOCK_MAX;
+  while (extra-- > 0) logsEl.firstChild.remove();
+  if ($('#autoScroll').checked && state.view !== 'logs') logsEl.scrollTop = logsEl.scrollHeight;
+}
+function rebuildDock() {
+  logsEl.innerHTML = '';
+  dockPending = [];
+  const lines = [];
+  for (let i = LV.entries.length - 1; i >= 0 && lines.length < DOCK_MAX; i--) {
+    const e = LV.entries[i];
+    if (e.dk !== null) lines.push([e.dk, KINDS[e.kind][2]]);
+  }
+  dockPending = lines.reverse();
+  flushDock();
+}
+function refilterDock() { for (const d of logsEl.children) d.style.display = dockMatches(d) ? '' : 'none'; }
+$('#logFilter').addEventListener('input', refilterDock);
+$('#onlyErr').addEventListener('change', refilterDock);
+$('#clearLogs').addEventListener('click', (e) => { e.stopPropagation(); logsEl.innerHTML = ''; dockPending = []; });
+$('#toggleDock').addEventListener('click', (e) => { e.stopPropagation(); const d = $('#dock'); d.classList.toggle('open'); $('#toggleDock').textContent = d.classList.contains('open') ? 'Hide' : 'Show'; });
+$('#dockHead').addEventListener('mousedown', (e) => {
+  if (e.target.closest('input, button, label')) return;
+  const dock = $('#dock'); if (!dock.classList.contains('open')) return;
+  const startY = e.clientY, startH = dock.offsetHeight;
+  const move = (ev) => dock.style.setProperty('--dock-h', `${Math.max(120, Math.min(window.innerHeight - 200, startH + startY - ev.clientY))}px`);
+  const up = () => { removeEventListener('mousemove', move); removeEventListener('mouseup', up); };
+  addEventListener('mousemove', move); addEventListener('mouseup', up);
+});
+
+// ── Live Logs console ──
+const out = $('#lvOut');
+function lvMatch(e) {
+  if (LV.problems ? !PROBLEM_KINDS.has(e.kind) : !LV.groups.has(KINDS[e.kind][1])) return false;
+  if (LV.worker !== '' && String(e.worker) !== LV.worker) return false;
+  if (LV.test && e.key !== LV.test) return false;
+  if (LV.q && !`${e.text} ${e.key ? shortOf(e.key) : ''}`.toLowerCase().includes(LV.q)) return false;
+  return true;
+}
+function hl(text) {
+  const s = esc(text);
+  if (!LV.q) return s;
+  const q = esc(LV.q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return s.replace(new RegExp(q, 'gi'), (m) => `<mark>${m}</mark>`);
+}
+function stamp(t) {
+  const d = new Date(t);
+  return `${d.toLocaleTimeString('en-GB', { hour12: false })}.${String(d.getMilliseconds()).padStart(3, '0')}`;
+}
+function lvRow(e) {
+  return `<div class="lr k-${e.kind}">${LV.ts ? `<span class="lt">${stamp(e.t)}</span>` : ''}<span class="lb b-${e.kind}">${KINDS[e.kind][0]}</span>`
+    + (e.worker != null ? `<span class="lw" style="--c:${wc(e.worker)}">W${e.worker}</span>` : '<span class="lw none"></span>')
+    + (e.key ? `<a class="lk" data-key="${esc(e.key)}" title="${esc(titleOf(e.key))}">${esc(shortOf(e.key))}</a>` : '<span class="lk none"></span>')
+    + `<span class="lx" style="padding-left:${(e.depth || 0) * 14}px">${hl(e.text)}</span>`
+    + (e.dur != null ? `<span class="ld">${fmtDur(e.dur)}</span>` : '') + '</div>';
+}
+function lvAppend(e) {
+  if (state.view !== 'logs') { LV.dirty = true; return; }
+  if (LV.group) return scheduleGroups();
+  if (!lvMatch(e)) return;
+  if (LV.paused) { LV.pending++; paintPause(); return; }
+  LV.queue.push(e);
+  // Up to 4 batches a second: each batch costs one layout, however many lines it has
+  if (LV.queue.length === 1) setTimeout(flushQueue, 250);
+}
+function flushQueue() {
+  if (!LV.queue.length) return;
+  if (out.firstElementChild && out.firstElementChild.classList.contains('hidden-note')) out.innerHTML = '';
+  const add = LV.queue.slice(-MAX_DOM);
+  LV.queue = [];
+  out.insertAdjacentHTML('beforeend', add.map(lvRow).join(''));
+  let extra = out.childElementCount - MAX_DOM;
+  while (extra-- > 0) out.firstElementChild.remove();
+  if (LV.stick) out.scrollTop = out.scrollHeight;
+  paintCount();
+}
+function lvRerender() {
+  LV.dirty = false;
+  LV.queue = [];
+  out.classList.toggle('nowrap', !LV.wrap);
+  if (LV.group) return renderGroups();
+  const rows = [];
+  for (let i = LV.entries.length - 1; i >= 0 && rows.length < MAX_DOM; i--) if (lvMatch(LV.entries[i])) rows.push(LV.entries[i]);
+  rows.reverse();
+  out.innerHTML = rows.length ? rows.map(lvRow).join('') : '<div class="hidden-note">No log lines match.</div>';
+  if (LV.stick) out.scrollTop = out.scrollHeight;
+  paintCount();
+}
+let groupTimer = null;
+function scheduleGroups() { if (!groupTimer) groupTimer = setTimeout(() => { groupTimer = null; if (state.view === 'logs' && LV.group && !LV.paused) renderGroups(); }, 800); }
+function renderGroups() {
+  const groups = new Map();
+  for (const e of LV.entries) {
+    if (!lvMatch(e)) continue;
+    const g = e.key || '';
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(e);
+  }
+  const top = out.scrollTop;
+  const atBottom = out.scrollTop + out.clientHeight >= out.scrollHeight - 20;
+  const LIMIT = 400;
+  out.innerHTML = groups.size ? [...groups].map(([key, list]) => {
+    const st = state.statuses[key] || {};
+    const s = key ? statusOf(key) : null;
+    const open = !LV.closed.has(key) && (LV.open.has(key) || (key && (s === 'running' || s === 'failed' || key === LV.test)));
+    const hidden = Math.max(0, list.length - LIMIT);
+    // Closed groups get their rows only when opened (toggle handler), so hundreds of tests stay cheap
+    if (!open) {
+      return `<details class="tg" data-key="${esc(key)}">
+      <summary>${key ? lozenge(s) : '<span class="loz s-queued">Runner</span>'}${key ? `<b>${esc(shortOf(key))}</b>` : ''}
+        <span class="tg-t">${esc(key ? titleOf(key) : 'Runner, setup and output outside tests')}</span>
+        <span class="tg-m">${st.worker != null && key ? `W${st.worker} · ` : ''}${key && st.duration != null ? `${fmtDur(st.duration)} · ` : ''}${list.length} lines</span></summary>
+    </details>`;
+    }
+    return `<details class="tg" data-key="${esc(key)}" data-rows="1" open>
+      <summary>${key ? lozenge(s) : '<span class="loz s-queued">Runner</span>'}${key ? `<b>${esc(shortOf(key))}</b>` : ''}
+        <span class="tg-t">${esc(key ? titleOf(key) : 'Runner, setup and output outside tests')}</span>
+        <span class="tg-m">${st.worker != null && key ? `W${st.worker} · ` : ''}${key && st.duration != null ? `${fmtDur(st.duration)} · ` : ''}${list.length} lines</span></summary>
+      ${hidden ? `<div class="hidden-note">${hidden} earlier line(s) hidden — filter by this test to see them all</div>` : ''}
+      ${list.slice(-LIMIT).map(lvRow).join('')}
+    </details>`;
+  }).join('') : '<div class="hidden-note">No log lines match.</div>';
+  out.scrollTop = atBottom && LV.stick ? out.scrollHeight : top;
+  paintCount();
+}
+out.addEventListener('toggle', (e) => {
+  const d = e.target.closest('details.tg'); if (!d) return;
+  if (d.open) { LV.open.add(d.dataset.key); LV.closed.delete(d.dataset.key); } else { LV.open.delete(d.dataset.key); LV.closed.add(d.dataset.key); }
+  if (d.open && !d.dataset.rows) renderGroups();
+}, true);
+out.addEventListener('click', (e) => {
+  const k = e.target.closest('.lk[data-key]');
+  if (k) { e.preventDefault(); lvFocusTest(k.dataset.key); }
+});
+out.addEventListener('scroll', () => {
+  LV.stick = out.scrollTop + out.clientHeight >= out.scrollHeight - 30;
+  $('#lvJump').classList.toggle('on', !LV.stick);
+});
+$('#lvJump').addEventListener('click', () => { LV.stick = true; out.scrollTop = out.scrollHeight; $('#lvJump').classList.remove('on'); });
+function paintCount() {
+  $('#lvCount').textContent = `${LV.entries.length.toLocaleString()} lines captured`;
+  const n = LV.group ? 0 : out.childElementCount;
+  $('#lvShown').textContent = LV.group ? '' : `· ${n.toLocaleString()} shown${n >= MAX_DOM ? ' (latest — search or filter to find older lines)' : ''}`;
+}
+function paintPause() { $('#lvPause').textContent = LV.paused ? `▶ Resume${LV.pending ? ` (${LV.pending} new)` : ''}` : '⏸ Pause'; $('#lvPause').classList.toggle('hot', LV.paused); }
+function paintChips() {
+  $('#lvChips').innerHTML = GROUPS.map(([g, label]) => `<button class="chip ${LV.groups.has(g) ? 'on' : ''}" data-g="${g}">${label}</button>`).join(' ');
+  $('#lvProblems').classList.toggle('on', LV.problems);
+}
+function lvFocusTest(key) {
+  if (!state.testLogs.has(key) && !LV.entries.some((e) => e.key === key)) toast('No log for this test in this session yet');
+  LV.test = key;
+  fillTestSelect();
+  $('#lvTest').value = key;
+  LV.open.add(key);
+  LV.closed.delete(key);
+  if (state.view !== 'logs') setView('logs'); else lvRerender();
+}
+function fillTestSelect() {
+  const keys = new Set(state.runKeys);
+  if (LV.test) keys.add(LV.test);
+  const cur = LV.test;
+  $('#lvTest').innerHTML = '<option value="">All tests</option>' + [...keys].map((k) =>
+    `<option value="${esc(k)}">${esc(shortOf(k))} · ${esc(titleOf(k).slice(0, 70))}</option>`).join('');
+  $('#lvTest').value = cur;
+}
+function fillWorkerSelect() {
+  const n = Math.max(state.runWorkers || 0, state.orgs.length);
+  const cur = LV.worker;
+  $('#lvWorker').innerHTML = '<option value="">All workers</option>' + Array.from({ length: n }, (_, i) =>
+    `<option value="${i}">W${i}${state.orgs[i] ? ` · ${esc(state.orgs[i].replace(/^.*?(\S+\s*\S*)$/, '$1'))}` : ''}</option>`).join('');
+  $('#lvWorker').value = cur;
+}
+$('#lvChips').addEventListener('click', (e) => {
+  const c = e.target.closest('[data-g]'); if (!c) return;
+  LV.groups.has(c.dataset.g) ? LV.groups.delete(c.dataset.g) : LV.groups.add(c.dataset.g);
+  LV.problems = false; paintChips(); savePrefs(); lvRerender();
+});
+$('#lvProblems').addEventListener('click', () => { LV.problems = !LV.problems; paintChips(); lvRerender(); });
+$('#lvWorker').addEventListener('change', (e) => { LV.worker = e.target.value; lvRerender(); });
+$('#lvTest').addEventListener('change', (e) => { LV.test = e.target.value; lvRerender(); });
+let lvSearchTimer;
+$('#lvSearch').addEventListener('input', (e) => { clearTimeout(lvSearchTimer); lvSearchTimer = setTimeout(() => { LV.q = e.target.value.trim().toLowerCase(); lvRerender(); }, 200); });
+$('#lvGroup').addEventListener('change', (e) => { LV.group = e.target.checked; savePrefs(); lvRerender(); });
+$('#lvTs').addEventListener('change', (e) => { LV.ts = e.target.checked; savePrefs(); lvRerender(); });
+$('#lvWrap').addEventListener('change', (e) => { LV.wrap = e.target.checked; savePrefs(); out.classList.toggle('nowrap', !LV.wrap); });
+$('#lvPause').addEventListener('click', () => { LV.paused = !LV.paused; if (!LV.paused) { LV.pending = 0; lvRerender(); } paintPause(); });
+$('#lvClear').addEventListener('click', () => { LV.entries = []; LV.pending = 0; lvRerender(); paintPause(); });
+$('#lvGroup').checked = LV.group; $('#lvTs').checked = LV.ts; $('#lvWrap').checked = LV.wrap;
+paintChips();
+
+function lineKind(text) { return /\b(error|fail|failed|timeout|exception)\b/i.test(text) ? 'err' : /\bwarn/i.test(text) ? 'warn' : null; }
+
+// ── Live events ──
+function lane(w) {
+  if (w == null) return null;
+  if (!state.lanes[w]) state.lanes[w] = { passed: 0, failed: 0, flaky: 0, skipped: 0, time: 0 };
+  return state.lanes[w];
+}
+function endStatus(ev) {
+  return ev.retrying ? 'retrying' : ev.outcome === 'flaky' ? 'flaky' : ev.outcome === 'skipped' ? 'skipped'
+    : ev.outcome === 'expected' ? 'passed' : ev.status === 'interrupted' ? 'interrupted' : 'failed';
+}
+function handle(ev) {
+  const t = ev.t || Date.now();
+  switch (ev.type) {
+    case 'hello':
+      logsEl.innerHTML = ''; dockPending = []; state.testLogs.clear();
+      LV.entries = []; state.lanes = {}; state.durations = []; state.phases = []; state.phaseIdx = -1; state.phaseCodes = [];
+      setRunning(ev.running);
+      if (ev.running) { state.runKeys = ev.keys; state.runStart = ev.startedAt; state.runResult = null; }
+      // The saved events follow; draw once when they are all in (replayEnd)
+      state.replaying = true;
+      break;
+    case 'replayEnd':
+      state.replaying = false;
+      rebuildDock();
+      dirty.keys.clear();
+      render();
+      if (state.view === 'logs') lvRerender();
+      break;
+    case 'runStart':
+      state.runKeys = ev.keys; state.runStart = t; state.runEnd = 0; state.runResult = null;
+      state.lanes = {}; state.durations = []; state.phases = ev.steps; state.phaseIdx = -1; state.phaseCodes = [];
+      state.runWorkers = Number(ev.options.workers) || state.orgs.length || 1;
+      for (const k of ev.keys) state.statuses[k] = { ...(state.statuses[k] || {}), status: 'queued' };
+      $('#pResult').innerHTML = '';
+      setRunning(true);
+      fillTestSelect(); fillWorkerSelect();
+      emit({ t, kind: 'run', text: `══ Run started · ${ev.keys.length} test(s) · ${ev.options.headed ? 'headed' : 'headless'} · workers ${ev.options.workers || 'auto'} · retries ${ev.options.retries === '' || ev.options.retries == null ? 'config' : ev.options.retries} · ${ev.steps.join(' → ')}` });
+      break;
+    case 'phaseStart':
+      state.phaseIdx++;
+      emit({ t, kind: 'run', text: `── ${ev.label}` });
+      emit({ t, kind: 'cmd', text: `$ ${ev.command}` });
+      break;
+    case 'phaseEnd':
+      state.phaseCodes[state.phaseIdx] = ev.code;
+      emit({ t, kind: ev.code ? 'err' : 'run', text: `── ${ev.label} finished (exit code ${ev.code})` });
+      break;
+    case 'begin':
+      if (ev.workers) state.runWorkers = Math.min(ev.workers, Math.max(1, ev.total));
+      fillWorkerSelect();
+      emit({ t, kind: 'sys', text: `Playwright found ${ev.total} test(s) · ${ev.workers} worker(s)` });
+      break;
+    case 'log': {
+      const k = ev.level === 'err' ? 'err' : lineKind(ev.text) || 'sys';
+      emit({ t, kind: k, text: ev.text });
+      break;
+    }
+    case 'testBegin': {
+      state.statuses[ev.key] = { ...(state.statuses[ev.key] || {}), status: 'running', worker: ev.worker, retry: ev.retry };
+      if (!ev.retry) state.testLogs.set(ev.key, []);
+      const l = lane(ev.worker);
+      Object.assign(l, { key: ev.key, since: t, step: '', action: '', retry: ev.retry });
+      emit({ t, kind: ev.retry ? 'retry' : 'start', key: ev.key, worker: ev.worker,
+        text: `${ev.retry ? `Retry #${ev.retry}: ` : ''}${titleOf(ev.key)}`,
+        dock: `▶ ${ev.retry ? `retry #${ev.retry} ` : ''}[W${ev.worker}] ${shortOf(ev.key)}  ${titleOf(ev.key)}` });
+      break;
+    }
+    case 'stepBegin': {
+      const l = lane(ev.worker);
+      if (l && l.key === ev.key && ev.cat === 'test.step') l.step = ev.title;
+      emit({ t, kind: ev.cat === 'hook' ? 'hook' : 'step', key: ev.key, worker: ev.worker, depth: ev.depth, text: `▸ ${ev.title}`,
+        dock: ev.cat === 'hook' ? null : `   • ${ev.title}` });
+      break;
+    }
+    case 'stepEnd': {
+      const l = lane(ev.worker);
+      const kind = ev.cat === 'pw:api' ? 'action' : ev.cat === 'expect' ? 'expect' : ev.cat === 'hook' ? 'hook' : 'step';
+      if (l && l.key === ev.key && (kind === 'action' || kind === 'expect')) l.action = ev.title;
+      if (ev.error) {
+        emit({ t, kind: 'err', key: ev.key, worker: ev.worker, depth: ev.depth, dur: ev.duration, text: `${ev.title} — ${ev.error}`, dock: `   ✘ ${ev.title}: ${ev.error}` });
+      } else if (kind === 'action' || kind === 'expect') {
+        emit({ t, kind, key: ev.key, worker: ev.worker, depth: ev.depth, dur: ev.duration, text: ev.title, dock: null });
+      } else if (ev.duration > 0) {
+        // End of a step / hook: only its time is new
+        emit({ t, kind, key: ev.key, worker: ev.worker, depth: ev.depth, dur: ev.duration, text: `✓ ${ev.title}`, dock: null });
+      }
+      break;
+    }
+    case 'out':
+      for (const line of ev.text.replace(/\n$/, '').split('\n')) {
+        if (!line.trim()) continue;
+        const k = ev.err ? 'err' : lineKind(line) || (ev.key ? 'out' : 'sys');
+        emit({ t, kind: k, key: ev.key, worker: ev.worker, text: line, dock: `${ev.key ? `   [${shortOf(ev.key)}] ` : ''}${line}` });
+      }
+      break;
+    case 'testEnd': {
+      const status = endStatus(ev);
+      state.statuses[ev.key] = { status, duration: ev.duration, error: ev.error, worker: ev.worker, retry: ev.retry,
+        annotations: ev.annotations, attachments: ev.attachments, at: new Date(t).toISOString() };
+      const l = lane(ev.worker);
+      if (l) {
+        if (l.key === ev.key) { l.time += ev.duration; l.key = null; l.step = ''; l.action = ''; }
+        l.lastKey = ev.key;
+        if (status === 'passed') l.passed++; else if (status === 'flaky') l.flaky++; else if (status === 'skipped') l.skipped++;
+        else if (status !== 'retrying') l.failed++;
+      }
+      if (status !== 'retrying' && status !== 'skipped') state.durations.push(ev.duration);
+      const kind = { passed: 'pass', flaky: 'pass', skipped: 'skip', retrying: 'retry' }[status] || 'fail';
+      const ok = ['passed', 'flaky', 'skipped'].includes(status);
+      emit({ t, kind, key: ev.key, worker: ev.worker, dur: ev.duration,
+        text: `${STATUS_TEXT[status].toUpperCase()}${ev.retrying ? ' — will retry' : ''} · ${titleOf(ev.key)}`,
+        dock: `${ok ? '✓' : '✘'} ${shortOf(ev.key)} ${STATUS_TEXT[status].toLowerCase()} in ${fmtDur(ev.duration)}${ev.retrying ? ' — will retry' : ''}` });
+      for (const a of ev.annotations || []) emit({ t, kind: 'note', key: ev.key, worker: ev.worker, text: `@${a.type}${a.description ? `: ${a.description}` : ''}` });
+      if (ev.error) {
+        const lines = ev.error.split('\n');
+        lines.slice(0, 40).forEach((line, i) => emit({ t, kind: 'err', key: ev.key, worker: ev.worker, depth: 1, text: line, dock: i < 6 ? `     ${line}` : null }));
+        if (lines.length > 40) emit({ t, kind: 'err', key: ev.key, worker: ev.worker, depth: 1, text: `… ${lines.length - 40} more line(s) in the test details`, dock: null });
+      }
+      if ((ev.attachments || []).length) emit({ t, kind: 'note', key: ev.key, worker: ev.worker, text: `Attachments: ${ev.attachments.map((a) => a.name).join(', ')}`, dock: null });
+      break;
+    }
+    case 'error': emit({ t, kind: 'err', text: ev.text }); break;
+    case 'end': emit({ t, kind: ev.status === 'passed' ? 'run' : 'err', text: `Playwright finished: ${ev.status} in ${fmtDur(ev.duration)}` }); break;
+    case 'runEnd':
+      for (const k of state.runKeys) {
+        const s = state.statuses[k];
+        if (s && ['queued', 'running', 'retrying'].includes(s.status)) s.status = ev.result === 'stopped' ? 'interrupted' : 'notrun';
+      }
+      for (const l of Object.values(state.lanes)) { l.key = null; l.step = ''; l.action = ''; }
+      state.runResult = ev.result; state.runEnd = t;
+      setRunning(false);
+      emit({ t, kind: ev.result === 'passed' ? 'pass' : 'fail', text: `══ Run ${ev.result} after ${fmtDur(ev.duration)}` });
+      updateProgress(ev.result);
+      if (!ev.replay) toast(`Run ${ev.result} — ${$('#pPass').textContent} passed, ${$('#pFail').textContent} failed`);
+      break;
+  }
+  if (ev.key) dirty.keys.add(ev.key);
+  if (ev.type === 'runStart' || ev.type === 'runEnd') dirty.full = true;
+  scheduleTick();
+}
+
+// Events are queued and handled in slices of ~12 ms, so a burst (or the replay after a reload)
+// never freezes the page
+const inbox = [];
+let inboxPos = 0;
+let draining = false;
+function drainInbox() {
+  const start = performance.now();
+  while (inboxPos < inbox.length && performance.now() - start < 12) {
+    try { handle(JSON.parse(inbox[inboxPos++])); } catch (e) { console.error(e); }
+  }
+  flushDock();
+  if (inboxPos < inbox.length) return setTimeout(drainInbox, 0);
+  inbox.length = 0;
+  inboxPos = 0;
+  draining = false;
+  // A server started before replayEnd existed never sends it: end the replay once events stop coming
+  if (state.replaying) {
+    clearTimeout(replayTimer);
+    replayTimer = setTimeout(() => { if (state.replaying && !draining) handle({ type: 'replayEnd' }); }, 1000);
+  }
+}
+let replayTimer = null;
+function connect() {
+  const es = new EventSource('/api/events');
+  es.onmessage = (m) => {
+    inbox.push(m.data);
+    if (!draining) { draining = true; setTimeout(drainInbox, 0); }
+  };
+  es.onerror = () => { addDock('Lost the connection to the Test Board server — retrying…', 'err'); flushDock(); };
+}
+
+let toastTimer;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 3500); }
+
+// ── Logs & Files ──
+const FV = { logs: [], sel: new Set(), name: null, groups: new Set(GROUPS.map((g) => g[0])), problems: false, w: '', q: '', offset: 0, limit: 500, matched: 0, live: false };
+const fmtBytes = (n) => n == null ? '' : n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
+const logDate = (name) => { const m = name.match(/run-(\d{4})(\d\d)(\d\d)-(\d\d)(\d\d)(\d\d)/); return m ? new Date(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +m[6])) : null; };
+const RESULT_LOZ = { passed: 'passed', failed: 'failed', stopped: 'interrupted' };
+
+async function loadFiles() {
+  try {
+    const r = await fetch(`/api/files?keepLogs=${$('#fvKeep').value}`);
+    const j = await r.json();
+    FV.logs = j.logs;
+    FV.sel = new Set([...FV.sel].filter((n) => j.logs.some((l) => l.name === n)));
+    renderClean(j.clean, j.running);
+    renderLogTable();
+  } catch (e) { toast(`Could not load the files: ${e.message}`); }
+}
+function renderClean(clean, running) {
+  $('#fvCleanSize').innerHTML = `${esc(clean.size)} <small>in ${clean.items.length} item(s)</small>`;
+  $('#fvCleanText').textContent = clean.items.length ? 'can be removed. The same cleanup runs before every test run (unless "Clean old files first" is off).' : 'Nothing to clean.';
+  $('#fvCleanNow').disabled = !clean.items.length || running;
+  $('#fvCleanNow').title = running ? 'Tests are running — clean up after the run' : '';
+  $('#fvCleanList').innerHTML = clean.items.length ? `<table class="tbl"><tr><th>Path</th><th class="num">Size</th><th>Why</th></tr>${clean.items.slice(0, 300).map((it) =>
+    `<tr><td>${esc(it.path)}</td><td class="num">${fmtBytes(it.bytes)}</td><td>${esc(it.reason)}</td></tr>`).join('')}</table>` : '';
+}
+function renderLogTable() {
+  const logs = FV.logs;
+  $('#fvLogsSub').textContent = logs.length ? `${logs.length} log(s) · ${fmtBytes(logs.reduce((s, l) => s + (l.size || 0), 0))} · test-results/ui-logs` : '';
+  $('#fvDelete').disabled = !FV.sel.size;
+  if (!logs.length) { $('#fvTable').innerHTML = '<tr><td class="empty">No run logs yet. Every run from Test Board writes one.</td></tr>'; return; }
+  const allSel = logs.filter((l) => !l.live).every((l) => FV.sel.has(l.name));
+  $('#fvTable').innerHTML = `<tr><th><input type="checkbox" id="fvAll" ${allSel ? 'checked' : ''}></th><th>Started</th><th>Result</th><th class="num">Tests</th><th class="num">Passed</th><th class="num">Failed</th><th class="num">Flaky</th><th class="num">Skipped</th><th class="num">Stopped</th><th class="num">Duration</th><th>Mode</th><th class="num">Size</th><th></th></tr>`
+    + logs.map((l) => {
+      const d = logDate(l.name);
+      const res = l.live ? lozenge('running') : l.result ? lozenge(RESULT_LOZ[l.result] || 'failed').replace(/>[^<]*</, `>${esc(l.result)}<`) : '<span class="loz s-queued">incomplete</span>';
+      return `<tr class="${FV.name === l.name ? 'cur' : ''}" data-name="${esc(l.name)}">
+        <td>${l.live ? '' : `<input type="checkbox" class="fvcb" ${FV.sel.has(l.name) ? 'checked' : ''}>`}</td>
+        <td>${d ? d.toLocaleString() : esc(l.name)}${l.live ? '<span class="live-tag">LIVE</span>' : ''}</td>
+        <td>${res}</td>
+        <td class="num">${l.tests ?? ''}</td>
+        <td class="num" style="color:var(--c-pass)">${l.passed || ''}</td>
+        <td class="num" style="color:var(--c-fail);font-weight:700">${l.failed || ''}</td>
+        <td class="num">${l.flaky || ''}</td><td class="num">${l.skipped || ''}</td><td class="num">${l.interrupted || ''}</td>
+        <td class="num">${l.duration != null ? fmtDur(l.duration) : ''}</td>
+        <td>${esc(l.mode || '')}</td>
+        <td class="num">${fmtBytes(l.size)}</td>
+        <td class="acts"><button class="btn fvview">View</button> <a class="btn subtle" href="/api/logfile/download?name=${encodeURIComponent(l.name)}" title="Download">⬇</a>${l.live ? '' : ' <button class="btn subtle fvdel" title="Delete">🗑</button>'}</td>
+      </tr>`;
+    }).join('');
+}
+$('#fvTable').addEventListener('click', async (e) => {
+  if (e.target.id === 'fvAll') {
+    for (const l of FV.logs) if (!l.live) e.target.checked ? FV.sel.add(l.name) : FV.sel.delete(l.name);
+    return renderLogTable();
+  }
+  const tr = e.target.closest('tr[data-name]'); if (!tr) return;
+  const name = tr.dataset.name;
+  if (e.target.classList.contains('fvcb')) { e.target.checked ? FV.sel.add(name) : FV.sel.delete(name); $('#fvDelete').disabled = !FV.sel.size; return; }
+  if (e.target.classList.contains('fvdel')) return deleteLogs([name]);
+  if (e.target.closest('a')) return;
+  openLogFile(name);
+});
+async function deleteLogs(names) {
+  if (!names.length || !confirm(`Delete ${names.length} run log(s)? This cannot be undone.`)) return;
+  try {
+    const j = await post('/api/logs/delete', { names });
+    toast(`Deleted ${j.removed.length} log(s)`);
+    for (const n of j.removed) FV.sel.delete(n);
+    if (j.removed.includes(FV.name)) closeLogFile();
+    loadFiles();
+  } catch (e) { toast(e.message); }
+}
+$('#fvDelete').addEventListener('click', () => deleteLogs([...FV.sel]));
+$('#fvRefresh').addEventListener('click', loadFiles);
+$('#fvKeep').addEventListener('change', loadFiles);
+$('#fvCleanShow').addEventListener('click', () => {
+  const l = $('#fvCleanList'); const show = l.style.display === 'none';
+  l.style.display = show ? '' : 'none'; $('#fvCleanShow').textContent = show ? 'Hide items' : 'Show items';
+});
+$('#fvCleanNow').addEventListener('click', async () => {
+  if (!confirm(`Delete ${$('#fvCleanSize').textContent} of old test output now? Run logs beyond the newest ${$('#fvKeep').value} are deleted too.`)) return;
+  try { const j = await post('/api/clean', { keepLogs: $('#fvKeep').value }); toast(`Removed ${j.items.length} item(s), ${j.size}`); loadFiles(); }
+  catch (e) { toast(e.message); }
+});
+
+// Viewer: lines come from the server already filtered and paged, so big logs stay fast
+function fvKinds() {
+  if (FV.problems) return [...PROBLEM_KINDS];
+  return Object.keys(KINDS).filter((k) => FV.groups.has(KINDS[k][1]));
+}
+function fvRow(l) {
+  const kind = KINDS[l.kind] ? l.kind : 'sys';
+  return `<div class="lr k-${kind}"><span class="lt">${esc(l.ts)}</span><span class="lb b-${kind}">${KINDS[kind][0]}</span>`
+    + (l.w != null ? `<span class="lw" style="--c:${wc(l.w)}">W${l.w}</span>` : '<span class="lw none"></span>')
+    + `<span class="lx">${hlq(l.text, FV.q)}</span><span class="ld">#${l.n}</span></div>`;
+}
+function hlq(text, q) {
+  const s = esc(text);
+  if (!q) return s;
+  return s.replace(new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), (m) => `<mark>${m}</mark>`);
+}
+async function fetchLogLines({ tail = false } = {}) {
+  if (!FV.name) return;
+  const params = new URLSearchParams({ name: FV.name, kinds: fvKinds().join(','), w: FV.w, q: FV.q, offset: FV.offset, limit: FV.limit });
+  if (tail) params.set('tail', '1');
+  try {
+    const r = await fetch(`/api/logfile?${params}`);
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error);
+    FV.offset = j.offset; FV.matched = j.matched; FV.live = j.live;
+    const s = j.summary;
+    $('#fvMeta').textContent = `${j.total.toLocaleString()} lines · ${s.tests || 0} tests · ✓ ${s.passed} · ✘ ${s.failed}${s.flaky ? ` · flaky ${s.flaky}` : ''}${s.skipped ? ` · skipped ${s.skipped}` : ''}${j.live ? ' · live' : ''}`;
+    const out = $('#fvOut');
+    out.innerHTML = j.lines.length ? j.lines.map(fvRow).join('') : '<div class="hidden-note">No lines match.</div>';
+    out.scrollTop = tail ? out.scrollHeight : 0;
+    const from = j.matched ? j.offset + 1 : 0, to = j.offset + j.lines.length;
+    $('#fvCount').textContent = `Lines ${from.toLocaleString()}–${to.toLocaleString()} of ${j.matched.toLocaleString()} matching (${j.total.toLocaleString()} in the file)`;
+    $('#fvFirst').disabled = $('#fvPrev').disabled = j.offset <= 0;
+    $('#fvNext').disabled = $('#fvLast').disabled = to >= j.matched;
+  } catch (e) { toast(`Could not read the log: ${e.message}`); }
+}
+function openLogFile(name) {
+  FV.name = name; FV.offset = 0;
+  const d = logDate(name);
+  $('#fvTitle').textContent = `Run log · ${d ? d.toLocaleString() : name}`;
+  $('#fvDownload').href = `/api/logfile/download?name=${encodeURIComponent(name)}`;
+  $('#fvViewer').style.display = '';
+  const n = Math.max(state.orgs.length, 1);
+  $('#fvWorker').innerHTML = '<option value="">All workers</option>' + Array.from({ length: n }, (_, i) => `<option value="${i}">W${i}</option>`).join('');
+  $('#fvWorker').value = FV.w;
+  renderLogTable();
+  fetchLogLines({ tail: true });
+  $('#fvViewer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeLogFile() { FV.name = null; $('#fvViewer').style.display = 'none'; renderLogTable(); }
+function paintFvChips() {
+  $('#fvChips').innerHTML = GROUPS.map(([g, label]) => `<button class="chip ${FV.groups.has(g) ? 'on' : ''}" data-g="${g}">${label}</button>`).join(' ');
+  $('#fvProblems').classList.toggle('on', FV.problems);
+}
+paintFvChips();
+$('#fvChips').addEventListener('click', (e) => {
+  const c = e.target.closest('[data-g]'); if (!c) return;
+  FV.groups.has(c.dataset.g) ? FV.groups.delete(c.dataset.g) : FV.groups.add(c.dataset.g);
+  FV.problems = false; paintFvChips(); FV.offset = 0; fetchLogLines({ tail: true });
+});
+$('#fvProblems').addEventListener('click', () => { FV.problems = !FV.problems; paintFvChips(); FV.offset = 0; fetchLogLines({ tail: true }); });
+$('#fvWorker').addEventListener('change', (e) => { FV.w = e.target.value; fetchLogLines({ tail: true }); });
+let fvSearchTimer;
+$('#fvSearch').addEventListener('input', (e) => { clearTimeout(fvSearchTimer); fvSearchTimer = setTimeout(() => { FV.q = e.target.value.trim(); FV.offset = 0; fetchLogLines(); }, 300); });
+$('#fvFirst').addEventListener('click', () => { FV.offset = 0; fetchLogLines(); });
+$('#fvPrev').addEventListener('click', () => { FV.offset = Math.max(0, FV.offset - FV.limit); fetchLogLines(); });
+$('#fvNext').addEventListener('click', () => { FV.offset += FV.limit; fetchLogLines(); });
+$('#fvLast').addEventListener('click', () => fetchLogLines({ tail: true }));
+$('#fvClose').addEventListener('click', closeLogFile);
+// A live log on its last page follows the run
+setInterval(() => {
+  if (state.view === 'files' && FV.name && FV.live && FV.offset + FV.limit >= FV.matched) fetchLogLines({ tail: true });
+}, 3000);
+
+// Run-bar options are remembered; both clean-ups are on unless switched off
+$('#cleanup').checked = prefs.cleanup !== false;
+$('#cleanFiles').checked = prefs.cleanFiles !== false;
+$('#cleanup').addEventListener('change', savePrefs);
+$('#cleanFiles').addEventListener('change', savePrefs);
+
+// ── Theme ──
+function paintTheme() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  $('#themeBtn').textContent = dark ? '☀️' : '🌙';
+  $('#themeBtn').title = dark ? 'Switch to the light theme' : 'Switch to the dark theme';
+}
+$('#themeBtn').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('tb-theme', next); } catch {}
+  paintTheme();
+});
+paintTheme();
+
+// ── Load ──
+async function load(refresh) {
+  $('#content').innerHTML = '<div class="empty">Loading the test files…</div>';
+  try {
+    const r = await fetch('/api/tests' + (refresh ? '?refresh=1' : ''));
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error);
+    decorate(j.tests);
+    state.tests = j.tests;
+    state.byKey = new Map(j.tests.map((t) => [t.key, t]));
+    state.orgs = j.orgs || [];
+    state.runWorkers = state.orgs.length || 1;
+    state.statuses = { ...j.statuses, ...Object.fromEntries(Object.entries(state.statuses).filter(([, v]) => ['queued', 'running', 'retrying'].includes(v.status))) };
+    state.selected = new Set([...state.selected].filter((k) => state.byKey.has(k)));
+    const tags = [...new Set(j.tests.flatMap((t) => t.tags))].sort();
+    $('#labelFilter').innerHTML = '<option value="">All labels</option>' + tags.map((g) => `<option value="${esc(g)}">${esc(g.replace(/^@/, ''))}</option>`).join('');
+    const wsel = $('#workers'), wcur = wsel.value;
+    wsel.innerHTML = `<option value="">Auto (${state.orgs.length || 1})</option>` + Array.from({ length: Math.max(1, state.orgs.length) }, (_, i) => `<option>${i + 1}</option>`).join('');
+    wsel.value = wcur;
+    fillWorkerSelect();
+    render();
+    if (refresh) toast(`Reloaded ${j.tests.length} tests`);
+  } catch (e) {
+    $('#content').innerHTML = `<div class="empty">Could not load the tests:<br><pre style="text-align:left;white-space:pre-wrap">${esc(e.message)}</pre></div>`;
+  }
+}
+load().then(() => {
+  if (prefs.view) setView(prefs.view);
+  connect();
+});
+</script>
+</body>
+</html>

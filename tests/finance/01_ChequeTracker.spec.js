@@ -14,7 +14,7 @@
 //   npx playwright test tests/finance/01_ChequeTracker.spec.js --grep @cheque
 // ═════════════════════════════════════════════════════════════════════════
 
-const { test, expect } = require('../../fixtures/base-test');
+const { test, expect, bugCheck } = require('../../fixtures/base-test');
 const { ChequeTrackerPage } = require('../../pages/finance/ChequeTrackerPage');
 const { paymentDate } = require('../../pages/sales/SalesInvoicePaymentPage');
 const { addDays } = require('../../pages/sales/SalesInvoiceEditPage');
@@ -192,7 +192,10 @@ test.describe('Cheque Tracker', () => {
     await ct.openTracker();
     const msg = await ct.moveTo('Deposited', [future.chequeNo, today.chequeNo]);
     expect(await ct.chequeRow(today.chequeNo, 'Deposited'), 'today\'s cheque moved').toBeTruthy();
-    expect(await ct.chequeRow(future.chequeNo), `future cheque stays in hand ("${msg}")`).toBeTruthy();
+    // QA (BUG-CT-05): a bulk move also moves the future-dated cheque out of In Hand
+    await bugCheck('BUG-CT-05', 'future-dated cheque is moved by a bulk Move To', async () => {
+      expect(await ct.chequeRow(future.chequeNo), `future cheque stays in hand ("${msg}")`).toBeTruthy();
+    });
   });
 
   test('TC12 - Move to with no cheque selected does nothing (or asks to select a cheque)', { tag: T, annotation: { type: 'cases', description: 'CT TC-CIH-08, TC-MT-06' } }, async ({ page }) => {

@@ -5,6 +5,7 @@ const { LoginPage, defaultLoginData } = require('../pages/common/LoginPage');
 const { ORGS } = require('../test-data/UserData');
 const { STORAGE_STATE, ORG_FILE } = require('./auth');
 const { TIMEOUTS } = require('./timeouts');
+const { cleanOutputs, formatBytes } = require('../utils/cleanOutputs');
 
 /**
  * Log in once per run, switch into every test org (ORG_NAMES) once, and save the session plus
@@ -30,7 +31,22 @@ function freshStateExists() {
   }
 }
 
+// Old test output (debug folders, old run logs) is removed before the tests start.
+// CLEAN_BEFORE_RUN=false skips it; CLEAN_KEEP_LOGS sets how many run logs stay (default 20).
+// Files changed in the last 10 minutes stay, in case another run is going on at the same time.
+function cleanOldOutput() {
+  if (process.env.CLEAN_BEFORE_RUN === 'false') return;
+  try {
+    const keepLogs = Number(process.env.CLEAN_KEEP_LOGS) || 20;
+    const { items, bytes } = cleanOutputs({ keepLogs, minAgeMs: 10 * 60 * 1000 });
+    if (items.length) console.log(`[clean] removed ${items.length} old output item(s), ${formatBytes(bytes)}`);
+  } catch (e) {
+    console.log(`[clean] skipped: ${e.message}`);
+  }
+}
+
 module.exports = async () => {
+  cleanOldOutput();
   if (freshStateExists()) {
     console.log(`[auth] reusing session ${path.relative(process.cwd(), STORAGE_STATE)}`);
     return;

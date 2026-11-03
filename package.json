@@ -6,7 +6,10 @@
   "directories": {
     "test": "tests"
   },
-  "scripts": {},
+  "scripts": {
+    "ui": "bun ui/server.js",
+    "ui:node": "node ui/server.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/santhoshvgts/yolo-playwright-automation.git"

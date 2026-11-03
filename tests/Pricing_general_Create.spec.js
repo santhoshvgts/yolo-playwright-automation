@@ -3,6 +3,8 @@ const { Pricing_general_Create } = require('../pages/Pricing_general_Create');
 const { generatePricing_general_CreateData } = require('../test-data/Pricing_Create-data');
 const { LoginFlow } = require('../pages/LoginFlow');
 const { URLS } = require('../config/urls');
+const { PricingPage } = require('../pages/inventory/PricingPage');
+const { STORAGE_STATE } = require('../config/auth');
 
 const moduleName = 'Pricing_general_Create';
 
@@ -18,6 +20,17 @@ test.describe(moduleName, () => {
   test.describe.configure({ mode: 'default' });
   test.beforeEach(async ({ page }) => {
     await new LoginFlow(page, URLS.base).loginAndSelectOrg(data);
+  });
+
+  // The lists made here are General / Category / Profile wise at 42–50 %; left active, they re-price every later
+  // sales invoice in the org. Switch every "Price List …" list off again (saved session, this worker's org).
+  test.afterAll(async ({ browser }) => {
+    test.setTimeout(600_000);
+    const context = await browser.newContext({ storageState: STORAGE_STATE });
+    const pl = new PricingPage(await context.newPage());
+    await pl.open();
+    await pl.deactivateAll('Price List ');
+    await context.close();
   });
 
   test('TC01 - Create a General price list with Overall Markup', { annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {

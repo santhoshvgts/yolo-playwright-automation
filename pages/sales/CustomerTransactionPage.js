@@ -3,6 +3,7 @@
 const { expect } = require('@playwright/test');
 const { SalesInvoicePaymentPage } = require('./SalesInvoicePaymentPage');
 const { money } = require('../../utils/stockMath');
+const { textIs } = require('../../utils/testHelpers');
 
 const amount = (t) => (/^\s*-?\s*$/.test(String(t)) ? 0 : money(t));
 
@@ -16,7 +17,7 @@ class CustomerTransactionPage extends SalesInvoicePaymentPage {
   constructor(page) {
     super(page);
     this.customerTab = this.page.locator('#btn_customer');   // a 'Customer' button can also show on the page
-    this.customerLink = (name) => this.loc(`//div[text()="${name}"]`);
+    this.customerLink = (name) => this.loc(`//div[${textIs(name)}]`);
     this.viewDetailsBtn = this.page.getByRole('button', { name: 'View Details' });
     this.customerTabButton = (name) => this.page.getByRole('tab', { name, exact: true });
     this.visibleRows = this.page.locator('table tbody tr.ant-table-row').filter({ visible: true });

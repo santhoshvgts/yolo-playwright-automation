@@ -13,7 +13,7 @@ const WAIT = {
 };
 const { adminData, appUrls, masterData } = require('../../test-data/UserData');
 const fs = require('fs');
-const { ORG_FILE } = require('../../config/auth');
+const { ORG_FILE, STORAGE_STATE } = require('../../config/auth');
 
 const DEFAULT_BASE_URL = appUrls.invoice;
 
@@ -191,9 +191,39 @@ class LoginPage extends BasePage {
     console.log(`Opening ${app} app...`);
     this.baseUrl = url;
     if (app === 'invoice' && await this.openSavedOrg()) return;
+    // Each login ends the account's other sessions, so take a session another test has already renewed first
+    if (app === 'invoice' && savedOrgId() && await this.adoptSavedSession() && await this.openSavedOrg()) return;
     await this.ensureLoggedIn(data);
     const host = new URL(url).host.replace(/\./g, '\\.');
     await expect(this.page).toHaveURL(new RegExp(host), { timeout: WAIT.navigation });
+    if (app === 'invoice' && savedOrgId()) await this.saveSession();
+  }
+
+  /** Load STORAGE_STATE's cookies into this context when they differ from ours (another test logged in since). */
+  async adoptSavedSession() {
+    try {
+      const { cookies = [] } = JSON.parse(fs.readFileSync(STORAGE_STATE, 'utf8'));
+      const mine = new Set((await this.page.context().cookies()).map((c) => `${c.name}=${c.value}`));
+      if (cookies.every((c) => mine.has(`${c.name}=${c.value}`))) return false;
+      await this.page.context().addCookies(cookies);
+      console.log('Saved session: trying the session another test saved');
+      return true;
+    } catch { return false; }
+  }
+
+  /**
+   * The saved session was dropped (the server ends it when the account logs in elsewhere): hand the new one to
+   * the tests after this one — every test of every worker loads STORAGE_STATE — instead of each logging in again.
+   */
+  async saveSession() {
+    const tmp = `${STORAGE_STATE}.${process.pid}.tmp`;
+    try {
+      await this.page.context().storageState({ path: tmp });
+      fs.renameSync(tmp, STORAGE_STATE);   // whole-file swap: a test starting now never reads half a file
+      console.log('Saved the new session for the next tests');
+    } catch (e) {
+      console.log(`Could not save the new session: ${e.message.slice(0, 80)}`);
+    }
   }
 
   /**

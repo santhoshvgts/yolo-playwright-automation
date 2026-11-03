@@ -38,7 +38,7 @@ test.describe('Price List', () => {
   // Safety net: no list created here may stay active (it would change other suites' invoice rates)
   test.afterEach(async () => {
     // Deactivate what this test made by name, then every active "ZZ PL" entry (duplicate names included)
-    if (created.length) await pl.deactivateCreated(created, 'ZZ PL').catch((e) => console.log(`cleanup failed: ${e.message.slice(0, 80)}`));
+    if (created.length) await pl.cleanupCreated(created, 'ZZ PL');
   });
 
   const uniq = () => `${Date.now().toString(36).slice(-5)}${Math.floor(Math.random() * 90 + 10)}`;
@@ -137,9 +137,11 @@ test.describe('Price List', () => {
     await pl.fillList({ name: one, rate: 1 });
     const r = await pl.trySaveList();
     console.log(`1-character name: ${r.saved ? 'saved' : r.errors.join(' | ')}`);
-    // "Z" is outside the "ZZ PL" cleanup, and an active 1 % list for All marks up every later invoice
-    if (r.saved) await pl.deactivateAll(one, { exact: true });
-    else { created.pop(); await pl.discardList(); }
+    // "Z" is outside the "ZZ PL" cleanup, and an active 1 % list for All marks up every later invoice — so sweep it
+    // unless the form showed a real error (a refusal with no message may still have saved)
+    if (!r.saved) await pl.discardList();
+    if (r.saved || !r.errors.length) await pl.deactivateAll(one, { exact: true });
+    if (!r.saved) created.pop();
   });
 
   // QA (BUG-PLO-01): there is no duplicate-name check for price lists (current flow).

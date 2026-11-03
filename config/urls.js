@@ -13,8 +13,16 @@
 
 const BASE = (process.env.BASE_URL || 'https://invoice.test.vgts.xyz').replace(/\/+$/, '');
 
-// Org the suite runs against. Its id is part of every in-app path.
-const ORG_ID = process.env.ORG_ID || '2d9d0527d0d94b1ab010cc24eca9a5ab';
+// Org the suite runs against. Its id is part of every in-app path. With several test orgs (ORG_NAMES) each
+// worker has its own: config/global-setup.js saves name → id to ORG_FILE, so read this worker's org from there.
+const workerOrgId = () => {
+  try {
+    const { masterData } = require('../test-data/UserData');
+    const { ORG_FILE } = require('./auth');
+    return JSON.parse(require('fs').readFileSync(ORG_FILE, 'utf8')).orgIds[masterData.organization] || '';
+  } catch { return ''; }
+};
+const ORG_ID = process.env.ORG_ID || workerOrgId() || '2d9d0527d0d94b1ab010cc24eca9a5ab';
 
 // Paths, relative to BASE — usable directly with page.goto() thanks to baseURL.
 const PATHS = {

@@ -4,6 +4,7 @@ const { expect } = require('@playwright/test');
 const { AppBasePage } = require('../base/app-base-page');
 const { saveSection, requireSection } = require('../../utils/flowStore');
 const { toNumber, expectClose } = require('../../utils/stockMath');
+const { textIs } = require('../../utils/testHelpers');
 
 // Rundata section when the caller's data has no `section` (the old serial spec's name).
 const DEFAULT_SECTION = 'customerPaymentData';
@@ -36,7 +37,7 @@ class CustomerPaymentPage extends AppBasePage {
     this.salesInvoiceTab = this.loc('//div[@id="tab_sales_invoice"]');
 
     // ── Customer profile (list → profile header) ───────────────────────────
-    this.customerProfile = (name) => this.loc(`//div[text()="${name}"]`);
+    this.customerProfile = (name) => this.loc(`//div[${textIs(name)}]`);
     // BRITTLE: cusDue — CSS-module hashed class (_14rpb_61) + nth-child
     this.cusDue = this.loc('._customer_info_header_content_value_14rpb_61 > :nth-child(2) > div');
     // BRITTLE: cusAdvance — long inline style-attribute selector
@@ -55,7 +56,7 @@ class CustomerPaymentPage extends AppBasePage {
     // ── New Payment Received ───────────────────────────────────────────────
     this.newPaymentBtn   = this.loc('//span[text()="New Payment Received "]');
     this.customerSelect  = this.page.locator('#si_select_cus');
-    this.customerOption  = (name) => this.loc(`//div[text()='${name}']`);
+    this.customerOption  = (name) => this.loc(`//div[${textIs(name)}]`);
     this.proceedBtn      = this.loc('//span[text()="Next"]');
     // BRITTLE: paymentScreenDue — inline style-attribute selector + nth-child
     this.paymentScreenDue = this.loc('[style="display: flex; justify-content: space-between;"] > :nth-child(2) > div');

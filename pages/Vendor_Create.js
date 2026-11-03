@@ -21,7 +21,7 @@ class Vendor_Create extends SelfHealingBasePage {
     this.cosmeticsOptionBusinessType = this.page.getByTitle('Cosmetics', { exact: true });
     this.businessTagDropdown = this.page.locator('.ant-select-selection-overflow');
     this.addBusinessTagButton = this.page.getByRole('button', { name: 'Add Business Tag' });
-    this.selectTagOption = this.page.getByText('Tag XJ13OP');
+    this.selectTagOption = this.page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option').first();   // any business tag — 'Tag XJ13OP' exists only in the first test org
     this.tagNameField = this.page.getByRole('dialog').filter({ hasText: 'CloseSaveCreate Business' }).locator('#name');
     this.tagDescriptionField = this.page.getByRole('textbox', { name: 'Description' });
     this.tagSaveButton = this.page.getByRole('button', { name: 'Save' }).nth(1);
@@ -81,7 +81,7 @@ class Vendor_Create extends SelfHealingBasePage {
 
     // Edit Tags
     this.businessTagDropdown = this.page.locator('.ant-select-selection-overflow');
-    this.tagOption = this.page.getByText('Tag XJ13OP');
+    this.tagOption = this.page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option').first();   // any business tag — 'Tag XJ13OP' exists only in the first test org
 
     // Edit PAN
     this.panButton = this.page.locator('div:nth-child(9) > .ant-btn');

@@ -1,1 +1,173 @@
-{}
+{
+  "siEditFlowItems": {
+    "items": [
+      {
+        "itemName": "TCE-A 8rBvl0",
+        "baseUnit": "pcs",
+        "price": 100,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-B MLM94D",
+        "baseUnit": "pcs",
+        "price": 250,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-C lDicDF",
+        "baseUnit": "pcs",
+        "price": 40,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      },
+      {
+        "itemName": "TCE-D RzCc9D",
+        "baseUnit": "pcs",
+        "price": 75,
+        "conversions": {
+          "pcs": 1
+        },
+        "openingStock": 100000
+      }
+    ],
+    "updatedAt": "2026-11-03T11:19:42.879Z"
+  },
+  "flowItemCreateData": {
+    "productName": "Soft Gold Tuna mzze",
+    "productDescription": "Savor the crunchy essence in our Ball, designed for simple culinary adventures",
+    "salePricePerPcs": "17",
+    "updatedAt": "2026-11-03T08:30:06.118Z"
+  },
+  "unitPurchaseData": {
+    "itemName": "Handcrafted Metal Fish hWRt",
+    "boxconversion": 9,
+    "bundleconversion": 9,
+    "updatedAt": "2026-11-02T10:18:34.488Z",
+    "newtotalqty": 1922.86,
+    "initialtotalqty": 0,
+    "updatedTotalqty": 1869.73,
+    "editTotalqty": 1869.73,
+    "finalTotalqty": 0,
+    "billNo": "PINV-AUTO/0027",
+    "vbExistingDue": 23613806.46,
+    "vbExistingAdvance": 2,
+    "vbExistingClosing": 23613804.46,
+    "piAmount": 7754.16,
+    "edpiAmount": 3372.54,
+    "vbUpdatedDue": 23617179
+  },
+  "Product_item_Create:generateProduct_item_CreateData": {
+    "emailId": "santhosh@yoloworks.com",
+    "password": "***REDACTED***",
+    "searchByNameOrGST": "auto",
+    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "compello",
+    "productDescription": "Earum concido aliquam cenaculum adaugeo.",
+    "salePricePerPcs": "463",
+    "quantity": "8",
+    "productName2": "desino",
+    "productDescription2": "Cras curtus tantillus ter aestas.",
+    "salePricePerUnit": "906",
+    "updatedAt": "2026-11-02T10:20:08.466Z"
+  },
+  "productItemCreateData": {
+    "productName": "compello",
+    "productDescription": "Earum concido aliquam cenaculum adaugeo.",
+    "salePricePerPcs": "463",
+    "updatedAt": "2026-11-02T10:20:54.419Z"
+  },
+  "Business_Vendor_withGST": {
+    "vendorOrganisationName": "Dach LLC",
+    "openingBalance": "81867",
+    "organisationMobileNo": "5660160634",
+    "organisationEmail": "Clementina_Powlowski19@gmail.com",
+    "gstValue": "24AAAGM0289C1ZP",
+    "updatedAt": "2026-11-02T10:23:32.467Z",
+    "editedVendorOrganisationName": "Ellie Cormier",
+    "editedopeningBalance": "81867",
+    "editedOrganisationMobileNo": "1584085864",
+    "editedOrganisationEmail": "Garnett.Lubowitz42@gmail.com"
+  },
+  "Business_Vendor_withoutGST": {
+    "vendorOrganisationName": "Kutch Gislason",
+    "openingBalance": "1957.0299207530697",
+    "organisationMobileNo": "0968157101",
+    "organisationEmail": "Hester.Hintz51@hotmail.com",
+    "updatedAt": "2026-11-02T10:22:19.423Z"
+  },
+  "Individual_Vendor": {
+    "vendorName": "Ms Aglae Cassin",
+    "openingBalance": "81867",
+    "mobileNo": "0952816675",
+    "organisationEmail": "Sonny.Bergstrom32@hotmail.com",
+    "updatedAt": "2026-11-02T10:22:43.659Z"
+  },
+  "purchaseFlowData": {
+    "itemName": "Handmade Concrete Mouse vlVM",
+    "boxconversion": 20,
+    "bundleconversion": 20,
+    "updatedAt": "2026-11-03T06:37:42.257Z",
+    "newtotalqty": 6850.93,
+    "initialtotalqty": 0,
+    "updatedTotalqty": 6170.42,
+    "editTotalqty": 6170.42,
+    "finalTotalqty": 0,
+    "billNo": "PINV-AUTO/0027",
+    "vbExistingDue": 23613846.46,
+    "vbExistingAdvance": 2,
+    "vbExistingClosing": 23613844.46,
+    "piAmount": 2326.24,
+    "edpiAmount": 5557.81,
+    "vbUpdatedDue": 23619404.27
+  },
+  "salesFlowData": {
+    "itemName": "Rustic Concrete Salad LZcj",
+    "boxconversion": 12,
+    "bundleconversion": 12,
+    "updatedAt": "2026-11-03T07:29:03.002Z",
+    "newtotalqty": 1160.91,
+    "initialtotalqty": 1300,
+    "updatedTotalqty": 1153.15,
+    "editTotalqty": 146.85,
+    "finalTotalqty": 1300,
+    "billNo": "SINV-AUTO/0038",
+    "endTotalqty": 1300,
+    "cbExistingDue": 70195.82,
+    "cbExistingAdvance": 71250,
+    "cbExistingClosing": -1054.179999999993,
+    "siAmount": 2392.66,
+    "edsiAmount": 2140.16,
+    "cbUpdatedDue": 72335.98,
+    "cbFinalAdvance": 71250,
+    "cbFinalClosing": -1054.18
+  },
+  "unitSalesData": {
+    "itemName": "Soft Gold Tuna mzze",
+    "boxconversion": 14,
+    "bundleconversion": 14,
+    "updatedAt": "2026-11-03T08:37:32.571Z",
+    "newtotalqty": 1318.65,
+    "initialtotalqty": 1500,
+    "updatedTotalqty": 1297.07,
+    "editTotalqty": 202.93,
+    "finalTotalqty": 1500,
+    "billNo": "SINV-AUTO/0085",
+    "endTotalqty": 1500,
+    "cbExistingDue": 99089.21,
+    "cbExistingAdvance": 72076,
+    "cbExistingClosing": 27013.210000000006,
+    "siAmount": 2729.66,
+    "edsiAmount": 1629.53,
+    "cbUpdatedDue": 100718.74,
+    "cbFinalAdvance": 72076,
+    "cbFinalClosing": 27013.21
+  }
+}

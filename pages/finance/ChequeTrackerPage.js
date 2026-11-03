@@ -61,14 +61,27 @@ class ChequeTrackerPage extends SalesInvoicePaymentPage {
   async searchCt(text) {
     await this.fillInto(this.ctSearch, text);
     await this.settle(2500, 'cheque search');
-    return this.readCtRows();
+    // The search is debounced: right after the settle the tab can still show its unfiltered rows or a spinner
+    const want = String(text).trim().toLowerCase();
+    let rows = [];
+    await expect.poll(async () => {
+      rows = await this.readCtRows();
+      if (await this.page.locator('.ant-spin-spinning').count()) return false;
+      if (rows.length) return !want || rows.every((r) => Object.values(r).join(' ').toLowerCase().includes(want));
+      return (await this.page.locator('.ant-empty').filter({ visible: true }).count()) > 0;
+    }, { timeout: 15_000 }).toBe(true).catch(() => console.log(`Cheque search "${text}" did not settle — using what is shown`));
+    return rows;
   }
 
-  /** The row of `chequeNo` on `tab` (null when absent). */
+  /** The row of `chequeNo` on `tab` (null when absent). A just-moved cheque can take a moment to reach its tab. */
   async chequeRow(chequeNo, tab = 'Cheque In Hand') {
-    await this.openTracker(tab);
-    const rows = await this.searchCt(chequeNo);
-    return rows.find((r) => r['Cheque Number'] === String(chequeNo)) || null;
+    for (let attempt = 1; ; attempt++) {
+      await this.openTracker(tab);
+      const row = (await this.searchCt(chequeNo)).find((r) => r['Cheque Number'] === String(chequeNo));
+      if (row || attempt === 3) return row || null;
+      console.log(`Cheque ${chequeNo} not on ${tab} yet — looking again`);
+      await this.page.waitForTimeout(3000);
+    }
   }
 
   /** Which tab holds the cheque now. */

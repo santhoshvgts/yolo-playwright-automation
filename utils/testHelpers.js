@@ -65,4 +65,12 @@ async function capturePrint(page, click) {
   return { popup: !!p, download: !!dl, print };
 }
 
-module.exports = { runSafely, step, isStrict, capturePrint };
+/**
+ * XPath predicate: the node's own text is `name`, ignoring case and outer spaces. Master data is typed by hand in
+ * each test org, so the same customer can be "saravana store" in one org and "Saravana store" in another.
+ */
+function textIs(name) {
+  return `translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='${String(name).trim().toLowerCase()}'`;
+}
+
+module.exports = { runSafely, step, isStrict, capturePrint, textIs };

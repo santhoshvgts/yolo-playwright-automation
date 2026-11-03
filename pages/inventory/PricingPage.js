@@ -174,7 +174,13 @@ class PricingPage extends SalesInvoiceEditPage {
       return { saved: false, errors: ['Save disabled'], message: 'Save disabled' };
     }
     await this.plSave.click();
-    const saved = await this.plToast.filter({ hasText: /success/i }).first().waitFor({ timeout: 10_000 }).then(() => true, () => false);
+    // Under load the success message can come late, or be gone before it is seen — leaving the form also means saved.
+    // A "refused" that was really saved leaves an active list nobody cleans up (it re-prices every later invoice).
+    let saved = false;
+    await expect.poll(async () => {
+      saved = (await this.plToast.filter({ hasText: /success/i }).count()) > 0 || !this.formUrl.test(this.page.url());
+      return saved || (await this.plErrors.count()) > 0;
+    }, { timeout: 20_000 }).toBe(true).catch(() => {});
     const errors = await this.plErrors.allInnerTexts().catch(() => []);
     const message = (await this.plToast.allInnerTexts().catch(() => [])).join(' | ');
     console.log(`Price list save ${saved ? 'accepted' : 'refused'}: ${errors.join(' | ') || message || 'no message'}`);
@@ -232,28 +238,39 @@ class PricingPage extends SalesInvoiceEditPage {
   /** Deactivate every active list whose name starts with `prefix` (or is exactly it with { exact: true }), all pages. */
   async deactivateAll(prefix, { exact = false } = {}) {
     const match = (name) => (exact ? name === prefix : name.startsWith(prefix));
-    let n = 0;
-    for (let round = 0; round < 40; round++) {
+    let n = 0; let stuck = 0;
+    const next = this.page.locator('li.ant-pagination-next').filter({ visible: true }).first();
+    // A re-opened view is not found again in place, so reload the list after each switch — straight back to the
+    // page being worked on (an org can hold hundreds of old lists). Sweep again while the last sweep switched
+    // something off, in case the table re-sorted.
+    const backTo = async (pageNo) => {
       await this.searchLists(prefix);
-      let hit = -1;
-      for (let pageNo = 0; pageNo < 30; pageNo++) {
-        const rows = await this.readRows();
-        hit = rows.findIndex((r) => r[3] === 'Active' && match(r[0]));
-        if (hit >= 0) break;
-        const next = this.page.locator('li.ant-pagination-next').filter({ visible: true }).first();
+      for (let p = 0; p < pageNo; p++) { await next.click(); await this.settle(800, 'next page'); }
+    };
+    for (let sweep = 0, before = -1; sweep < 5 && n !== before; sweep++) {
+      before = n;
+      await this.searchLists(prefix);
+      for (let pageNo = 0; pageNo < 60; pageNo++) {
+        const tried = new Set();
+        for (let first = true; ; first = false) {
+          if (!first) await backTo(pageNo);
+          const rows = await this.readRows();
+          const hit = rows.findIndex((r, i) => !tried.has(i) && r[3] === 'Active' && match(r[0]));
+          if (hit < 0) break;
+          tried.add(hit);
+          await this.plRows.nth(hit).locator('td').first().click({ force: true });
+          await expect(this.plDrawer).toBeVisible();
+          await this.settle(1500, 'view');
+          // One list that will not switch off must not stop the clean-up of the others
+          if (await this._setSwitch(false).catch((e) => { stuck += 1; console.log(`"${rows[hit][0]}" did not switch off: ${e.message.split('\n')[0]}`); return false; })) n += 1;
+          await this.page.keyboard.press('Escape');
+        }
         if (!(await next.count()) || (await next.getAttribute('aria-disabled')) === 'true') break;
         await next.click();
         await this.settle(1500, 'next page');
       }
-      if (hit < 0) break;
-      await this.plRows.nth(hit).locator('td').first().click({ force: true });
-      await expect(this.plDrawer).toBeVisible();
-      await this.settle(1500, 'view');
-      if (await this._setSwitch(false)) n += 1;
-      await this.page.keyboard.press('Escape');
-      await this.settle(800, 'view closed');
     }
-    console.log(`Deactivated ${n} "${prefix}" entr${n === 1 ? 'y' : 'ies'}`);
+    console.log(`Deactivated ${n} "${prefix}" entr${n === 1 ? 'y' : 'ies'}${stuck ? ` (${stuck} would not switch off)` : ''}`);
     return n;
   }
 
@@ -271,6 +288,22 @@ class PricingPage extends SalesInvoiceEditPage {
       if (row?.status === 'Active') await this.setActive(name, false);
     }
     if (prefix) await this.deactivateAll(prefix);
+  }
+
+  /**
+   * afterEach safety net: deactivateCreated, and when the app stalls (slow server, lost session) reopen it and try
+   * once more — a list left active here re-prices every later invoice of the org.
+   */
+  async cleanupCreated(names, prefix) {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        if (attempt > 1) await this.open();
+        await this.deactivateCreated(names, prefix);
+        return;
+      } catch (e) {
+        console.log(`cleanup attempt ${attempt} failed: ${e.message.slice(0, 80)}`);
+      }
+    }
   }
 
   async editList(name) {

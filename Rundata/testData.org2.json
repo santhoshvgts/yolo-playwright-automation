@@ -2,7 +2,7 @@
   "siEditFlowItems": {
     "items": [
       {
-        "itemName": "TCE-A lPX9qv",
+        "itemName": "TCE-A 9qdu43",
         "baseUnit": "pcs",
         "price": 100,
         "conversions": {
@@ -11,7 +11,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-B aDFXN4",
+        "itemName": "TCE-B mgEQ55",
         "baseUnit": "pcs",
         "price": 250,
         "conversions": {
@@ -20,7 +20,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-C rRk1cw",
+        "itemName": "TCE-C NBq6in",
         "baseUnit": "pcs",
         "price": 40,
         "conversions": {
@@ -29,7 +29,7 @@
         "openingStock": 100000
       },
       {
-        "itemName": "TCE-D o3AJEn",
+        "itemName": "TCE-D 3v2aWV",
         "baseUnit": "pcs",
         "price": 75,
         "conversions": {
@@ -38,6 +38,200 @@
         "openingStock": 100000
       }
     ],
-    "updatedAt": "2026-10-30T07:26:38.948Z"
+    "updatedAt": "2026-11-03T07:13:49.954Z"
+  },
+  "customerPaymentData": {
+    "paymentNumber": "",
+    "existingDue": 1392234.91,
+    "existingAdvance": 944,
+    "existingClosingBalance": 1391290.91,
+    "amtReceived": 29139,
+    "amtUsedForPayment": 29139,
+    "excessAmt": 0,
+    "updatedAt": "2026-11-03T11:16:18.342Z",
+    "updatedamtReceived": 32686,
+    "updatedamtUsedForPayment": 32686,
+    "updatedexcessAmt": 0
+  },
+  "flowItemCreateData": {
+    "productName": "Frozen Cotton Car wPBO",
+    "productDescription": "Experience the grey brilliance of our Mouse, perfect for immediate environments",
+    "salePricePerPcs": "29",
+    "updatedAt": "2026-11-03T08:29:43.443Z"
+  },
+  "salesFlowData": {
+    "itemName": "Handmade Granite Pizza kBeC",
+    "boxconversion": 13,
+    "bundleconversion": 13,
+    "updatedAt": "2026-11-02T08:36:40.405Z"
+  },
+  "unitCustomerPaymentData": {
+    "billNo": "SINV-AUTO/0111",
+    "invoiceStatus": "7 days due",
+    "updatedAt": "2026-11-02T10:11:36.039Z",
+    "dueAmtinSIpreview": 236,
+    "amountEntered3": 236
+  },
+  "GeneralOverallMarkupPricing": {
+    "priceListName": "Price List Recycled Gold Car",
+    "customRate": "42",
+    "updatedAt": "2026-11-02T10:19:10.149Z",
+    "editedPriceListName": "Price List Sleek Rubber Pizza",
+    "editedCustomRate": "50"
+  },
+  "GeneralOverallMarkdownPricing": {
+    "priceListName": "Price List Refined Bronze Keyboard",
+    "customRate": "42",
+    "updatedAt": "2026-11-02T10:19:42.712Z",
+    "editedPriceListName": "Price List Frozen Marble Bike",
+    "editedCustomRate": "50"
+  },
+  "GeneralItemSpecificPricing": {
+    "priceListName": "Price List Handcrafted Plastic Pizza",
+    "customRate": "42",
+    "itemName": "TestProduct",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-11-02T10:20:18.391Z",
+    "editedPriceListName": "Price List Licensed Bronze Towels",
+    "editedCustomRate": "50",
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
+  },
+  "GeneralItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Modern Plastic Chips",
+    "customRate": "42",
+    "itemName": "TestProduct",
+    "itemAmount": "100",
+    "updatedAt": "2026-11-02T10:20:58.227Z",
+    "editedAutoCalculatePriceListName": "Price List Rustic Silk Chair",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM1": "500",
+    "editedAutoCalculatePrimaryUOM2": "600",
+    "editedAutoCalculatePrimaryUOM3": "700"
+  },
+  "CategoryWiseOverallMarkupPricing": {
+    "priceListName": "Price List Intelligent Gold Shoes",
+    "customRate": "42",
+    "updatedAt": "2026-11-02T10:21:27.741Z",
+    "editedPriceListName": "Price List Tasty Silk Table",
+    "editedCustomRate": "50"
+  },
+  "CategoryWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Sleek Silk Salad",
+    "customRate": "42",
+    "updatedAt": "2026-11-02T10:22:35.307Z",
+    "editedPriceListName": "Price List Awesome Cotton Bacon",
+    "editedCustomRate": "50"
+  },
+  "CategoryWiseItemSpecificPricing": {
+    "priceListName": "Price List Luxurious Ceramic Shoes",
+    "customRate": "42",
+    "itemName": "TestProduct",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-11-02T10:22:58.551Z",
+    "editedPriceListName": "Price List Fresh Granite Gloves",
+    "editedCustomRate": "50",
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
+  },
+  "CategoryWiseItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Handcrafted Aluminum Chips",
+    "customRate": "42",
+    "itemName": "TestProduct",
+    "itemAmount": "100",
+    "updatedAt": "2026-11-02T10:23:20.110Z",
+    "editedAutoCalculatePriceListName": "Price List Soft Marble Car",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM": "500"
+  },
+  "ProfileWiseOverallMarkupPricing": {
+    "priceListName": "Price List Bespoke Steel Towels",
+    "customRate": "42",
+    "updatedAt": "2026-11-02T10:23:38.244Z",
+    "editedPriceListName": "Price List Gorgeous Aluminum Bacon",
+    "editedCustomRate": "50"
+  },
+  "ProfileWiseOverallMarkdownPricing": {
+    "priceListName": "Price List Handmade Rubber Shoes",
+    "customRate": "42",
+    "updatedAt": "2026-11-02T10:23:49.479Z",
+    "editedPriceListName": "Price List Ergonomic Bronze Bacon",
+    "editedCustomRate": "50"
+  },
+  "ProfileWiseItemSpecificPricing": {
+    "priceListName": "Price List Fantastic Gold Chips",
+    "customRate": "42",
+    "profileName": "Profile Awesome Bronze Towels",
+    "itemName": "TestProduct",
+    "itemAmount1": "100",
+    "itemAmount2": "150",
+    "itemAmount3": "200",
+    "updatedAt": "2026-11-02T10:24:04.128Z",
+    "editedPriceListName": "Price List Gorgeous Plastic Gloves",
+    "editedCustomRate": "50",
+    "editedProfileName": "Profile Electronic Plastic Chips",
+    "editedProductName": "TestProduct",
+    "editedPrimaryUOM1": "500",
+    "editedPrimaryUOM2": "600",
+    "editedPrimaryUOM3": "700"
+  },
+  "ProfileWiseItemSpecificPricing_ByAutoCalculating": {
+    "priceListName": "Price List Oriental Concrete Cheese",
+    "customRate": "42",
+    "profileName": "Profile Awesome Bronze Towels",
+    "itemName": "TestProduct",
+    "itemAmount": "100",
+    "updatedAt": "2026-11-02T10:24:27.557Z",
+    "editedAutoCalculatePriceListName": "Price List Awesome Granite Computer",
+    "editedAutoCalculateCustomRate": "50",
+    "editedAutoCalculateProfileName": "Profile Electronic Plastic Chips",
+    "editedAutoCalculateProductName": "TestProduct",
+    "editedAutoCalculatePrimaryUOM1": "500",
+    "editedAutoCalculatePrimaryUOM2": "600",
+    "editedAutoCalculatePrimaryUOM3": "700"
+  },
+  "unitPurchaseData": {
+    "itemName": "Frozen Cotton Car wPBO",
+    "boxconversion": 10,
+    "bundleconversion": 10,
+    "updatedAt": "2026-11-03T08:35:39.628Z",
+    "newtotalqty": 2133.51,
+    "initialtotalqty": 0,
+    "updatedTotalqty": 1456.68,
+    "editTotalqty": 1456.68,
+    "vbExistingDue": 54217.88,
+    "vbExistingAdvance": 105,
+    "vbExistingClosing": 54112.88,
+    "piAmount": 2916.31
+  },
+  "Product_item_Create:generateProduct_item_CreateData": {
+    "emailId": "santhosh@yoloworks.com",
+    "password": "***REDACTED***",
+    "searchByNameOrGST": "auto",
+    "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
+    "productName": "casus",
+    "productDescription": "Vulgus delibero quos defero sui sonitus est totam valetudo.",
+    "salePricePerPcs": "154",
+    "quantity": "4",
+    "productName2": "adduco",
+    "productDescription2": "Dicta timidus cruentus adeptio umerus vindico.",
+    "salePricePerUnit": "358",
+    "updatedAt": "2026-11-03T08:36:12.811Z"
+  },
+  "productItemCreateData": {
+    "productName": "casus",
+    "productDescription": "Vulgus delibero quos defero sui sonitus est totam valetudo.",
+    "salePricePerPcs": "154",
+    "updatedAt": "2026-11-03T08:36:35.543Z"
   }
 }

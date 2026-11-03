@@ -4,6 +4,7 @@ const { AppBasePage } = require('../base/app-base-page');
 const { requireSection } = require('../../utils/flowStore');
 const { expectClose } = require('../../utils/stockMath');
 const { masterData } = require('../../test-data/UserData');
+const { textIs } = require('../../utils/testHelpers');
 
 /**
  * Invoice app → Sales → New Sales Invoice: typing an over-large quantity shows
@@ -17,7 +18,7 @@ class SalesStockAlertPage extends AppBasePage {
     this.salesTab          = this.page.locator('#tab_sales');
     this.newSalesInvoiceBtn = this.page.locator('#btn_new_sales_invoice > span');
     this.customerSelect    = this.page.locator('#si_select_cus');
-    this.customerOption    = (name) => this.loc(`//div[text()='${name}']`);
+    this.customerOption    = (name) => this.loc(`//div[${textIs(name)}]`);
     this.customerNextBtn   = this.page.locator('#si_select_cus_next');
     // The empty "Add item…" auto-complete row (no hashed antd class — it changes per build)
     this.itemSelect = this.page.locator('.ant-select-auto-complete').last();
