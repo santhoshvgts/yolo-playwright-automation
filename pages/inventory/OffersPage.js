@@ -20,6 +20,7 @@ class OffersPage extends PricingPage {
   constructor(page) {
     super(page);
     this.listTab = 5;
+    this.apiKind = 'offer'; // utils/pricingApi
     this.formUrl = /inventory\/offers-list/;
     this.newPricingBtn = this.page.getByRole('button', { name: /Offers/ }).first();
     this.plSave = this.page.getByRole('button', { name: 'Save', exact: true });

@@ -2,6 +2,8 @@
 
 const { expect } = require('@playwright/test');
 const { SalesInvoiceEditPage } = require('../sales/SalesInvoiceEditPage');
+const { apiSession, deactivate } = require('../../utils/pricingApi');
+const { ORG_ID } = require('../../config/urls');
 
 const OPEN_DROPDOWN = '.ant-select-dropdown:not(.ant-select-dropdown-hidden)';
 const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -24,6 +26,7 @@ class PricingPage extends SalesInvoiceEditPage {
   constructor(page) {
     super(page);
     this.listTab = 4;
+    this.apiKind = 'priceList'; // utils/pricingApi
     this.formUrl = /inventory\/price-list/;
     this.newPricingBtn = this.page.getByRole('button', { name: /Pricing/ }).first();
     this.plSearch = this.page.getByPlaceholder('Search').filter({ visible: true }).first();
@@ -235,8 +238,39 @@ class PricingPage extends SalesInvoiceEditPage {
     await this.page.keyboard.press('Escape');
   }
 
+  /** Org id in the page URL (…xyz/<org id>/…), else this worker's org. */
+  orgId() {
+    const m = this.page.url().match(/\.xyz\/([0-9a-f]{20,})/);
+    return m ? m[1] : ORG_ID;
+  }
+
+  /**
+   * Switch lists off through the app's API (utils/pricingApi) — seconds instead of a UI sweep.
+   * Returns the number switched off, or null when the API could not do it all (the caller falls back to the UI).
+   */
+  async deactivateByApi(opts) {
+    try {
+      // One API session per org is enough (opening it loads the Pricing tab)
+      const orgId = this.orgId();
+      if (this._api?.orgId !== orgId) this._api = { orgId, api: await apiSession(this.page, orgId) };
+      const r = await deactivate(this._api.api, this.apiKind, opts);
+      return r.stuck.length ? null : r.switched;
+    } catch (e) {
+      this._api = null;
+      console.log(`API clean-up failed (${e.message.split('\n')[0]}) — using the UI`);
+      return null;
+    }
+  }
+
   /** Deactivate every active list whose name starts with `prefix` (or is exactly it with { exact: true }), all pages. */
   async deactivateAll(prefix, { exact = false } = {}) {
+    const viaApi = await this.deactivateByApi({ prefix, exact });
+    if (viaApi !== null) return viaApi;
+    return this.deactivateAllInUi(prefix, { exact });
+  }
+
+  /** The UI sweep behind deactivateAll, used when the API is not available. */
+  async deactivateAllInUi(prefix, { exact = false } = {}) {
     const match = (name) => (exact ? name === prefix : name.startsWith(prefix));
     let n = 0; let stuck = 0;
     const next = this.page.locator('li.ant-pagination-next').filter({ visible: true }).first();
@@ -295,6 +329,9 @@ class PricingPage extends SalesInvoiceEditPage {
    * once more — a list left active here re-prices every later invoice of the org.
    */
   async cleanupCreated(names, prefix) {
+    // The API first: these exact lists, then the prefix sweep; the UI only when the API cannot finish
+    const named = names.length ? await this.deactivateByApi({ names }) : 0;
+    if (named !== null && (!prefix || (await this.deactivateByApi({ prefix })) !== null)) return;
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         if (attempt > 1) await this.open();

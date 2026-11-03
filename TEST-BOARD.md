@@ -54,7 +54,7 @@ The test keys come from the spec file and the test number. For example, `CT-11` 
    - **Mode:** Headless or Headed.
    - **Workers:** "Auto" uses one worker per test org (`ORG_NAMES` in `.env`). The config never allows more workers than orgs.
    - **Retries:** "Config" uses `playwright.config.js` (1 retry locally). Choose 0 to see failures faster.
-   - **Pricing cleanup** (on by default): runs `tests/tools/pricing-cleanup.spec.js` before your tests, which takes about 2 minutes. It switches off any price list or offer that an earlier run left active; a leftover one changes invoice rates and fails the sales tests. You can turn it off for a quick single-test run.
+   - **Pricing cleanup** (on by default): runs `tests/tools/pricing-cleanup.spec.js` before your tests. It switches the lists off through the app's API (`utils/pricingApi.js`) and takes about 40 seconds. It switches off any price list or offer that an earlier run left active; a leftover one changes invoice rates and fails the sales tests. You can turn it off for a quick single-test run.
    - **Clean old files** (on by default): removes old test output before the tests start. See [Cleaning before a run](#cleaning-before-a-run).
 3. Click **▶ Run selected**, or **Run all** for the whole suite. The whole suite takes hours.
 4. Watch the progress bar, the statuses and the live logs. **■ Stop** ends the run and closes its browsers.
