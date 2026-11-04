@@ -4,14 +4,14 @@
     "password": "***REDACTED***",
     "searchByNameOrGST": "auto",
     "fieldFile": "D:\\YOLO\\yolo-playwright-automation\\test-data\\Upload_files\\MZO9pvcB03.png",
-    "productName": "terra",
-    "productDescription": "Aro ipsa cubitum thalassinus illum curiositas laboriosam summa derideo.",
-    "salePricePerPcs": "649",
-    "updatedAt": "2026-11-03T14:25:54.489Z",
-    "productName2": "magnam",
-    "productDescription2": "Labore dolorum civis patria coepi terminatio tubineus victoria.",
-    "salePricePerUnit": "435",
-    "quantity": "1"
+    "productName": "vester",
+    "productDescription": "Tego copiose defessus acervus vulgaris vomer.",
+    "salePricePerPcs": "574",
+    "updatedAt": "2026-11-04T05:12:12.009Z",
+    "productName2": "talus",
+    "productDescription2": "Via ocer deorsum.",
+    "salePricePerUnit": "440",
+    "quantity": "0"
   },
   "testRuns": {
     "tests_Product_item_Create_spec_js": {

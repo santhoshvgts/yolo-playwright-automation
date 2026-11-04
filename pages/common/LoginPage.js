@@ -14,6 +14,7 @@ const WAIT = {
 const { adminData, appUrls, masterData } = require('../../test-data/UserData');
 const fs = require('fs');
 const { ORG_FILE, STORAGE_STATE } = require('../../config/auth');
+const { retryGatewayErrors } = require('../../utils/apiRetry');
 
 const DEFAULT_BASE_URL = appUrls.invoice;
 
@@ -206,6 +207,8 @@ class LoginPage extends BasePage {
     if (!url) throw new Error(`Unknown app "${app}" (expected invoice | fieldforce | inventory)`);
     console.log(`Opening ${app} app...`);
     this.baseUrl = url;
+    // A 502 on the app's user-info call logs the test out — retry gateway errors (utils/apiRetry.js)
+    await retryGatewayErrors(this.page.context());
     if (await this.openSavedOrg(app)) return;
     // Each login ends the account's other sessions, so every other worker's running test fails. Under load the
     // app sometimes shows the login screen for a session the server still accepts: retry the saved session

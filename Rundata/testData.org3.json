@@ -41,28 +41,10 @@
     "updatedAt": "2026-11-03T11:19:42.879Z"
   },
   "flowItemCreateData": {
-    "productName": "Soft Gold Tuna mzze",
-    "productDescription": "Savor the crunchy essence in our Ball, designed for simple culinary adventures",
-    "salePricePerPcs": "17",
-    "updatedAt": "2026-11-03T08:30:06.118Z"
-  },
-  "unitPurchaseData": {
-    "itemName": "Handcrafted Metal Fish hWRt",
-    "boxconversion": 9,
-    "bundleconversion": 9,
-    "updatedAt": "2026-11-02T10:18:34.488Z",
-    "newtotalqty": 1922.86,
-    "initialtotalqty": 0,
-    "updatedTotalqty": 1869.73,
-    "editTotalqty": 1869.73,
-    "finalTotalqty": 0,
-    "billNo": "PINV-AUTO/0027",
-    "vbExistingDue": 23613806.46,
-    "vbExistingAdvance": 2,
-    "vbExistingClosing": 23613804.46,
-    "piAmount": 7754.16,
-    "edpiAmount": 3372.54,
-    "vbUpdatedDue": 23617179
+    "productName": "Recycled Bamboo Ball awSe",
+    "productDescription": "New Salad model with 19 GB RAM, 583 GB storage, and infatuated features",
+    "salePricePerPcs": "25",
+    "updatedAt": "2026-11-04T05:08:33.589Z"
   },
   "Product_item_Create:generateProduct_item_CreateData": {
     "emailId": "santhosh@yoloworks.com",
@@ -169,5 +151,13 @@
     "cbUpdatedDue": 100718.74,
     "cbFinalAdvance": 72076,
     "cbFinalClosing": 27013.21
+  },
+  "unitPurchaseData": {
+    "itemName": "Recycled Bamboo Ball awSe",
+    "boxconversion": 11,
+    "bundleconversion": 11,
+    "updatedAt": "2026-11-04T05:09:14.221Z",
+    "newtotalqty": 3026.47,
+    "initialtotalqty": 0
   }
 }

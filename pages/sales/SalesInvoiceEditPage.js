@@ -90,7 +90,9 @@ class SalesInvoiceEditPage extends SalesInvoiceStockPage {
     const input = root.locator('input[role="combobox"]').first();
     const label = async () => {
       const id = await input.getAttribute('aria-activedescendant');
-      return id ? ((await this.page.locator(`[id="${id}"]`).getAttribute('aria-label')) || '').trim() : '';
+      // "<list>_-1" = no option active yet: no element has that id, and waiting for it would burn the action timeout
+      if (!id || id.endsWith('_-1')) return '';
+      return ((await this.page.locator(`[id="${id}"]`).getAttribute('aria-label', { timeout: 2_000 }).catch(() => '')) || '').trim();
     };
     for (let k = 0; k < 80; k++) {
       if ((await label()) === text) { await this.page.keyboard.press('Enter'); return; }

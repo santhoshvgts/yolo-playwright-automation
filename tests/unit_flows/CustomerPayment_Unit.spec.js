@@ -20,8 +20,10 @@ test.describe(moduleName, () => {
   // Fixed size: the top menu folds "Reports" into "…" on narrow windows.
   test.use({ viewport: { width: 1800, height: 900 } });
   // No retries: a retry would record a second payment and skew the balance maths.
-  // Each step reads what the previous one saved — keep them in order on one worker
-  test.describe.configure({ mode: 'default', retries: 0, timeout: 600_000 });
+  // Each step reads what the previous one saved, in this worker's org. Serial keeps the whole chain on one
+  // worker: in 'default' mode a failure hands the remaining steps to whichever worker is free next — another
+  // org, where the saved item does not exist. After a failure the remaining steps are skipped instead.
+  test.describe.configure({ mode: 'serial', retries: 0, timeout: 600_000 });
 
   // ── Bulk Payment Received ──
   test('TC01 - Create a bulk customer payment against the customer\'s due invoices and verify invoice dues and customer balances', { tag: ['@unit', '@payment'], annotation: { type: 'cases', description: 'TC01' } }, async ({ page }) => {

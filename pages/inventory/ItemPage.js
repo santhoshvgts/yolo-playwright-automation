@@ -111,8 +111,11 @@ class ItemPage extends AppBasePage {
     await this.addDescriptionButton.click();
     await this.productDescriptionField.fill(data.productDescription);
     await this.hsnField.click();
-    await this.hsnSearchButton.click();
-    await this.hsnResult(data.hsnCode).click();
+    // The HSN lookup sometimes comes back empty under load — search again rather than fail the whole flow
+    await expect(async () => {
+      await this.hsnSearchButton.click();
+      await this.hsnResult(data.hsnCode).click({ timeout: 10_000 });
+    }).toPass({ timeout: 60_000 });
 
     console.log('Sale price + alternate UOMs...');
     await this.salePriceField.fill(data.salePricePerPcs);

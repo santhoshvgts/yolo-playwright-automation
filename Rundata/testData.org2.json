@@ -54,10 +54,10 @@
     "updatedexcessAmt": 0
   },
   "flowItemCreateData": {
-    "productName": "Frozen Cotton Car wPBO",
-    "productDescription": "Experience the grey brilliance of our Mouse, perfect for immediate environments",
-    "salePricePerPcs": "29",
-    "updatedAt": "2026-11-03T08:29:43.443Z"
+    "productName": "Generic Ceramic Keyboard uqVC",
+    "productDescription": "Innovative Car featuring troubled technology and Bronze construction",
+    "salePricePerPcs": "37",
+    "updatedAt": "2026-11-04T04:03:51.295Z"
   },
   "salesFlowData": {
     "itemName": "Handmade Granite Pizza kBeC",
@@ -200,20 +200,6 @@
     "editedAutoCalculatePrimaryUOM2": "600",
     "editedAutoCalculatePrimaryUOM3": "700"
   },
-  "unitPurchaseData": {
-    "itemName": "Frozen Cotton Car wPBO",
-    "boxconversion": 10,
-    "bundleconversion": 10,
-    "updatedAt": "2026-11-03T08:35:39.628Z",
-    "newtotalqty": 2133.51,
-    "initialtotalqty": 0,
-    "updatedTotalqty": 1456.68,
-    "editTotalqty": 1456.68,
-    "vbExistingDue": 54217.88,
-    "vbExistingAdvance": 105,
-    "vbExistingClosing": 54112.88,
-    "piAmount": 2916.31
-  },
   "Product_item_Create:generateProduct_item_CreateData": {
     "emailId": "santhosh@yoloworks.com",
     "password": "***REDACTED***",
@@ -233,5 +219,13 @@
     "productDescription": "Vulgus delibero quos defero sui sonitus est totam valetudo.",
     "salePricePerPcs": "154",
     "updatedAt": "2026-11-03T08:36:35.543Z"
+  },
+  "unitPurchaseData": {
+    "itemName": "Generic Ceramic Keyboard uqVC",
+    "boxconversion": 17,
+    "bundleconversion": 17,
+    "updatedAt": "2026-11-04T04:04:19.310Z",
+    "newtotalqty": 5469.81,
+    "initialtotalqty": 0
   }
 }

@@ -1,5 +1,6 @@
 const base = require('@playwright/test');
 const { TIMEOUTS } = require('../config/timeouts');
+const { retryGatewayErrors } = require('../utils/apiRetry');
 
 /**
  * Shared test fixture.
@@ -15,6 +16,7 @@ const test = base.test.extend({
   page: async ({ page }, use) => {
     page.setDefaultTimeout(TIMEOUTS.action);
     page.setDefaultNavigationTimeout(TIMEOUTS.navigation);
+    await retryGatewayErrors(page.context());
     await use(page);
   },
 });
